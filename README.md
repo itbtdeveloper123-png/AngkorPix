@@ -201,10 +201,10 @@ git clone https://github.com/itbtdeveloper123-png/AngkorPix.git
 cd AngkorPix
 
 # Run the desktop application
-cargo run -p photocraft
+cargo run -p angkorpix
 
 # Or run in release mode for maximum performance
-cargo run --release -p photocraft
+cargo run --release -p angkorpix
 ```
 
 <br>
