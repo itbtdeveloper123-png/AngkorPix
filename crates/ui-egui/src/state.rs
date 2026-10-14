@@ -404,6 +404,9 @@ pub struct Panels {
     /// The right dock's icon rail. An app that embeds PhotoCraft's UI can hide it for a simpler view.
     #[serde(default = "yes")]
     pub rail: bool,
+    /// Window › Contextual Task Bar: modern floating context-sensitive taskbar over canvas.
+    #[serde(default = "yes")]
+    pub contextual_task_bar: bool,
     /// The title bar with the in-window menus. An app that embeds PhotoCraft's UI and draws its own
     /// bar can hide it; the caption buttons of a custom title bar go with it.
     #[serde(default = "yes")]
@@ -432,6 +435,7 @@ impl Default for Panels {
             dock: true,
             hidden_by_tab: None,
             rail: true,
+            contextual_task_bar: true,
             menu_bar: true,
             gradient_editor: false,
         }
@@ -1264,6 +1268,12 @@ pub struct UiState {
     pub camera_raw_scope: CameraRawScopeState,
     #[serde(default)]
     pub camera_raw_preview: CameraRawPreviewState,
+    /// Saved position of the contextual task bar if the user dragged it, else None (auto-positioned).
+    #[serde(default)]
+    pub contextual_task_bar_pos: Option<[f32; 2]>,
+    /// Whether the contextual task bar position is pinned (locked in place) vs floating with selection.
+    #[serde(default)]
+    pub contextual_task_bar_pinned: bool,
 }
 
 impl Default for UiState {
@@ -1348,6 +1358,8 @@ impl Default for UiState {
             chrome: Default::default(),
             camera_raw_scope: Default::default(),
             camera_raw_preview: Default::default(),
+            contextual_task_bar_pos: None,
+            contextual_task_bar_pinned: false,
         }
     }
 }

@@ -191,7 +191,7 @@ Triangle and Curvature Pen (minus legacy Rounded Rectangle and Targeted Adjustme
 
 ## Panels and workspace
 
-30 of 35 Window-menu panels exist (measured). Missing: Libraries, Comments, Contextual Task Bar,
+31 of 35 Window-menu panels exist (measured). Missing: Libraries, Comments,
 Discover, Generative variations. Dock tabs: Layers, Channels, Paths, History, Actions, Layer
 Comps, Properties, Adjustments, Navigator, Histogram, Info, Color, Swatches, Character,
 Paragraph; the rest open as in-app floating windows.
@@ -212,11 +212,13 @@ Paragraph; the rest open as in-app floating windows.
 | Layers panel: wheel steps blend modes, drop on New/Trash | partial | UI-217-14 |
 | Smart filter rows: click selects, drag onto another smart object moves, ⌥-drag copies, drag onto Delete removes | done | `smart_ui.rs`, `layer.smartFilter.transfer` (#4271) |
 | Smart filter rows: drag up or down the stack to reorder (a line marks the drop; the bottom filter is applied first) | done | `smart_ui.rs` `reorder_drop`, `layer.smartFilter.move` |
+| Contextual Task Bar: floating context-sensitive bar over canvas (Select Subject, Remove Background, Select Sky, Mask, Invert, Fill, Crop, Type) | done | `contextual_task_bar.rs` |
 
 ## Revision history
 
 | Date | Change | Summary |
 |---|---|---|
+| 2026-10-14 | minor | Contextual Task Bar landed: floating context-sensitive taskbar over canvas with drag handle, dynamic action buttons and kebab options menu (`contextual_task_bar.rs`) |
 | 2026-10-13 | minor | Smart object perspective (non-affine) corrected to done: #426 landed four-corner placements with PSD round trip; scorecard FILE-215-6 flipped |
 | 2026-10-10 | major | First version, from a source audit against Photoshop 2026 27.11.0's shortcuts file and the open issues |
 | 2026-10-10 | minor | Fixed Crop live resize snapping feedback and outdated-camera rendering, applied ratios immediately to centred inscribed previews, and removed two-point options-bar overflow; added pointer, rendering, dropdown/Enter, Swap/X and scrolling regressions |

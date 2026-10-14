@@ -67,6 +67,7 @@ pub const UI_COMMANDS: &[(&str, &str, &[&str], Option<&str>)] = &[
     ("window.toggle.properties", "Properties", &["Window"], None),
     ("window.toggle.color", "Color", &["Window"], Some("F6")),
     ("window.toggle.brushSettings", "Brush Settings", &["Window"], Some("F5")),
+    ("window.toggle.contextualTaskBar", "Contextual Task Bar", &["Window"], None),
     ("window.toggle.navigator", "Navigator", &["Window"], None),
     ("window.toggle.toolbar", "Tools", &["Window"], None),
     // Photoshop's Tab and ⇧Tab: all panels (Tools, options bar and the dock), or only the dock.
@@ -117,6 +118,7 @@ pub(crate) fn panel_alias(id: &str) -> Option<&'static str> {
         "tools" => "window.toggle.toolbar",
         "options" => "window.toggle.options",
         "brushSettings" | "brushes" => "window.toggle.brushSettings",
+        "contextualTaskBar" | "contextual_task_bar" => "window.toggle.contextualTaskBar",
         _ => return None,
     })
 }
@@ -674,6 +676,7 @@ pub(crate) fn invoke_unguarded(app: &mut PhotocraftApp, ctx: &egui::Context, id:
                 "toolbar" => &mut p.toolbar,
                 "options" => &mut p.options_bar,
                 "brushSettings" => &mut p.brush_settings,
+                "contextualTaskBar" => &mut p.contextual_task_bar,
                 "dock" => &mut p.dock,
                 _ => return Err(format!("unknown panel in {t}")),
             };
@@ -881,6 +884,7 @@ fn checked(app: &PhotocraftApp, id: &str) -> Option<bool> {
         "window.togglePanels" => p.toolbar || p.options_bar || p.dock,
         "window.toggle.options" => p.options_bar,
         "window.toggle.brushSettings" => p.brush_settings,
+        "window.toggle.contextualTaskBar" => p.contextual_task_bar,
         _ => return None,
     })
 }
