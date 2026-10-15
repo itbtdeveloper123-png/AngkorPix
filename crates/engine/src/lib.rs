@@ -11,6 +11,7 @@ pub mod actions_cmds;
 pub mod actions_edit_cmds;
 pub mod adjust_cmds;
 pub mod adjust_params;
+pub mod adjustment_preset_cmds;
 pub mod align_cmds;
 mod allocation;
 pub mod analysis_cmds;

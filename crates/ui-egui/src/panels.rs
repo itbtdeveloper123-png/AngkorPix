@@ -3439,10 +3439,115 @@ fn properties_body_inner(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
     }
 }
 
-/// Photoshop's Adjustments panel: a grid of one-click adjustment layers.
+/// Photoshop 2024–2026 Adjustments panel:
+/// 1. Adjustment Presets (categorized cards with one-click apply)
+/// 2. Single Adjustments (grid of 16 one-click icons)
 fn adjustments_grid(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
-    ui.label(RichText::new(tl!("Add an adjustment")).color(t.text_dim));
+
+    // 1. Adjustment Presets section
+    ui.label(RichText::new(tl!("Adjustment Presets")).strong().color(t.text));
+    ui.add_space(3.0);
+
+    // Category filter pills: All, Portraits, Landscape, Photo Repair, Creative, Black & White
+    let mut selected_cat = None;
+    ui.horizontal_wrapped(|ui| {
+        ui.spacing_mut().item_spacing = vec2(3.0, 3.0);
+        let current_cat = if app.ui.adjustments_category.is_empty() { "all" } else { app.ui.adjustments_category.as_str() };
+
+        let cats = ["all", "Portraits", "Landscape", "Photo Repair", "Creative", "Black & White"];
+        for cat in cats {
+            let label = if cat == "all" { tl!("All") } else { cat };
+            let is_selected = current_cat.eq_ignore_ascii_case(cat);
+            let btn_color = if is_selected { t.accent } else { t.card };
+            let text_color = if is_selected { Color32::WHITE } else { t.text };
+            let resp = ui.add(
+                egui::Button::new(RichText::new(label).size(10.5).color(text_color))
+                    .fill(btn_color)
+                    .corner_radius(CornerRadius::same(10)),
+            );
+            if resp.clicked() {
+                selected_cat = Some(cat.to_string());
+            }
+        }
+    });
+    if let Some(cat) = selected_cat {
+        app.ui.adjustments_category = cat;
+    }
+    ui.add_space(6.0);
+
+    // Preset cards list
+    let current_cat = if app.ui.adjustments_category.is_empty() { "all" } else { app.ui.adjustments_category.as_str() };
+    let filtered_presets: Vec<&'static photocraft_engine::adjustment_preset_cmds::PresetDef> = photocraft_engine::adjustment_preset_cmds::PRESETS
+        .iter()
+        .filter(|p| current_cat.eq_ignore_ascii_case("all") || p.category.eq_ignore_ascii_case(current_cat))
+        .collect();
+
+    let mut apply_preset = None;
+
+    egui::ScrollArea::vertical()
+        .max_height(160.0)
+        .auto_shrink([false, false])
+        .show(ui, |ui| {
+            ui.spacing_mut().item_spacing = vec2(4.0, 4.0);
+            for p in filtered_presets {
+                let card_w = ui.available_width().max(100.0);
+                let (rect, resp) = ui.allocate_exact_size(vec2(card_w, 32.0), Sense::click());
+                let hovered = resp.hovered();
+
+                let bg_color = if hovered { t.hover } else { t.card };
+                let border_stroke = if hovered {
+                    Stroke::new(1.0, t.accent)
+                } else {
+                    Stroke::new(0.5, t.card_border)
+                };
+
+                let painter = ui.painter();
+                painter.rect(rect, CornerRadius::same(4), bg_color, border_stroke, egui::StrokeKind::Inside);
+
+                // Badge swatch: 20x20 gradient square
+                let badge_rect = Rect::from_min_size(rect.min + vec2(6.0, 6.0), vec2(20.0, 20.0));
+                let c1 = Color32::from_rgb(p.badge_colors[0][0], p.badge_colors[0][1], p.badge_colors[0][2]);
+                let c2 = Color32::from_rgb(p.badge_colors[1][0], p.badge_colors[1][1], p.badge_colors[1][2]);
+                painter.rect_filled(badge_rect, CornerRadius::same(3), c1);
+                painter.line_segment([badge_rect.left_bottom(), badge_rect.right_top()], Stroke::new(1.0, c2));
+
+                // Title and subtitle
+                let text_pos = badge_rect.right_top() + vec2(8.0, 0.0);
+                painter.text(
+                    text_pos,
+                    Align2::LEFT_TOP,
+                    p.label,
+                    egui::FontId::proportional(11.0),
+                    t.text,
+                );
+                painter.text(
+                    text_pos + vec2(0.0, 11.0),
+                    Align2::LEFT_TOP,
+                    p.category,
+                    egui::FontId::proportional(9.0),
+                    t.text_dim,
+                );
+
+                let resp = resp.on_hover_text(format!("{}\n{}", p.description, if p.steps.len() > 1 { "(Creates an Adjustment Group)" } else { "(Creates an Adjustment Layer)" }));
+
+                if resp.clicked() {
+                    apply_preset = Some(p.id);
+                }
+            }
+        });
+
+    if let Some(id) = apply_preset {
+        let _ = app.run("adjustment.presets.apply", json!({ "preset": id }));
+        app.ui.dock_tabs.properties = 0;
+    }
+
+    ui.add_space(8.0);
+    ui.separator();
+    ui.add_space(4.0);
+
+    // 2. Single Adjustments section
+    ui.label(RichText::new(tl!("Single Adjustments")).color(t.text_dim));
     ui.add_space(4.0);
     let items: [(&str, &str, &str); 16] = [
         ("brightnessContrast", "sun", tl!("Brightness/Contrast")),

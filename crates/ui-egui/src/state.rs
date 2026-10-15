@@ -1274,6 +1274,9 @@ pub struct UiState {
     /// Whether the contextual task bar position is pinned (locked in place) vs floating with selection.
     #[serde(default)]
     pub contextual_task_bar_pinned: bool,
+    /// Active category filter in the Adjustments panel presets ("all", "Portraits", "Landscape", etc.).
+    #[serde(default)]
+    pub adjustments_category: String,
 }
 
 impl Default for UiState {
@@ -1360,6 +1363,7 @@ impl Default for UiState {
             camera_raw_preview: Default::default(),
             contextual_task_bar_pos: None,
             contextual_task_bar_pinned: false,
+            adjustments_category: "all".into(),
         }
     }
 }
