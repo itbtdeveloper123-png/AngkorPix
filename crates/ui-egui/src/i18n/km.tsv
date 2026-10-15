@@ -76,7 +76,7 @@
 	Flatten All Masks	Flatten All Masks
 	Flip Horizontal	ត្រឡប់ផ្តេក
 	Flip Vertical	ត្រឡប់បញ្ឈរ
-	Free Transform	បំប្លែងទម្រង់សេរី
+	Free Transform	បំប្លែងទម្រង់សេរី (Free Transform)
 	Generate	Generate
 	Guides, Grid & Slices…	បន្ទាត់ណែនាំ ក្រឡាចត្រង្គ និងបន្ទះកាត់…
 	Help	ជំនួយ
@@ -160,7 +160,7 @@
 	Toggle Last State	ប្តូរស្ថានភាពចុងក្រោយ
 	Toolbar…	របារឧបករណ៍…
 	Tools…	ប្រអប់ឧបករណ៍…
-	Transform	បំប្លែងទម្រង់
+	Transform	បំប្លែងទម្រង់ (Transform)
 	Transparency & Gamut…	ភាពថ្លា និងកម្រិតពណ៌…
 	Type	អក្សរ
 	Type…	អក្សរ…
@@ -219,7 +219,7 @@
 	Convert to Embedded	Convert to Embedded
 	Convert to Layers	បំប្លែងទៅជា ស្រទាប់
 	Convert to Linked…	បំប្លែងទៅជាឯកសារភ្ជាប់…
-	Convert to Smart Object	បំប្លែងទៅជាវត្ថុឆ្លាតវៃ
+	Convert to Smart Object	បំប្លែងទៅជា Smart Object
 	Copy Layer Style	ចម្លងរចនាប័ទ្មស្រទាប់
 	Count Tool	Count Tool
 	Create Clipping Mask	បង្កើតរបាំងក្លីប (Clipping Mask)
@@ -251,7 +251,7 @@
 	Export Contents…	Export Contents…
 	Exposure…	កម្រិតពន្លឺ (Exposure)…
 	Fill Content	Fill Content
-	Flatten Image	បង្រួមស្រទាប់ទាំងអស់ចូលគ្នាតែមួយ
+	Flatten Image	ពង្រាបស្រទាប់ទាំងអស់ (Flatten Image)
 	Flip Canvas Horizontal	Flip Canvas Horizontal
 	Flip Canvas Vertical	Flip Canvas Vertical
 	Frame from Layers	Frame from Layers
@@ -274,7 +274,7 @@
 	Horizontally	Horizontally
 	Hue/Saturation…	លាំពណ៌/ភាពឆ្អែតពណ៌ (Hue/Saturation)…
 	Image Rotation	ការបង្វិលរូបភាព
-	Image Size…	ទំហំរូបភាព…
+	Image Size…	ទំហំរូបភាព (Image Size)…
 	Indexed Color	Indexed Color
 	Inner Glow…	ពន្លឺចាំងខាងក្នុង…
 	Inner Shadow…	ស្រមោលខាងក្នុង…
@@ -306,7 +306,7 @@
 	Median	Median
 	Merge Layers	បញ្ចូលស្រទាប់ចូលគ្នា
 	Merge Shape Components	Merge Shape Components
-	Merge Visible	បញ្ចូលស្រទាប់ដែលមើលឃើញ
+	Merge Visible	បញ្ចូលស្រទាប់ដែលមើលឃើញ (Merge Visible)
 	Minimum	Minimum
 	Mode	ទម្រង់ពណ៌ (Mode)
 	Multichannel	ពហុឆានែល (Multichannel)
@@ -357,7 +357,7 @@
 	Show Altered Video	Show Altered Video
 	Skewness	Skewness
 	Smart Filter	តម្រងឆ្លាតវៃ (Smart Filter)
-	Smart Object	Smart Object
+	Smart Object	វត្ថុឆ្លាតវៃ (Smart Object)
 	Smart Objects	វត្ថុឆ្លាតវៃ (Smart Objects)
 	Solid Color…	ពណ៌សុទ្ធ…
 	Stack Mode	Stack Mode
@@ -395,7 +395,7 @@
 	Create Work Path	បង្កើតខ្សែបន្ទាត់ការងារ
 	Crisp	Crisp
 	Default Features	Default Features
-	Deselect	ដោះការជ្រើសរើស
+	Deselect	ដោះការជ្រើសរើស (Deselect / Ctrl+D)
 	Deselect Layers	ដោះការជ្រើសរើសស្រទាប់
 	Discretionary Ligatures	Discretionary Ligatures
 	East Asian Features	East Asian Features
@@ -432,7 +432,7 @@
 	Paste Lorem Ipsum	Paste Lorem Ipsum
 	Rasterize Type Layer	ស្រទាប់ បម្លែងអក្សរជាភីកសែល
 	Replace All Missing Fonts	Replace All Missing Fonts
-	Reselect	ជ្រើសរើសឡើងវិញ
+	Reselect	ជ្រើសរើសឡើងវិញ (Reselect / Ctrl+Shift+D)
 	Resolve Missing Fonts…	Resolve Missing Fonts…
 	Save Default Type Styles	Save Default Type Styles
 	Save Selection…	រក្សាទុកជម្រើស…
@@ -714,10 +714,10 @@
 	Zoom Tool	ឧបករណ៍ពង្រីក/បង្រួម (Zoom)
 	Spot Healing Brush Tool	ជក់លុបស្នាមអុច
 	Healing Brush Tool	ជក់ជួសជុលស្នាម
-	Patch Tool	Patch Tool
-	Content-Aware Move Tool	Content-Aware Move Tool
+	Patch Tool	ឧបករណ៍ប៉ះស្នាម (Patch Tool)
+	Content-Aware Move Tool	ឧបករណ៍រំកិលតាមបរិបទ (Content-Aware Move)
 	Clone Stamp Tool	ត្រាចម្លងរូបភាព (Clone Stamp)
-	History Brush Tool	History Brush Tool
+	History Brush Tool	ឧបករណ៍ជក់ប្រវត្តិដើម (History Brush)
 	Blur Tool	ឧបករណ៍ធ្វើឱ្យព្រិល
 	Sharpen Tool	ឧបករណ៍ធ្វើឱ្យច្បាស់
 	Smudge Tool	ឧបករណ៍ទាញលាបពណ៌ (Smudge)
@@ -743,7 +743,7 @@
 	Edit in Quick Mask Mode  (Q)	Edit in Quick Mask Mode  (Q)
 	Edit in Standard Mode  (Q)	Edit in Standard Mode  (Q)
 	Change Screen Mode  (F)	Change Screen Mode  (F)
-	Opacity	Opacity
+	Opacity	ភាពស្រអាប់ (Opacity)
 	Opacity:	ភាពស្រអាប់:
 	Hardness	Hardness
 	Smoothing	Smoothing
@@ -772,7 +772,7 @@
 	Width	ទទឹង
 	Height	កម្ពស់
 	Delete Cropped Pixels	Delete Cropped Pixels
-	Fill	Fill
+	Fill	បំពេញ (Fill)
 	Fill:	កម្រិតបំពេញ:
 	Stroke:	Stroke:
 	Weight:	Weight:
@@ -805,7 +805,7 @@
 	Swaps height and width	Swaps height and width
 	Fit Screen	Fit Screen
 	Fill Screen	Fill Screen
-	Select Subject	ជ្រើសរើសប្រធានបទ
+	Select Subject	ជ្រើសរើសតួអង្គ/ប្រធានបទ (Select Subject)
 	Frequency	Frequency
 	Limits:	Limits:
 	Sampling: Continuous	Sampling: Continuous
@@ -922,7 +922,7 @@
 	Show the layer's effects  ({key}-click: all layers)	Show the layer's effects  ({key}-click: all layers)
 	Link the mask to the layer	Link the mask to the layer
 	Unlink the mask from the layer	Unlink the mask from the layer
-	Delete Layer	លុបស្រទាប់
+	Delete Layer	លុបស្រទាប់ (Delete Layer)
 	Delete Layers	លុប ស្រទាប់
 	Duplicate Layers…	ចម្លង ស្រទាប់ ទ្វេដង…
 	Add Layer Mask	Add Layer Mask
@@ -933,7 +933,7 @@
 	Delete Layer Mask	លុប របាំងស្រទាប់
 	Disable Layer Mask	Disable Layer Mask
 	Release Clipping Mask	ដោះរបាំងក្លីប
-	Merge Down	Merge Down
+	Merge Down	បញ្ចូលស្រទាប់ខាងក្រោម (Merge Down)
 	Merge Group	Merge Group
 	Quick Export As PNG	Quick Export As PNG
 	Rename Layer…	ប្តូរឈ្មោះស្រទាប់…
@@ -1170,7 +1170,7 @@
 	Subtract	ដកពណ៌
 	Darken	ងងឹត
 	Overlay	ជាន់លើ (Overlay)
-	Color Dodge	គេចពណ៌
+	Color Dodge	បន្ថែមពន្លឺពណ៌ (Color Dodge)
 	Color Burn	ដុតពណ៌
 	Linear Burn	ដុតពណ៌លីនេអ៊ែរ
 	Hard Mix	ល្បាយពណ៌ខ្លាំង
@@ -1287,7 +1287,7 @@
 	Detail	Detail
 	Effects	Effects
 	Exposure	Exposure
-	Feather	Feather
+	Feather	ភាពព្រាលគែម (Feather)
 	Full-resolution preview unavailable	Full-resolution preview unavailable
 	Global	Global
 	Grain	Grain
@@ -1843,7 +1843,7 @@ document	Orientation	ទិសដៅក្រដាស
 	Reset to Default	Reset to Default
 	Make Default	Make Default
 	Preview	Preview
-	Blend Mode	Blend Mode
+	Blend Mode	របៀបលាយពណ៌ (Blend Mode)
 	Use Global Light	Use Global Light
 	Distance	Distance
 	Spread	Spread
@@ -2270,7 +2270,7 @@ shape	Appearance	រូបរាង
 	GitHub	GitHub
 	Gray Gamma 2.2	Gray Gamma 2.2
 	Invalid delete command	Invalid delete command
-	Inverse	ត្រឡប់ការជ្រើសរើសផ្ទុយ
+	Inverse	ត្រឡប់ការជ្រើសរើសផ្ទុយ (Inverse / Ctrl+Shift+I)
 	Lighten	ភ្លឺ
 	Missing delete command	Missing delete command
 	PhotoCraft	PhotoCraft
@@ -2381,7 +2381,7 @@ shape	Appearance	រូបរាង
 	Miter limit	Miter limit
 	Move Panel	Move Panel
 	New Crop Preset…	New Crop Preset…
-	New Layer	បង្កើត ស្រទាប់ ថ្មី
+	New Layer	បង្កើតស្រទាប់ថ្មី (New Layer)
 	No document open	No document open
 	No matching settings	No matching settings
 	Number	Number
@@ -2485,7 +2485,7 @@ shape	Appearance	រូបរាង
 	PSD	PSD
 	Quick Actions	Quick Actions
 	Remove	Remove
-	Remove Background	លុបផ្ទៃខាងក្រោយ
+	Remove Background	លុបផ្ទៃខាងក្រោយ (Remove Background)
 	Remove Tool	Remove Tool
 	Keyboard shortcuts imported	Keyboard shortcuts imported
 	Your keyboard shortcut set {set} is in use here: {n} shortcuts differ from the defaults. Edit › Keyboard Shortcuts shows them; Reset All to Defaults undoes this.	Your keyboard shortcut set {set} is in use here: {n} shortcuts differ from the defaults. Edit › Keyboard Shortcuts shows them; Reset All to Defaults undoes this
@@ -2655,7 +2655,7 @@ shape	Appearance	រូបរាង
 	Pass Through	Pass Through
 	Dissolve	រលាយ
 	Darker Color	ពណ៌ងងឹតជាង (Darker Color)
-	Linear Dodge (Add)	គេចពណ៌លីនេអ៊ែរ (បូកពណ៌)
+	Linear Dodge (Add)	បន្ថែមពន្លឺលីនេអ៊ែរ (Linear Dodge)
 	Lighter Color	ពណ៌ភ្លឺជាង (Lighter Color)
 	Soft Light	ពន្លឺស្រាល
 	Hard Light	ពន្លឺខ្លាំង
@@ -2962,7 +2962,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Draft	Draft
 	Dry Brush	Dry Brush
 	Duplicate	ចម្លងទ្វេដង
-	Duplicate Layer	ចម្លង ស្រទាប់ ទ្វេដង
+	Duplicate Layer	ស្ទួនស្រទាប់ (Duplicate Layer)
 	Duplicate Layer Comp	Duplicate Layer Comp
 	Duplicate Layers	ចម្លង ស្រទាប់ ទ្វេដង
 	Duplication	Duplication
@@ -3570,7 +3570,7 @@ curves	Smooth	បន្ទន់រលូន
 	Open color-less EXR as ACEScg	បើក EXR គ្មានពណ៌ជា ACEScg
 	Edit Selected Guides	Edit Selected Guides
 	Clear Selected Guides	Clear Selected Guides
-	Adjust Colors	កែសម្រួលពណ៌
+	Adjust Colors	កែសម្រួលពណ៌ (Adjust Colors)
 	Adjust colors	កែសម្រួលពណ៌
 	Select subject	ជ្រើសរើសប្រធានបទ
 	Remove background	លុបផ្ទៃខាងក្រោយ
@@ -3602,3 +3602,673 @@ curves	Smooth	បន្ទន់រលូន
 	Automatically detect and select subject	ស្វែងរក និងជ្រើសរើសប្រធានបទស្វ័យប្រវត្តិ
 	Automatically isolate subject and mask out background	ញែកប្រធានបទ និងលុបផ្ទៃខាងក្រោយស្វ័យប្រវត្តិ
 	Automatically detect and select sky	ស្វែងរក និងជ្រើសរើសផ្ទៃមេឃស្វ័យប្រវត្តិ
+
+# Additional comprehensive translations for Photoshop parity (KM)
+	(none)	(គ្មាន)
+	10 fps	10 fps
+	15 fps	15 fps
+	24 fps	24 fps
+	25 fps	25 fps
+	30 fps	30 fps
+	3D…	3D…
+	A:	A:
+	ACES	ACES
+	AI Integrations	ការរួមបញ្ចូល AI
+	About {app}	អំពី {app}
+	Action playback failed: {error}	ការចាក់ Action បរាជ័យ៖ {error}
+	Actual Color	ពណ៌ពិតប្រាកដ
+	Actual Pixels	ភីកសែលពិត ១០០%
+	Add Mask	បន្ថែមរបាំង (Add Mask)
+	Add Pins	បន្ថែមម្ជុលខ្ទាស់ (Add Pins)
+	Add a mask  (from the selection; ⌥ inverts)	បន្ថែមរបាំងស្រទាប់ (ពីការជ្រើសរើស; ⌥ បញ្ច្រាស)
+	Add to selection  (⇧)	បន្ថែមលើការជ្រើសរើស (⇧ Shift)
+	Added swatch {name}	បានបន្ថែមគំរូពណ៌ {name}
+	Adds grain to the soft edges of the brush tip.	បន្ថែមគ្រាប់ល្អិត (Grain) ទៅគែមស្រទន់នៃចុងជក់។
+	Adjustment Layers	ស្រទាប់កែតម្រូវពណ៌ (Adjustment Layers)
+	Adobe Every-line Composer	អ្នករៀបចំបន្ទាត់ទាំងអស់ Adobe
+	Adobe PDF Presets…	Preset របស់ Adobe PDF…
+	Adobe Single-line Composer	អ្នករៀបចំបន្ទាត់ទោល Adobe
+	Advanced Controls	ការគ្រប់គ្រងកម្រិតខ្ពស់
+	Adwaita (Dark)	Adwaita (ងងឹត)
+	Adwaita (Light)	Adwaita (ភ្លឺ)
+	After	បន្ទាប់ពី
+	After (X)	បន្ទាប់ពី (X)
+	Airbrush: keeps painting while the pointer rests.	ជក់បាញ់ (Airbrush)៖ បន្តបាញ់ពណ៌នៅពេលទប់ព្រួញកណ្ដុរនៅស្ងៀម។
+	Alternates for Current Selection	ជម្រើសជំនួសសម្រាប់ការជ្រើសរើសបច្ចុប្បន្ន
+	Any	ណាមួយ
+	Apple RGB	Apple RGB
+	Apply Mask	អនុវត្តរបាំង (Apply Mask)
+	Apply to All	អនុវត្តចំពោះទាំងអស់
+	Apply {option}: {state}	អនុវត្ត {option}៖ {state}
+	Are you sure you want to quit?	តើអ្នកពិតជាចង់ចាកចេញមែនទេ?
+	Are you sure?	តើអ្នកប្រាកដដែរឬទេ?
+	Art History Brush	ជក់ប្រវត្តិដើមបែបសិល្បៈ (Art History Brush)
+	Artboards	ក្ដារសិល្បៈ (Artboards)
+	Artboards to Files	រក្សាទុក Artboards ជាឯកសារដាច់ដោយឡែក
+	Artboards to PDF	នាំចេញ Artboards ជា PDF
+	Ask Before Saving Saved Embedded	សួរមុនពេលរក្សាទុក Profile ដែលបង្កប់
+	Ask When Pasting	សួរនៅពេលបិទភ្ជាប់ (Paste)
+	Aspect Ratio	សមាមាត្ររូបភាព (Aspect Ratio)
+	Audio	សំឡេង (Audio)
+	Author Title	មុខតំណែងអ្នកនិពន្ធ
+	Auto Clean Brush	សម្អាតជក់ស្វ័យប្រវត្តិ
+	Auto-Hide	លាក់ស្វ័យប្រវត្តិ
+	Auto-Leading	គម្លាតបន្ទាត់ស្វ័យប្រវត្តិ (Auto-Leading)
+	Auto-leading %	គម្លាតបន្ទាត់ស្វ័យប្រវត្តិ %
+	Automatically Create First Snapshot	បង្កើត Snapshot ដំបូងដោយស្វ័យប្រវត្តិ
+	Automatically Create New Snapshot When Saving	បង្កើត Snapshot ថ្មីស្វ័យប្រវត្តិនៅពេលរក្សាទុក
+	Autosave failed: {error}	ការរក្សាទុកស្វ័យប្រវត្តិបានបរាជ័យ៖ {error}
+	Avoid Widows/Orphans	ជៀសវាងបន្ទាត់ទោល (Widows/Orphans)
+	Back	ថយក្រោយ
+	Backend: {backend} ({type})	Backend៖ {backend} ({type})
+	Based On	ផ្អែកលើ
+	Before	មុន
+	Bend	ពត់កោង
+	Blend Clipped Layers as Group	លាយស្រទាប់ខ្ទាស់ជាក្រុម (Blend Clipped Layers)
+	Blend Interior Effects as Group	លាយ Effect ខាងក្នុងជាក្រុម
+	Blend RGB Colors Using Gamma 1.0	លាយពណ៌ RGB ដោយប្រើ Gamma 1.0
+	Blending Mode	របៀបលាយពណ៌ (Blending Mode)
+	Breeze Dark	Breeze ងងឹត
+	Breeze Light	Breeze ភ្លឺ
+	Byline	ឈ្មោះអ្នកនិពន្ធ
+	Byline Title	ចំណងជើងអ្នកនិពន្ធ
+	CIE RGB	CIE RGB
+	CMYK:	CMYK:
+	Camera Make	ម៉ាកកាមេរ៉ា
+	Camera Model	ម៉ូឌែលកាមេរ៉ា
+	Cancel transform	បោះបង់ការបំប្លែងទម្រង់ (Esc)
+	Canvas rotation	ការបង្វិលផ្ទាំងក្រណាត់ (Canvas Rotation)
+	Caption Credits	ក្រេឌីតចំណងជើងរៀបរាប់
+	Capture Comp	ចាប់យករូបភាពសមាសភាព (Capture Comp)
+	Case Sensitive	ប្រកាន់តួអក្សរតូចធំ
+	Ccw	ច្រាសទ្រនិចនាឡិកា
+	Change Find	ប្តូរពាក្យស្វែងរក
+	Changes Saved	បានរក្សាទុកការកែប្រែ
+	Changes have not been saved.	ការកែប្រែមិនទាន់បានរក្សាទុកនៅឡើយទេ។
+	Change…	ផ្លាស់ប្តូរ…
+	Check for Updates	ពិនិត្យមើលកំណែថ្មី…
+	Checkerboard	ក្រឡាចត្រង្គថ្លា (Checkerboard)
+	Choose Folder	ជ្រើសរើសថត…
+	Choose…	ជ្រើសរើស…
+	City	ទីក្រុង
+	Clear History	សម្អាតប្រវត្តិ (Clear History)
+	Clear Selection	លុបការជ្រើសរើស (Clear Selection)
+	Click the first point or press ↵ to close · Esc cancels	ចុចលើចំណុចដំបូង ឬចុច ↵ ដើម្បីបិទខ្សែ · Esc ដើម្បីបោះបង់
+	Click to add a point · drag off or ⌘/Ctrl-click or Delete to remove	ចុចដើម្បីបន្ថែមចំណុច · អូសចេញ ឬ Ctrl-click ឬ Delete ដើម្បីលុប
+	Click to apply, ⌥-click to clear overrides, double-click for Style Options	ចុចដើម្បីអនុវត្ត, ⌥-click ដើម្បីលុបការកំណត់ជាន់, ចុចពីរដងសម្រាប់ជម្រើសរចនាប័ទ្ម
+	Click to zoom in  ·  ⌥-click to zoom out	ចុចដើម្បីពង្រីក · ចុច ⌥-click (Alt) ដើម្បីបង្រួម
+	Click: corner · Drag: smooth · Click first point: close · ↩ finish · Esc cancel	ចុច៖ កែង · អូស៖ ស្រទន់ · ចុចចំណុចដំបូង៖ បិទខ្សែ · ↩ បញ្ចប់ · Esc បោះបង់
+	Clipping Mask	របាំងខ្ទាស់ (Clipping Mask)
+	Clipping Path…	ខ្សែវណ្ឌខ្ទាស់ (Clipping Path)…
+	Clone source set at {x}, {y}	ចំណុចប្រភព Clone កំណត់នៅ {x}, {y}
+	Close Window	បិទផ្ទាំង (Close Window)
+	Cmyk	CMYK
+	Coerce to sRGB	បង្ខំបម្លែងទៅជា sRGB
+	Collapse group  (⌥-click: all groups)	បង្រួមក្រុម (⌥-click៖ គ្រប់ក្រុមទាំងអស់)
+	Color Noise Reduction	កាត់បន្ថយគ្រាប់រំខានពណ៌ (Color Noise Reduction)
+	Color Picker	ផ្ទាំងជ្រើសរើសពណ៌ (Color Picker)
+	Color Picker (Background Color)	ផ្ទាំងជ្រើសរើសពណ៌ (ពណ៌ផ្ទៃក្រោយ Background)
+	Color Picker (Custom Canvas Color)	ផ្ទាំងជ្រើសរើសពណ៌ (ពណ៌ Canvas ផ្ទាល់ខ្លួន)
+	Color Picker (Foreground Color)	ផ្ទាំងជ្រើសរើសពណ៌ (ពណ៌ផ្ទៃមុខ Foreground)
+	Color Sampler Tool	ឧបករណ៍ស្រង់គំរូពណ៌ (Color Sampler Tool)
+	Color Swatches	កាតាឡុកគំរូពណ៌ (Color Swatches)
+	Color management: {error}	ការគ្រប់គ្រងពណ៌៖ {error}
+	ColorMatch RGB	ColorMatch RGB
+	ColorSync	ColorSync
+	Commit Perspective Warp (↩)	យល់ព្រមការពត់ទស្សនវិស័យ (↩)
+	Commit Puppet Warp (↩)	យល់ព្រមការពត់តាមម្ជុលខ្ទាស់ (↩)
+	Commit any current edits (⌘↩)	យល់ព្រមការកែប្រែបច្ចុប្បន្ន (⌘↩ / Ctrl+Enter)
+	Commit current crop operation  (↵)	យល់ព្រមការកាត់តម្រឹមបច្ចុប្បន្ន (↵ Enter)
+	Commit transform	យល់ព្រមការបំប្លែងទម្រង់ (Enter)
+	Commit transform (↩)	យល់ព្រមការបំប្លែងទម្រង់ (↩)
+	Commit warp (↩)	យល់ព្រមការពត់កោង (↩ Warp)
+	Compare	ប្រៀបធៀប
+	Compression	ការបង្ហាប់ (Compression)
+	Confirm	បញ្ជាក់
+	Continue	បន្ត
+	Convert Frames > Video Layers	បម្លែងគំនូសតាង > ស្រទាប់វីដេអូ
+	Convert to Grayscale	បម្លែងទៅជាសខ្មៅ (Grayscale)
+	Copy Complete Stroke	ចម្លងខ្សែបន្ទាត់គែមទាំងមូល
+	Copy Fill	ចម្លងពណ៌បំពេញ (Copy Fill)
+	Copyright Info URL	URL ព័ត៌មានកម្មសិទ្ធិបញ្ញា
+	Copyright Url	URL កម្មសិទ្ធិបញ្ញា
+	Could not rename the action: {error}	មិនអាចប្តូរឈ្មោះ Action បានទេ៖ {error}
+	Couldn't open {name}: {error}	មិនអាចបើក {name} បានទេ៖ {error}
+	Couldn't save preferences: {error}. Retrying…	មិនអាចរក្សាទុកចំណូលចិត្តបានទេ៖ {error}។ កំពុងព្យាយាមឡើងវិញ…
+	Country	ប្រទេស
+	Create Date	កាលបរិច្ឆេទបង្កើត
+	Create Multiple Picture Packages	បង្កើតកញ្ចប់រូបភាពច្រើនផ្ទាំង
+	Create Snapshot	បង្កើត Snapshot ថ្មី
+	Create Vector Mask	បង្កើតរបាំង Vector (Vector Mask)
+	Create a new layer  (⇧⌘N)	បង្កើតស្រទាប់ថ្មី (⇧⌘N / Shift+Ctrl+N)
+	Create new count group	បង្កើតក្រុមកត់ត្រាចំនួនថ្មី
+	Create new layer	បង្កើតស្រទាប់ថ្មី (New Layer)
+	Create new set	បង្កើតឈុតថ្មី (New Set)
+	Create…	បង្កើត…
+	Credit	ក្រេឌីត
+	Current Time	ពេលវេលាបច្ចុប្បន្ន
+	Custom Pixel Aspect Ratio	សមាមាត្រភីកសែលផ្ទាល់ខ្លួន
+	Custom pattern	លំនាំផ្កាផ្ទាល់ខ្លួន (Custom Pattern)
+	Cw	ស្របទ្រនិចនាឡិកា
+	Dark Gray	ប្រផេះងងឹត
+	Data Set: {name}  ({index}/{total})	សំណុំទិន្នន័យ៖ {name} ({index}/{total})
+	Data Sets as Files	សំណុំទិន្នន័យជាឯកសារ
+	Date	កាលបរិច្ឆេទ
+	Date Created	កាលបរិច្ឆេទបង្កើត
+	DateTime Original	កាលបរិច្ឆេទ និងម៉ោងដើម
+	Decrease Brush Hardness	បន្ថយកម្រិតរឹងរបស់ជក់ {
+	Decrease Brush Size	បន្ថយទំហំជក់ [
+	Decrease Type Size	បន្ថយទំហំអក្សរ
+	Decrease Type Size by 10	បន្ថយទំហំអក្សរ ១០pt
+	Deep	ជ្រៅ
+	Defaults	លំនាំដើម
+	Defaults restored.	បានកំណត់តម្លៃលំនាំដើមឡើងវិញ។
+	Degrees	ដឺក្រេ
+	Delete Layer…	លុបស្រទាប់…
+	Delete Mask	លុបរបាំង (Delete Mask)
+	Delete Pins	លុបម្ជុលខ្ទាស់
+	Delete Preset…	លុប Preset…
+	Delete Smart Filters	លុប Smart Filters
+	Delete Snapshot	លុប Snapshot
+	Delete…	លុប…
+	Desaturate Monitor Colors By	បន្ថយតិត្ថិភាពពណ៌ម៉ូនីទ័រត្រឹម
+	Detect Faces	ស្វែងរកផ្ទៃមុខស្វ័យប្រវត្តិ
+	Diameter	អង្កត់ផ្ចិត
+	Direction of Stroke	ទិសដៅនៃខ្សែបន្ទាត់គែម
+	Disable	បិទដំណើរការ
+	Disable Mask	បិទដំណើរការរបាំង
+	Disable Symmetry Path	បិទដំណើរការខ្សែវណ្ឌស៊ីមេទ្រី
+	Disabled	បានបិទដំណើរការ
+	Discard Changes	បោះបង់ការកែប្រែ
+	Display	ការបង្ហាញ (Display)
+	Display profile not used	មិនបានប្រើ Profile ម៉ូនីទ័រទេ
+	Display profiles: {reason}	Profile ម៉ូនីទ័រ៖ {reason}
+	Do you want to save you made to “{name}” before quitting?	តើអ្នកចង់រក្សាទុកការផ្លាស់ប្តូរលើ “{name}” មុនពេលចាកចេញដែរឬទេ?
+	Document Size	ទំហំឯកសារ (Document Size)
+	Documentation	ឯកសារជំនួយ (Documentation)
+	Documents	ឯកសារ (Documents)
+	Dodge/Burn	បន្ថែមពន្លឺ/ស្រមោល (Dodge/Burn)
+	Dont Enlarge	កុំពង្រីកលើសទំហំដើម
+	Drag to move the layer	អូសដើម្បីរំកិលស្រទាប់
+	Drag: draw freehand · Release on the start point: close	អូស៖ គូរសេរី · លែងដៃលើចំណុចចាប់ផ្តើម៖ បិទខ្សែ
+	Driver: {driver}	Driver៖ {driver}
+	Duplicated selection name	ឈ្មោះការជ្រើសរើសស្ទួន
+	EXIF Version	ជំនាន់ EXIF
+	Edit Toolbar	កែសម្រួលរបារឧបករណ៍ (Edit Toolbar)
+	Edit…	កែសម្រួល…
+	Email	អ៊ីមែល
+	Embed profiles	បង្កប់ Color Profile
+	Enable	បើកដំណើរការ
+	Enable Mask	បើកដំណើរការរបាំង
+	Enable Smart Filters	បើកដំណើរការ Smart Filters
+	Enable Timeline Quick Config	បើកការកំណត់រហ័សលើ Timeline
+	Enter description…	បញ្ចូលការពិពណ៌នា…
+	Erase with Brush or Pencil (hold)	លុបជាមួយជក់ ឬខ្មៅដៃ (ចុចសង្កត់)
+	Error File	ឯកសារកំហុស (Error File)
+	Expand All Groups	ពន្លាតក្រុមទាំងអស់
+	Expand group  (⌥-click: all groups)	ពន្លាតក្រុម (⌥-click៖ គ្រប់ក្រុមទាំងអស់)
+	Export As: {name}	នាំចេញជា៖ {name}
+	Export Image	នាំចេញរូបភាព
+	Export Options	ជម្រើសនាំចេញ
+	Export Settings	ការកំណត់ការនាំចេញ
+	Export to	នាំចេញទៅកាន់
+	Exported contents to {path}	បាននាំចេញមាតិកាទៅកាន់ {path}
+	Exported presets to {path}	បាននាំចេញ Preset ទៅកាន់ {path}
+	Exported {path}	បាននាំចេញ {path}
+	Exported {path} ({size})	បាននាំចេញ {path} ({size})
+	Exporting…	កំពុងនាំចេញ…
+	Exposure Program	កម្មវិធីកម្រិតពន្លឺ (Exposure Program)
+	Failed	បរាជ័យ
+	Failed to open file	មិនអាចបើកឯកសារបានទេ
+	Failed to save file	មិនអាចរក្សាទុកឯកសារបានទេ
+	Fallback: {reason}	ជម្រើសជំនួស៖ {reason}
+	Feather Radius	កាំព្រាលគែម (Feather Radius)
+	File Format	ទម្រង់ឯកសារ (File Format)
+	File Name	ឈ្មោះឯកសារ
+	File Size	ទំហំឯកសារ
+	File not found	រកមិនឃើញឯកសារទេ
+	Filename	ឈ្មោះឯកសារ
+	Fill Color	ពណ៌បំពេញ (Fill Color)
+	Fill Light	ពន្លឺបំពេញបន្ថែម (Fill Light)
+	Fill Path…	បំពេញពណ៌លើខ្សែវណ្ឌ (Fill Path)…
+	Fill with Background Color	បំពេញដោយពណ៌ផ្ទៃក្រោយ (Background Color)
+	Fill with Background Color, Preserve Transparency	បំពេញដោយពណ៌ផ្ទៃក្រោយ ដោយរក្សាភាពថ្លា
+	Fill with Foreground Color	បំពេញដោយពណ៌ផ្ទៃមុខ (Foreground Color)
+	Fill with Foreground Color, Preserve Transparency	បំពេញដោយពណ៌ផ្ទៃមុខ ដោយរក្សាភាពថ្លា
+	Find	ស្វែងរក
+	Find and Replace Text	ស្វែងរក និងជំនួសអត្ថបទ
+	Finish	បញ្ចប់
+	First Color Readout	តម្លៃអានពណ៌ទីមួយ
+	Fit to Window	ពង្រីកសមល្មមផ្ទាំង Window (Ctrl+0)
+	Flatten Frames Into Clips	បង្រួមគំនូសតាងចូលទៅក្នុងឃ្លីប
+	Flatten Frames Into Layers	បង្រួមគំនូសតាងចូលទៅក្នុងស្រទាប់
+	Forward	ទៅមុខ
+	Frame Duration	ថិរវេលាគំនូសតាង (Frame Duration)
+	Frame Sync	ការធ្វើសមកាលកម្មគំនូសតាង
+	Free Transform Path	បំប្លែងទម្រង់ខ្សែវណ្ឌសេរី (Free Transform Path)
+	Full Screen	ពេញអេក្រង់ (Full Screen)
+	Fullscreen	ពេញអេក្រង់
+	GPS	GPS
+	GPU backend preference: {backend}	ចំណូលចិត្ត GPU Backend៖ {backend}
+	GPU device was lost; using the CPU renderer.	បាត់ឧបករណ៍ GPU; ប្តូរមកប្រើ CPU Renderer វិញ។
+	GPU error; using the CPU renderer.	កំហុស GPU; ប្តូរមកប្រើ CPU Renderer វិញ។
+	GPU retry scheduled	បានកំណត់ពេលសាកល្បង GPU ឡើងវិញ
+	General Blend	ការលាយពណ៌ទូទៅ (General Blending)
+	General Blending	ការលាយពណ៌ទូទៅ (General Blending)
+	General Brushes	ជក់ទូទៅ (General Brushes)
+	Glyph Scaling	មាត្រដ្ឋានតួអក្សរ (Glyph Scaling)
+	Go to Layer	ទៅកាន់ស្រទាប់…
+	Graphics adapter	Graphics Adapter
+	Graphics adapter: {adapter}	Graphics Adapter៖ {adapter}
+	Gray:	ប្រផេះ៖
+	Grayscale Slider	បន្ទាត់រំកិលសខ្មៅ (Grayscale Slider)
+	Grid  (⌘')	ក្រឡាចត្រង្គ (⌘' / Ctrl+')
+	Grid view	ទិដ្ឋភាពក្រឡាចត្រង្គ
+	Group from Layers	បង្កើតក្រុមពីស្រទាប់ (Group from Layers)
+	Group · {n} layer	ក្រុម · {n} ស្រទាប់
+	Groups	ក្រុម (Groups)
+	Guide Layout…	ប្លង់ខ្សែបន្ទាត់ណែនាំ (Guide Layout)…
+	HDTV (Rec. 709)	HDTV (Rec. 709)
+	HSB Color	ពណ៌ HSB
+	HSL/Grayscale	HSL/សខ្មៅ
+	Hand Tool (hold)	ឧបករណ៍ដៃរំកិល (ចុចសង្កត់ Spacebar)
+	Hanging Punctuation	សញ្ញាវណ្ណយុត្តិព្យួរ (Hanging Punctuation)
+	Heal Auto	ជួសជុលស្នាមស្វ័យប្រវត្តិ
+	Heal Color	ពណ៌ជួសជុលស្នាម
+	Heal Off	បិទការជួសជុលស្នាម
+	Heal On	បើកការជួសជុលស្នាម
+	Hidden	បានលាក់
+	Hide Grid	លាក់ក្រឡាចត្រង្គ (Hide Grid)
+	Hide Others	លាក់ផ្ទាំងផ្សេងទៀត
+	Hide the layer's effects  (⌥-click: all layers)	លាក់ Effect របស់ស្រទាប់ (⌥-click៖ គ្រប់ស្រទាប់)
+	Hide {app}	លាក់ {app}
+	Horizontal Distortion	ការខូចទ្រង់ទ្រាយផ្ដេក (Horizontal Distortion)
+	Humidity	សំណើម
+	Image compositor: {processor}	អ្នកផ្សំរូបភាព៖ {processor}
+	Import Brush from Image…	នាំចូលជក់ពីរូបភាព…
+	Import Brushes… (.abr or image)	នាំចូលជក់ (.abr ឬ រូបភាព)…
+	Import Image	នាំចូលរូបភាព
+	Import Options	ជម្រើសនាំចូល
+	Import Settings	ការកំណត់នាំចូល
+	Importing {what} from {file}…	កំពុងនាំចូល {what} ពី {file}…
+	Importing…	កំពុងនាំចូល…
+	Import…	នាំចូល…
+	Include ICC Profile	រួមបញ្ចូល Profile ពណ៌ ICC
+	Increase Brush Hardness	បង្កើនកម្រិតរឹងរបស់ជក់ }
+	Increase Brush Size	បង្កើនទំហំជក់ ]
+	Increase Type Size	បង្កើនទំហំអក្សរ
+	Increase Type Size by 10	បង្កើនទំហំអក្សរ ១០pt
+	Industry Standard	ស្តង់ដារឧស្សាហកម្ម
+	Info Options…	ជម្រើសព័ត៌មាន (Info Options)…
+	Information	ព័ត៌មាន
+	Initial Direction of Stroke	ទិសដៅដំបូងនៃខ្សែបន្ទាត់គែម
+	Input	បញ្ចូល (Input)
+	Input Levels	កម្រិតពន្លឺបញ្ចូល (Input Levels)
+	Install Plug-in	ដំឡើងកម្មវិធីជំនួយ (Plug-in)
+	Intersect with	ប្រសព្វជាមួយ
+	Intersect with selection  (⇧⌥)	ប្រសព្វជាមួយការជ្រើសរើស (⇧⌥ / Shift+Alt)
+	Invalid panel layout; restored the default dock	ប្លង់ផ្ទាំងមិនត្រឹមត្រូវ; បានស្ដារប្លង់លំនាំដើមឡើងវិញ
+	Invert Selection	បញ្ច្រាសការជ្រើសរើស (Ctrl+Shift+I)
+	Join the ArtCraft Discord	ចូលរួម Discord របស់ ArtCraft
+	Join the ArtCraft Discord ({url})	ចូលរួម Discord របស់ ArtCraft ({url})
+	Keep proportions	រក្សាសមាមាត្រដើម
+	Keep view in sync	រក្សាទិដ្ឋភាពឱ្យស្របគ្នា
+	Keeps the current texture when switching presets.	រក្សាទុក Texture បច្ចុប្បន្ននៅពេលប្តូរ Preset។
+	Keyboard	ក្ដារចុច (Keyboard)
+	Last Modified	កែប្រែចុងក្រោយ
+	Layer Comps to Files	រក្សាទុក Layer Comps ជាឯកសារ
+	Layer Mask Hides Effects	របាំងស្រទាប់លាក់ Effect
+	Layer Styles	រចនាប័ទ្មស្រទាប់ (Layer Styles)
+	Layer from Background	ស្រទាប់ពីផ្ទៃខាងក្រោយ (Layer from Background)
+	Layers to Files	រក្សាទុកស្រទាប់នីមួយៗជាឯកសារ
+	Learn More	ស្វែងយល់បន្ថែម
+	Lens Corrections	កែតម្រូវកញ្ចក់លេន (Lens Corrections)
+	Lens Info	ព័ត៌មានលេន
+	Less	តិចជាង
+	Library	បណ្ណាល័យ (Library)
+	Limit Playback	កំណត់កម្រិតចាក់ឡើងវិញ
+	Linear Dodge	Linear Dodge (បន្ថែមពន្លឺលីនេអ៊ែរ)
+	Link	ភ្ជាប់តំណ (Link)
+	List view	ទិដ្ឋភាពជាបញ្ជី
+	Live Preview	ការមើលជាមុនផ្ទាល់ (Live Preview)
+	Load 3D LUT	ផ្ទុក 3D LUT…
+	Load Files into Stack	ផ្ទុកឯកសារចូលក្នុងជង់ស្រទាប់ (Stack)
+	Loading…	កំពុងផ្ទុក…
+	Localize Color Clusters	ដាក់ក្រុមពណ៌តាមតំបន់
+	Lock All	ចាក់សោទាំងអស់ (Lock All)
+	Lock Image Pixels	ចាក់សោភីកសែលរូបភាព
+	Lock Position	ចាក់សោទីតាំង (Lock Position)
+	Lock Transparent Pixels	ចាក់សោភីកសែលថ្លា (Lock Transparent Pixels)
+	Locked	បានចាក់សោ
+	Log Errors To File	កត់ត្រាកំហុសទៅក្នុងឯកសារ
+	Luminance Smoothness	ភាពរលូននៃពន្លឺ (Luminance Smoothness)
+	Mac Crisp	Mac ច្បាស់
+	Mac LCD	Mac LCD
+	Mac OS	Mac OS
+	Mac Sharp	Mac មុតស្រួច
+	Mac Smooth	Mac រលូន
+	Mac Strong	Mac ដិតខ្លាំង
+	Make Selection from Path	បង្កើតការជ្រើសរើសពីខ្សែវណ្ឌ (Path to Selection)
+	Make Selection…	បង្កើតការជ្រើសរើស (Make Selection)…
+	Make Symmetry Path	បង្កើតខ្សែវណ្ឌស៊ីមេទ្រី
+	Make Work Path…	បង្កើតជា Work Path…
+	Manual	ដោយដៃ (Manual)
+	Mask Channel	ឆានែលរបាំង (Mask Channel)
+	Masks	របាំង (Masks)
+	Medium Gray	ប្រផេះមធ្យម
+	Merge to HDR Pro	បញ្ចូលទៅជា HDR Pro…
+	Metering Mode	របៀបវាស់ពន្លឺ (Metering Mode)
+	Middle	កណ្តាល
+	Minimalistic	សាមញ្ញបំផុត (Minimalistic)
+	Missing Profiles: Ask When Opening	ខ្វះ Profile៖ សួរនៅពេលបើកឯកសារ
+	Modify Date	កាលបរិច្ឆេទកែប្រែ
+	Monitor profile in use on {display}: {profile}	Profile ម៉ូនីទ័រកំពុងប្រើលើ {display}៖ {profile}
+	Monitor profile in use: {profile}	Profile ម៉ូនីទ័រកំពុងប្រើ៖ {profile}
+	Monitor profile on {display} (main window): {profile}	Profile ម៉ូនីទ័រលើ {display} (ផ្ទាំងមេ)៖ {profile}
+	Monitor profile on {display}: {profile}	Profile ម៉ូនីទ័រលើ {display}៖ {profile}
+	Monitor profile: {profile}	Profile ម៉ូនីទ័រ៖ {profile}
+	More	បន្ថែមទៀត
+	Mouse	កណ្ដុរ (Mouse)
+	Mouse Controls	ការគ្រប់គ្រងកណ្ដុរ
+	Mouse Coordinates	កូអរដោនេកណ្ដុរ
+	NTSC (1953)	NTSC (1953)
+	Nearest	ជិតបំផុត (Nearest Neighbor)
+	New Brush	ជក់ថ្មី (New Brush)
+	New Brush Preset	កំណត់ជក់ថ្មីទុកជាមុន (New Brush Preset)
+	New Layer from Brush	ស្រទាប់ថ្មីពីជក់
+	New Path	ខ្សែវណ្ឌថ្មី (New Path)
+	New Selection	ការជ្រើសរើសថ្មី (New Selection)
+	New Snapshot	Snapshot ថ្មី
+	New Tool Preset	កំណត់ឧបករណ៍ថ្មីទុកជាមុន (New Tool Preset)
+	New Video Group	ក្រុមវីដេអូថ្មី
+	New Video Layer	ស្រទាប់វីដេអូថ្មី
+	New Window	ផ្ទាំង Window ថ្មី
+	New channel only	តែឆានែលថ្មីប៉ុណ្ណោះ
+	Newspaper	ក្រដាសកាសែត
+	Next	បន្ទាប់
+	No Document	គ្មានឯកសារបើកទេ
+	No Image	គ្មានរូបភាព
+	No Layer Comps	គ្មានសមាសភាពស្រទាប់ (Layer Comps)
+	No Layers	គ្មានស្រទាប់
+	No Results	គ្មានលទ្ធផល
+	No Results Found	រកមិនឃើញលទ្ធផលទេ
+	No Selection	គ្មានការជ្រើសរើស
+	No custom shape "{name}": pick one in the options bar or Window › Shapes	គ្មានរាងផ្ទាល់ខ្លួន "{name}" ទេ៖ សូមជ្រើសរើសមួយក្នុង Options bar ឬ Window › Shapes
+	No layers	គ្មានស្រទាប់
+	No recent files	គ្មានឯកសារបើកថ្មីៗទេ
+	No selection	គ្មានការជ្រើសរើស
+	Nonlinear History	ប្រវត្តិមិនលីនេអ៊ែរ (Nonlinear History)
+	Note tool	ឧបករណ៍កំណត់ចំណាំ (Note Tool)
+	Nothing to Redo	គ្មានអ្វីត្រូវធ្វើឡើងវិញទេ (Nothing to Redo)
+	Nothing to Undo	គ្មានអ្វីត្រូវត្រឡប់ក្រោយទេ (Nothing to Undo)
+	Nothing to paste: the clipboard holds no image	គ្មានអ្វីត្រូវបិទភ្ជាប់ទេ៖ ក្តារចម្លងមិនមានរូបភាពឡើយ
+	Object Name / Title	ឈ្មោះវត្ថុ / ចំណងជើង
+	On	បើក
+	Opacity Mask	របាំងភាពស្រអាប់ (Opacity Mask)
+	Open File	បើកឯកសារ…
+	Open Folder	បើកថត…
+	Open Image	បើករូបភាព…
+	Open Recent is unavailable on the web	Open Recent មិនអាចប្រើលើ Web បានទេ
+	Opened {url}	បានបើក {url}
+	Open…     ⌘O	បើក…     ⌘O
+	Operation canceled	ប្រតិបត្តិការត្រូវបានបោះបង់
+	Operation cancelled	ប្រតិបត្តិការត្រូវបានបោះបង់
+	Operation completed	ប្រតិបត្តិការបានបញ្ចប់ជោគជ័យ
+	Operation failed	ប្រតិបត្តិការបានបរាជ័យ
+	Out of memory	អស់ទំហំសតិ (Out of Memory)
+	Output Levels	កម្រិតពន្លឺបញ្ចេញ (Output Levels)
+	Override Action "Save" Commands	ជំនួសពាក្យបញ្ជា "Save" របស់ Action
+	PAL/SECAM	PAL/SECAM
+	PDF Presentation…	បទបង្ហាញ PDF…
+	Page Setup…	រៀបចំទំព័រ…
+	Panel	ផ្ទាំង (Panel)
+	Panel Options…	ជម្រើសផ្ទាំង (Panel Options)…
+	Paste Complete Stroke	បិទភ្ជាប់ខ្សែបន្ទាត់គែមទាំងមូល
+	Paste Fill	បិទភ្ជាប់ពណ៌បំពេញ (Paste Fill)
+	Path to Illustrator…	នាំចេញខ្សែវណ្ឌទៅ Illustrator…
+	Path:	ខ្សែវណ្ឌ (Path)៖
+	Paths to Illustrator	ខ្សែវណ្ឌទៅ Illustrator
+	Pattern Fill…	បំពេញលំនាំក្បាច់ (Pattern Fill)…
+	Percentage	ភាគរយ
+	Permission denied	ការអនុញ្ញាតត្រូវបានបដិសេធ
+	Photo (2 × 3 in)	រូបថត (២ × ៣ អ៊ីញ)
+	Photo (4 × 6 in)	រូបថត (៤ × ៦ អ៊ីញ)
+	Photo (5 × 7 in)	រូបថត (៥ × ៧ អ៊ីញ)
+	Photo (8 × 10 in)	រូបថត (៨ × ១០ អ៊ីញ)
+	PhotoCraft keeps retrying; until a save succeeds, preference changes are lost when it closes.	PhotoCraft បន្តព្យាយាម; លុះត្រាតែរក្សាទុកជោគជ័យ បើមិនដូច្នោះការផ្លាស់ប្តូរចំណូលចិត្តនឹងបាត់បង់ពេលបិទ។
+	Picture Package…	កញ្ចប់រូបភាព…
+	Platform: {os} {arch}	ប្រព័ន្ធដំណើរការ៖ {os} {arch}
+	Play Once	ចាក់ម្តង
+	Please wait…	សូមរង់ចាំ…
+	Preferences can't be saved	មិនអាចរក្សាទុកចំណូលចិត្តបានទេ
+	Preferences saved	បានរក្សាទុកចំណូលចិត្តរួចរាល់
+	Preferences were reset: {error}	ចំណូលចិត្តត្រូវបានកំណត់ឡើងវិញ៖ {error}
+	Preferences…	ការកំណត់ចំណូលចិត្ត (Preferences)…
+	Preset Name:	ឈ្មោះ Preset៖
+	Press keys	ចុចគ្រាប់ចុចលើក្តារចុច
+	Preview Image	មើលរូបភាពជាមុន
+	Previous	មុន
+	Printed to {path}	បានបោះពុម្ពទៅកាន់ {path}
+	ProPhoto RGB	ProPhoto RGB
+	Processing…	កំពុងដំណើរការ…
+	Profile Mismatches: Ask When Opening	Profile មិនត្រូវគ្នា៖ សួរនៅពេលបើក
+	Proof Setup…	រៀបចំ Proof ពណ៌…
+	Province / State	ខេត្ត / រដ្ឋ
+	Quick Sync	ធ្វើសមកាលកម្មរហ័ស
+	Quit	ចាកចេញ
+	Quit PhotoCraft	ចាកចេញពី PhotoCraft
+	Quit {app}	ចាកចេញពី {app}
+	R G B	R G B
+	R g b	R G B
+	RGB:	RGB:
+	Ran script {name}	បានដំណើរការស្គ្រីប {name}
+	Ready	រួចរាល់
+	Recent Files	ឯកសារថ្មីៗ (Recent Files)
+	Recent Items	ធាតុថ្មីៗ
+	Recovered {name}	បានសង្គ្រោះ {name}
+	Reference point location	ទីតាំងចំណុចយោង (Reference Point)
+	Remove All	លុបចេញទាំងអស់
+	Rename Tool Preset	ប្តូរឈ្មោះ Tool Preset
+	Rendering…	កំពុង Render…
+	Replace	ជំនួស
+	Report a Bug	រាយការណ៍កំហុស (Report a Bug)
+	Report an Issue	រាយការណ៍បញ្ហា
+	Reset All	កំណត់ឡើងវិញទាំងអស់
+	Reset Preferences	កំណត់ចំណូលចិត្តឡើងវិញ (Reset Preferences)
+	Restart	ចាប់ផ្តើមឡើងវិញ
+	Restart Required	តម្រូវឱ្យចាប់ផ្តើមកម្មវិធីឡើងវិញ
+	Restore last viewed comp	ស្តារសមាសភាពដែលបានមើលចុងក្រោយ
+	Resume	បន្តឡើងវិញ
+	Retry	ព្យាយាមម្តងទៀត
+	Roman Hanging Punctuation	សញ្ញាវណ្ណយុត្តិព្យួររ៉ូម៉ាំង
+	Rotate Auto	បង្វិលស្វ័យប្រវត្តិ
+	Rotate Fixed	បង្វិលថេរ
+	Ruler Units	ខ្នាតបន្ទាត់រង្វាស់
+	Rulers  (⌘R)	បន្ទាត់រង្វាស់ (⌘R / Ctrl+R)
+	SMPTE C	SMPTE C
+	Sample Size	ទំហំគំរូពណ៌ (Sample Size)
+	Save Changes	រក្សាទុកការកែប្រែ
+	Save File	រក្សាទុកឯកសារ
+	Save Image	រក្សាទុករូបភាព
+	Save a Copy	រក្សាទុកច្បាប់ចម្លង (Save a Copy)
+	Save before closing?	រក្សាទុកមុនពេលបិទដែរឬទេ?
+	Save your work and restart PhotoCraft to retry GPU acceleration. CPU rendering remains active for this session.	សូមរក្សាទុកការងាររបស់អ្នក ហើយចាប់ផ្តើម PhotoCraft ឡើងវិញដើម្បីសាកល្បង GPU Acceleration។ CPU Rendering នៅតែបន្តដំណើរការក្នុង Session នេះ។
+	Saved Multichannel	បានរក្សាទុក Multichannel
+	Saved a copy as {path}	បានរក្សាទុកច្បាប់ចម្លងជា {path}
+	Saved {path}; image assets: {n} in {dir}	បានរក្សាទុក {path}; ធនធានរូបភាព៖ {n} ក្នុង {dir}
+	Saving…	កំពុងរក្សាទុក…
+	Scale Horizontally	ពង្រីក/បង្រួមផ្ដេក
+	Scale Vertically	ពង្រីក/បង្រួមបញ្ឈរ
+	Scroll menu down	រមូរម៉ឺនុយចុះក្រោម
+	Scroll menu up	រមូរម៉ឺនុយឡើងលើ
+	Search commands (⌘K)	ស្វែងរកពាក្យបញ្ជា (⌘K / Ctrl+K)
+	Search commands, tools and panels	ស្វែងរកពាក្យបញ្ជា ឧបករណ៍ និងផ្ទាំងនានា
+	Second Color Readout	តម្លៃអានពណ៌ទីពីរ
+	Select Custom Color…	ជ្រើសរើសពណ៌ផ្ទាល់ខ្លួន…
+	Select Folder…	ជ្រើសរើសថត…
+	Select Inverse	បញ្ច្រាសការជ្រើសរើស (Ctrl+Shift+I)
+	Select Plane	ជ្រើសរើសប្លង់ (Select Plane)
+	Select Similar Colors	ជ្រើសរើសពណ៌ស្រដៀងគ្នា (Similar Colors)
+	Selected at launch: {backend}	បានជ្រើសរើសពេលបើក៖ {backend}
+	Sensitivity	កម្រិតចាប់អារម្មណ៍ (Sensitivity)
+	Sent to the printer ({spooler})	បានផ្ញើទៅកាន់ម៉ាស៊ីនបោះពុម្ព ({spooler})
+	Services	សេវាកម្ម (Services)
+	Set New Snapshot as Default	កំណត់ Snapshot ថ្មីជាលំនាំដើម
+	Set Start Timecode…	កំណត់ Timecode ចាប់ផ្តើម…
+	Settings:	ការកំណត់៖
+	Shallow	រាក់
+	Shortcut	ផ្លូវកាត់ (Shortcut)
+	Shortcuts	ផ្លូវកាត់ (Shortcuts)
+	Show All	បង្ហាញទាំងអស់
+	Show Guides  (⌘;)	បង្ហាញបន្ទាត់ណែនាំ (⌘; / Ctrl+;)
+	Show New Snapshot Dialog by Default	បង្ហាញប្រអប់ New Snapshot ជាលំនាំដើម
+	Show Rulers	បង្ហាញបន្ទាត់រង្វាស់ (Rulers)
+	Show the layer's effects  (⌥-click: all layers)	បង្ហាញ Effect របស់ស្រទាប់ (⌥-click៖ គ្រប់ស្រទាប់)
+	Shutter Speed	ល្បឿន Shutter
+	Simulate Paper	ត្រាប់តាមផ្ទៃក្រដាស
+	Single Word Justification	តម្រឹមពាក្យទោល
+	Skip	រំលង
+	Snap to Grid	ស្រូបភ្ជាប់នឹងក្រឡាចត្រង្គ
+	Snapshot 1	Snapshot ១
+	Software adapter	Software Adapter
+	Solarized Dark	Solarized ងងឹត
+	Source Channel	ឆានែលប្រភព
+	Source Invert	បញ្ច្រាសប្រភព
+	Source1 Channel	ឆានែលប្រភព ១
+	Source1 Invert	បញ្ច្រាសប្រភព ១
+	Source2 Channel	ឆានែលប្រភព ២
+	Source2 Invert	បញ្ច្រាសប្រភព ២
+	Space	ដកឃ្លា (Space)
+	Spacing:	គម្លាត៖
+	Split Toning	ការបំបែកស្រមោលពណ៌ (Split Toning)
+	Split at Playhead	បំបែកត្រង់ Playhead
+	Spot Channel	ឆានែលពណ៌ពិសេស (Spot Channel)
+	Spot:	ពណ៌ពិសេស៖
+	Status Information	ព័ត៌មានស្ថានភាព
+	Step Forward	បោះជំហានទៅមុខ (Step Forward)
+	Step {step} ({id}) failed: {error}	ជំហាន {step} ({id}) បរាជ័យ៖ {error}
+	Stop For Errors	បញ្ឈប់នៅពេលមានកំហុស
+	Stroke Color	ពណ៌ខ្សែបន្ទាត់គែម (Stroke Color)
+	Subject Distance	ចម្ងាយពីវត្ថុ/តួអង្គ
+	Subscript	អក្សរជើងក្រោម (Subscript)
+	Subtract Shapes at Overlap	ដកចេញរាងត្រួតស៊ីគ្នា (Subtract Overlap)
+	Subtract from	ដកចេញពី
+	Subtract from selection  (⌥)	ដកចេញពីការជ្រើសរើស (⌥ Alt)
+	Superscript	អក្សរលើ (Superscript)
+	Supplemental Categories	ប្រភេទបន្ថែម
+	Tablet	ថេប្លេតគូរ (Drawing Tablet)
+	Target Channel 3	ឆានែលគោលដៅ ៣
+	Target Channel 4	ឆានែលគោលដៅ ៤
+	Target Channel 5	ឆានែលគោលដៅ ៥
+	Target Channel 6	ឆានែលគោលដៅ ៦
+	Target Channel 7	ឆានែលគោលដៅ ៧
+	Target Channel 8	ឆានែលគោលដៅ ៨
+	Target Channel 9	ឆានែលគោលដៅ ៩
+	Target Composite Channel	ឆានែលចម្រុះគោលដៅ
+	Technology Previews	ការមើលបច្ចេកវិទ្យាសាកល្បងជាមុន
+	Technology Previews…	ការមើលបច្ចេកវិទ្យាសាកល្បងជាមុន…
+	The canvas is shown as sRGB. Choose a monitor profile in Edit › Color Settings.	ផ្ទាំង Canvas បង្ហាញជា sRGB។ ជ្រើសរើស Profile ម៉ូនីទ័រក្នុង Edit › Color Settings។
+	The canvas on {display} is shown as sRGB. Choose a monitor profile in Edit › Color Settings.	ផ្ទាំង Canvas លើ {display} បង្ហាញជា sRGB។ ជ្រើសរើស Profile ម៉ូនីទ័រក្នុង Edit › Color Settings។
+	The document does not have an embedded colour profile. Working space: {working}.	ឯកសារនេះមិនមាន Color Profile បង្កប់ទេ។ Working Space៖ {working}។
+	The document has an embedded colour profile that does not match the working space.\nEmbedded: {embedded}\nWorking: {working}	ឯកសារនេះមាន Color Profile បង្កប់ដែលមិនត្រូវគ្នានឹង Working Space ឡើយ។\nបង្កប់៖ {embedded}\nWorking Space៖ {working}
+	The file could not be opened.	មិនអាចបើកឯកសារនេះបានទេ។
+	The file could not be saved.	មិនអាចរក្សាទុកឯកសារនេះបានទេ។
+	This Layer:	ស្រទាប់នេះ (This Layer)៖
+	This Smart Object must be rasterized before proceeding. Its contents will no longer be editable. Rasterize the Smart Object?	វត្ថុឆ្លាតវៃ (Smart Object) នេះត្រូវតែបម្លែងជា Raster មុននឹងបន្ត។ មាតិការបស់វានឹងលែងអាចកែបានទៀតហើយ។ តើអ្នកចង់ Rasterize ដែរឬទេ?
+	This adjustment ({key}) is kept as imported and can't be edited yet.	ការកែតម្រូវពណ៌ ({key}) នេះត្រូវបានរក្សាទុកដូចដើម និងមិនទាន់អាចកែបាននៅឡើយទេ។
+	This fill layer must be rasterized before proceeding. Its fill content will no longer be editable. Rasterize the layer?	ស្រទាប់ Fill នេះត្រូវតែបម្លែងជា Raster មុននឹងបន្ត។ ពណ៌បំពេញរបស់វានឹងលែងអាចកែបានទៀតហើយ។ តើអ្នកចង់ Rasterize ដែរឬទេ?
+	This layer must be rasterized before proceeding.	ស្រទាប់នេះត្រូវតែបម្លែងជា Raster មុននឹងបន្ត។
+	This session: {reason}	Session នេះ៖ {reason}
+	This shape layer must be rasterized before proceeding. It will no longer be editable as a shape. Rasterize the shape?	ស្រទាប់ Shape នេះត្រូវតែបម្លែងជា Raster មុននឹងបន្ត។ វានឹងលែងអាចកែជារាង Shape បានទៀតហើយ។ តើអ្នកចង់ Rasterize ដែរឬទេ?
+	This type layer must be rasterized before proceeding. Its text will no longer be editable. Rasterize the type?	ស្រទាប់អក្សរនេះត្រូវតែបម្លែងជា Raster មុននឹងបន្ត។ អត្ថបទរបស់វានឹងលែងអាចវាយកែបានទៀតហើយ។ តើអ្នកចង់ Rasterize ដែរឬទេ?
+	Timecode	Timecode
+	Title	ចំណងជើង
+	Toggle Layer Mask Overlay	បិទ/បើកស្រទាប់ Overlay នៃរបាំង
+	Toggle reference point	បង្ហាញ/លាក់ចំណុចយោង (Reference Point)
+	Toggle the Brush Settings panel	បង្ហាញ/លាក់ផ្ទាំង Brush Settings (F5)
+	Tool Options	ជម្រើសឧបករណ៍ (Tool Options)
+	Total Ink	កម្រិតទឹកថ្នាំសរុប
+	Transformation	ការបំប្លែងទម្រង់ (Transformation)
+	Transmission Reference	ឯកសារយោងបញ្ជូន
+	Transparency Shapes Layer	ស្រទាប់តម្លាភាពនៃរាង
+	URLs	URLs
+	Ultra Bold	ដិតខ្លាំង (Ultra Bold)
+	Ultra Light	ស្តើងបំផុត (Ultra Light)
+	Uncoated CMYK	CMYK ក្រដាសធម្មតា (Uncoated)
+	Underlying Layer:	ស្រទាប់ខាងក្រោម (Underlying Layer)៖
+	Ungroup	រំលាយក្រុម (Ungroup)
+	Unite Shapes at Overlap	បូកបញ្ចូលរាងត្រួតស៊ីគ្នា (Unite Shapes)
+	Unlink	ផ្ដាច់តំណ (Unlink)
+	Unlock	ដោះសោ
+	Unlocked	បានដោះសោ
+	Unsaved Changes	ការកែប្រែមិនទាន់បានរក្សាទុក
+	Unsupported file format	ទម្រង់ឯកសារមិនគាំទ្រ
+	Unsupported format	ទម្រង់មិនគាំទ្រ
+	Update	ធ្វើបច្ចុប្បន្នភាព (Update)
+	Updates	កំណែថ្មីៗ (Updates)
+	Urgency	ភាពបន្ទាន់
+	Uses the foreground and background colors.	ប្រើពណ៌ផ្ទៃមុខ (Foreground) និងពណ៌ផ្ទៃក្រោយ (Background)។
+	Vector Mask Hides Effects	របាំង Vector លាក់ Effect
+	Vertical Distortion	ការខូចទ្រង់ទ្រាយបញ្ឈរ (Vertical Distortion)
+	View menu	ម៉ឺនុយ View
+	W:	W:
+	WIA Support	ការគាំទ្រ WIA
+	Warming Filter (85)	Warming Filter (85)
+	Warning	ការព្រមាន
+	Watercolour look: lighter interior, darker rims.	ទម្រង់គំនូរពណ៌ទឹក៖ ផ្ទៃក្នុងភ្លឺ គែមខាងក្រៅដិត។
+	Web Color	ពណ៌សម្រាប់ Web
+	Web Photo Gallery…	វិចិត្រសាលរូបថត Web…
+	Whole Word	ពាក្យទាំងមូល
+	Wide Gamut RGB	Wide Gamut RGB
+	Width and Height	ទទឹង និងកម្ពស់
+	Window renderer: {renderer}	Window Renderer៖ {renderer}
+	Word Spacing	គម្លាតរវាងពាក្យ (Word Spacing)
+	Working Gray Plate	ផ្ទាំងប្រផេះសម្រាប់ធ្វើការ
+	Working Space	លំហការងារ (Working Space)
+	Working-cmyk	Working CMYK
+	Workspaces	កន្លែងធ្វើការ (Workspaces)
+	Zoom In (hold, drag to scrub)	ពង្រីក (ចុចសង្កត់ រួចអូស)
+	Zoom Out (hold)	បង្រួម (ចុចសង្កត់ Alt)
+	auto	ស្វ័យប្រវត្តិ
+	brushes	ជក់
+	fallback	ជំនួស
+	gradients	ពណ៌ជម្រាល (Gradients)
+	layer mask	របាំងស្រទាប់ (Layer Mask)
+	manual	ដោយដៃ
+	off	បិទ
+	on	បើក
+	previous reading kept; the last re-read failed: {reason}	រក្សាតម្លៃអានមុន; ការអានឡើងវិញចុងក្រោយបរាជ័យ៖ {reason}
+	unknown	មិនស្គាល់
+	unknown type	ប្រភេទមិនស្គាល់
+	vector mask	របាំង Vector (Vector Mask)
+	{index} of {total}	{index} នៃ {total}
+	{label} is not available: {reason}	{label} មិនអាចប្រើបានទេ៖ {reason}
+	{message} (notes: {n}; {warning})	{message} (ចំណាំ៖ {n}; {warning})
+	{shortcut} assigned.	{shortcut} ត្រូវបានកំណត់។
+	{shortcut} is already in use by {commands} and will be removed from it when you click OK.	{shortcut} ត្រូវបានប្រើរួចហើយដោយ {commands} ហើយនឹងត្រូវដកចេញនៅពេលអ្នកចុចយល់ព្រម (OK)។
+	{verb} {mask} {layer}	{verb} {mask} {layer}
+	{zoom}%	{zoom}%
+	↑↓ navigate   ↵ run   esc close	↑↓ រំកិល   ↵ ដំណើរការ   esc បិទ
+@id	edit.clear	សម្អាត (Clear)
+@id	edit.purge.undo	សម្អាតប្រវត្តិមិនធ្វើវិញ (Purge Undo)
+@id	edit.stroke	គូសខ្សែបន្ទាត់គែម (Stroke)
+@id	edit.transform.scale	ពង្រីក/បង្រួម (Scale)
+@id	file.close	បិទឯកសារ (Close)
+@id	filter.sharpen.sharpen	បង្កើនភាពច្បាស់ (Sharpen)
+@id	layer.layerMask.apply	អនុវត្តរបាំងស្រទាប់ (Apply Layer Mask)
+@plural	Imported {n} brush from {file}|Imported {n} brushes from {file}	បាននាំចូលជក់ {n} ពី {file}|បាននាំចូលជក់ {n} ពី {file}
+@plural	Imported {n} gradient from {file}|Imported {n} gradients from {file}	បាននាំចូលពណ៌ជម្រាល {n} ពី {file}|បាននាំចូលពណ៌ជម្រាល {n} ពី {file}
+@plural	Imported {n} pattern from {file}|Imported {n} patterns from {file}	បាននាំចូលលំនាំក្បាច់ {n} ពី {file}|បាននាំចូលលំនាំក្បាច់ {n} ពី {file}
+layerLabel	Magenta	ពណ៌ក្រហមស្វាយ (Magenta)
+layerLabel	No Color	គ្មានពណ៌ (No Color)
+layerLabel	Red	ពណ៌ក្រហម (Red)
+navigator	Zoom	ការពង្រីក/បង្រួម (Zoom)
+	About AngkorPix	អំពី AngkorPix
+	Add Adjustment Layer	បន្ថែមស្រទាប់កែតម្រូវពណ៌ (Add Adjustment Layer)
+	AngkorPix	AngkorPix
+	AngkorPix Website	គេហទំព័រ AngkorPix
+	AngkorPix on GitHub	AngkorPix លើ GitHub
+	AngkorPix — an open-source, native image editor written in Rust.	AngkorPix — កម្មវិធីកែសម្រួលរូបភាព Native កម្រិតខ្ពស់ ប្រភពបើកចំហរ សរសេរដោយ Rust។
+	Contextual Task Bar	របារកិច្ចការបរិបទ (Contextual Task Bar)
+	Fill Selection (Shift+F5)	បំពេញពណ៌ការជ្រើសរើស (Shift+F5)
+	Report Issue	រាយការណ៍បញ្ហា
