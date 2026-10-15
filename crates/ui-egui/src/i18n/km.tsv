@@ -12,6 +12,8 @@
 	Again	ម្តងទៀត
 	AI Integrations…	ការរួមបញ្ចូល AI…
 	All	ជ្រើសរើសទាំងអស់
+	Artboard	ផ្ទាំងគំនូរ (Artboard)
+	Artboards	ផ្ទាំងគំនូរ (Artboards)
 	Artboards to Files…	ផ្ទាំងគំនូរទៅជាឯកសារ…
 	Artboards to PDF…	ផ្ទាំងគំនូរទៅជា PDF…
 	Assign Profile…	កំណត់ Profile ពណ៌…
@@ -40,7 +42,7 @@
 	Conditional Mode Change…	ប្តូរ Mode តាមលក្ខខណ្ឌ…
 	Contact Sheet II…	Contact Sheet II…
 	Content-Aware Fill…	បំពេញតាមបរិបទ (Content-Aware)…
-	Content-Aware Scale	ពង្រីកបង្រួមតាមបរិបទ…
+	Content-Aware Scale	ពង្រីកបង្រួមតាមបរិបទ (Content-Aware Scale)
 	Convert to Profile…	បំប្លែងទៅជា Profile ពណ៌…
 	Copy	ចម្លង
 	Copy Merged	ចម្លងរួមបញ្ចូលគ្នា
@@ -477,7 +479,7 @@
 	Dust & Scratches…	កម្ចាត់ធូលី និងស្នាមឆ្កូត…
 	Emboss…	ផុស…
 	Extrude…	ទាញចេញ…
-	Facet	ផ្ទៃជ្រុង…
+	Facet	ផ្ទៃជ្រុង
 	Fibers…	សរសៃអំបោះ…
 	Field Blur…	ភាពព្រាលតាមតំបន់ (Field Blur)…
 # Field Blur pins (#3373)
@@ -871,7 +873,7 @@
 	Follows only edges this close to the pointer ([ and ] change it)	ចាប់យកតែគែមណាដែលនៅជិតព្រួញកណ្ដុរ ([ និង ] ដើម្បីប្តូរ)
 	Higher values follow only edges that contrast sharply with their surroundings	តម្លៃកាន់តែខ្ពស់ ចាប់យកតែគែមណាដែលមានកម្រិតច្បាស់ខ្លាំងជាមួយផ្ទៃជុំវិញ
 	How often fastening points are placed by themselves	ប្រេកង់នៃការដាក់ចំណុចខ្ទាស់ដោយស្វ័យប្រវត្តិ
-	Drag a crop box · drag inside to move · edges resize ({ratio} ratio, {centre} centre) · Space moves while drawing · {commit} commits · Esc cancels	អូសប្រអប់កាត់តម្រឹម · អូសខាងក្នុងដើម្បីរំកិល · អូសគែមដើម្បីប្តូរទំហំ · Spacebar រំកិលពេលគូរ · {commit} យល់ព្រម · Esc បោះបង់
+	Drag a crop box · drag inside to move · edges resize ({ratio} ratio, {centre} centre) · Space moves while drawing · {commit} commits · Esc cancels	អូសប្រអប់កាត់តម្រឹម · អូសខាងក្នុងដើម្បីរំកិល · អូសគែមដើម្បីប្តូរទំហំ ({ratio} សមាមាត្រ, {centre} ផ្ចិត) · Space រំកិលពេលគូរ · {commit} យល់ព្រម · Esc បោះបង់
 	Commit current crop operation  ({key})	យល់ព្រមការកាត់តម្រឹមបច្ចុប្បន្ន ({key})
 	Cancel current crop operation  (Esc)	បោះបង់ការកាត់តម្រឹមបច្ចុប្បន្ន (Esc)
 	Align and distribute	តម្រឹម និងចែកចាយគម្លាត
@@ -1250,7 +1252,7 @@
 	Pixels:	ភីកសែល:
 	Cache Level:	Cache Level:
 # Mixer Brush (required for every registered non-English language)
-	Mixer Brush	Mixer Brush
+	Mixer Brush	ជក់លាយពណ៌ (Mixer Brush)
 	Mixer Brush Tool	ឧបករណ៍ Mixer Brush (Mixer Brush Tool)
 	Wet	Wet
 	Load	Load
@@ -1708,7 +1710,7 @@ document	Orientation	ទិសដៅក្រដាស
 	Size:	ទំហំ:
 	Width:	ទទឹង:
 	Height:	កម្ពស់:
-	8 bit	8 bit
+	8 bit	8 ប៊ីត (8 bit)
 	16 bit	16 bit
 	32 bit (float)	32 bit (float)
 	Integer	Integer
@@ -1719,7 +1721,7 @@ document	Orientation	ទិសដៅក្រដាស
 	TIFF Options	ជម្រើស TIFF
 	Including layers will increase file size.	Including layers will increase file size
 	Discard Layers and Save a Copy	Discard Layers and Save a Copy
-	Don't show again	Don't show again
+	Don't show again	កុំបង្ហាញម្ដងតៀត
 	Save…	រក្សាទុក…
 	Export As	នាំចេញ As
 	Original	Original
@@ -1838,16 +1840,27 @@ document	Orientation	ទិសដៅក្រដាស
 	Pattern Overlay	ជាន់លំនាំក្បាច់លើ (Pattern Overlay)
 	Outer Glow	ពន្លឺចាំងខាងក្រៅ (Outer Glow)
 	Drop Shadow	ស្រមោលធ្លាក់ក្រោម (Drop Shadow)
-	New Style…	រចនាប័ទ្ម ថ្មី…
-	Style {name} saved	Style {name} saved
-	Reset to Default	កំណត់ឡើងវិញ to Default
-	Make Default	Make Default
+	New Style…	រចនាប័ទ្មថ្មី…
+	Style {name} saved	បានរក្សាទុករចនាប័ទ្ម {name}
+	Reset to Default	កំណត់ជាលំនាំដើមឡើងវិញ
+	Make Default	កំណត់ជាលំនាំដើម
 	Preview	មើលជាមុន
 	Blend Mode	របៀបលាយពណ៌ (Blend Mode)
-	Use Global Light	Use Global Light
-	Distance	Distance
-	Spread	Spread
-	Choke	Choke
+	Use Global Light	ប្រើពន្លឺសកល (Global Light)
+	Distance	ចម្ងាយ (Distance)
+	Spread	សាយភាយ (Spread)
+	Choke	បង្រួម (Choke)
+	Structure	រចនាសម្ព័ន្ធ (Structure)
+	Elements	ធាតុផ្សំ (Elements)
+	Quality	គុណភាព (Quality)
+	Shading	ការដាក់ស្រមោល (Shading)
+	Fill Type	ប្រភេទចាក់ពណ៌ (Fill Type)
+	Fill Type:	ប្រភេទចាក់ពណ៌:
+	Overprint	បោះពុម្ពជាន់លើ (Overprint)
+	General Blending	ការបញ្ចូលទូទៅ (General Blending)
+	Advanced Blending	ការបញ្ចូលកម្រិតខ្ពស់ (Advanced Blending)
+	Blend If:	បញ្ចូលប្រសិនបើ (Blend If):
+	Delete effect	លុប Effect
 	Contour	Contour
 	Layer Knocks Out Drop Shadow	ស្រទាប់បាំងទម្លុះស្រមោល
 	Fill Opacity	បំពេញ ភាពស្រអាប់
@@ -1908,9 +1921,9 @@ colorRange	Invert	ត្រឡប់ពណ៌
 layers	Fill	កម្រិតចាក់ពណ៌
 layers	Fill:	កម្រិតចាក់ពណ៌:
 	Pattern Stamp Tool	ឧបករណ៍ត្រាលំនាំក្បាច់ (Pattern Stamp)
-	Pattern Stamp	Pattern Stamp
+	Pattern Stamp	ត្រាក្រឧាគំរូ (Pattern Stamp)
 	Impressionist	Impressionist
-	Scope	Scope
+	Scope	វិសាលភាព (Scope)
 	Selected	Selected
 	Open	បើក
 	Camera Raw ({name})	Camera Raw ({name})
@@ -2069,9 +2082,9 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Custom Pattern:	ផ្ទាល់ខ្លួន លំនាំក្បាច់
 	Cycle Screen Mode	Mode Cycle Screen
 	Define	Define
-	Delete layer ‘{name}’?	លុប layer ‘{name}’?
-	Delete layer?	លុប layer?
-	Delete {count} layers? {names}	លុប {count} layers? {names}
+	Delete layer ‘{name}’?	លុបស្រទាប់ ‘{name}’?
+	Delete layer?	លុបស្រទាប់?
+	Delete {count} layers? {names}	លុប {count} ស្រទាប់? {names}
 	Description	Description
 	Doc: {flat}/{layered}	Doc: {flat}/{layered}
 	Duotone…	ពីរពណ៌ (Duotone)…
@@ -2095,7 +2108,7 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Labels	Labels
 	Large document: redrawing on the CPU	Large document: redrawing on the CPU
 	Redrawing	Redrawing
-	Layer deleted, but confirmation preference could not be saved: {error}	Layer deleted, but confirmation preference could not be saved: {error}
+	Layer deleted, but confirmation preference could not be saved: {error}	ស្រទាប់ត្រូវបានលុប ប៉ុន្តែចំណូលចិត្តបញ្ជាក់មិនអាចរក្សាទុកបានទេ៘ {error}
 	Layer From Background…	Layer From Background…
 	Load a keyboard shortcut set saved as .kys	Load a keyboard shortcut set saved as .kys
 	Location	Location
@@ -2128,8 +2141,8 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Show/Hide Panels	Show/Hide Panels
 	Solarized Dark Theme	Solarized Dark Theme
 	Sync with system	Sync with system
-	The document is closed	The document is closed
-	The document or selected layers changed. Please request deletion again.	The document or selected layers changed. Please request deletion again
+	The document is closed	ឯកសារត្រូវបានបិត
+	The document or selected layers changed. Please request deletion again.	ឯកសារ ហើយស្រទាប់ដែលបានជ្រើសរើសបានផ្លាស់ប្តូរ។ សូមស្នើសុំលុបម្ដងតៀត។
 	The GPU compositor wasn't used: {reason}	The GPU compositor wasn't used: {reason}
 	This redraw took {seconds} s on the CPU.	This redraw took {seconds} s on the CPU
 	Transform Symmetry	Transform Symmetry
@@ -2269,10 +2282,10 @@ shape	Appearance	រូបរាង
 	Display P3	Display P3
 	GitHub	GitHub
 	Gray Gamma 2.2	Gray Gamma 2.2
-	Invalid delete command	Invalid delete command
+	Invalid delete command	ពាក្យបញ្ជាលុបមិនត្រឹមត្រូវ
 	Inverse	ត្រឡប់ការជ្រើសរើសផ្ទុយ (Inverse / Ctrl+Shift+I)
 	Lighten	ភ្លឺ
-	Missing delete command	Missing delete command
+	Missing delete command	ខ្វះពាក្យបញ្ជាលុប
 	PhotoCraft	PhotoCraft
 	Reset	កំណត់ឡើងវិញ
 	Tetrahedral	Tetrahedral
@@ -3686,9 +3699,9 @@ curves	Smooth	រលូន (Smooth)
 	Changes Saved	បានរក្សាទុកការកែប្រែ
 	Changes have not been saved.	ការកែប្រែមិនទាន់បានរក្សាទុកនៅឡើយទេ។
 	Change…	ផ្លាស់ប្តូរ…
-	Check for Updates	ពិនិត្យមើលកំណែថ្មី…
+	Check for Updates	ពិនិត្យមើលកំណែថ្មី
 	Checkerboard	ក្រឡាចត្រង្គថ្លា (Checkerboard)
-	Choose Folder	ជ្រើសរើសថត…
+	Choose Folder	ជ្រើសរើសថត
 	Choose…	ជ្រើសរើស…
 	City	ទីក្រុង
 	Clear History	សម្អាតប្រវត្តិ (Clear History)
@@ -3857,7 +3870,7 @@ curves	Smooth	រលូន (Smooth)
 	General Blending	ការលាយពណ៌ទូទៅ (General Blending)
 	General Brushes	ជក់ទូទៅ (General Brushes)
 	Glyph Scaling	មាត្រដ្ឋានតួអក្សរ (Glyph Scaling)
-	Go to Layer	ទៅកាន់ស្រទាប់…
+	Go to Layer	ទៅកាន់ស្រទាប់
 	Graphics adapter	Graphics Adapter
 	Graphics adapter: {adapter}	Graphics Adapter៖ {adapter}
 	Gray:	ប្រផេះ៖
@@ -3886,7 +3899,7 @@ curves	Smooth	រលូន (Smooth)
 	Humidity	សំណើម
 	Image compositor: {processor}	អ្នកផ្សំរូបភាព៖ {processor}
 	Import Brush from Image…	នាំចូលជក់ពីរូបភាព…
-	Import Brushes… (.abr or image)	នាំចូលជក់ (.abr ឬ រូបភាព)…
+	Import Brushes… (.abr or image)	នាំចូលជក់… (.abr ឬ រូបភាព)
 	Import Image	នាំចូលរូបភាព
 	Import Options	ជម្រើសនាំចូល
 	Import Settings	ការកំណត់នាំចូល
@@ -3931,7 +3944,7 @@ curves	Smooth	រលូន (Smooth)
 	Link	ភ្ជាប់តំណ (Link)
 	List view	ទិដ្ឋភាពជាបញ្ជី
 	Live Preview	ការមើលជាមុនផ្ទាល់ (Live Preview)
-	Load 3D LUT	ផ្ទុក 3D LUT…
+	Load 3D LUT	ផ្ទុក 3D LUT
 	Load Files into Stack	ផ្ទុកឯកសារចូលក្នុងជង់ស្រទាប់ (Stack)
 	Loading…	កំពុងផ្ទុក…
 	Localize Color Clusters	ដាក់ក្រុមពណ៌តាមតំបន់
@@ -3956,7 +3969,7 @@ curves	Smooth	រលូន (Smooth)
 	Mask Channel	ឆានែលរបាំង (Mask Channel)
 	Masks	របាំង (Masks)
 	Medium Gray	ប្រផេះមធ្យម
-	Merge to HDR Pro	បញ្ចូលទៅជា HDR Pro…
+	Merge to HDR Pro	បញ្ចូលទៅជា HDR Pro
 	Metering Mode	របៀបវាស់ពន្លឺ (Metering Mode)
 	Middle	កណ្តាល
 	Minimalistic	សាមញ្ញបំផុត (Minimalistic)
@@ -4005,9 +4018,9 @@ curves	Smooth	រលូន (Smooth)
 	Object Name / Title	ឈ្មោះវត្ថុ / ចំណងជើង
 	On	បើក
 	Opacity Mask	របាំងភាពស្រអាប់ (Opacity Mask)
-	Open File	បើកឯកសារ…
-	Open Folder	បើកថត…
-	Open Image	បើករូបភាព…
+	Open File	បើកឯកសារ
+	Open Folder	បើកថត
+	Open Image	បើករូបភាព
 	Open Recent is unavailable on the web	Open Recent មិនអាចប្រើលើ Web បានទេ
 	Opened {url}	បានបើក {url}
 	Open…     ⌘O	បើក…     ⌘O
@@ -4272,3 +4285,4 @@ navigator	Zoom	ការពង្រីក/បង្រួម (Zoom)
 	Contextual Task Bar	របារកិច្ចការបរិបទ (Contextual Task Bar)
 	Fill Selection (Shift+F5)	បំពេញពណ៌ការជ្រើសរើស (Shift+F5)
 	Report Issue	រាយការណ៍បញ្ហា
+	font '{font}' is not installed; text may render using a fallback face	ពុម្ពអក្សរ '{font}' មិនទាន់បានដំឡើងទេ; អត្ថបទអាចនឹងបង្ហាញដោយប្រើពុម្ពអក្សរជំនួស

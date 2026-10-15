@@ -585,3 +585,23 @@ fn add_beside_places_a_board_on_each_side_and_alt_duplicates_contents() {
     assert_eq!(doc(&s).size, before);
     assert!(s.execute("layer.artboard.addBeside", json!({"side": "diagonal"})).is_err());
 }
+
+#[test]
+fn file_new_with_artboards_creates_artboard_document() {
+    let mut s = Session::new();
+    s.execute("file.new", json!({"width": 800, "height": 600, "artboards": true, "name": "Web Design"})).unwrap();
+    let d = doc(&s);
+    assert_eq!(d.name, "Web Design");
+    assert_eq!(d.size.width, 800);
+    assert_eq!(d.size.height, 600);
+    assert!(d.has_artboards(), "the new document must have an artboard");
+    let boards = d.artboards();
+    assert_eq!(boards.len(), 1);
+    assert_eq!(boards[0].1, "Artboard 1");
+    assert_eq!(boards[0].2.rect, Rect::new(0, 0, 800, 600));
+    assert_eq!(boards[0].2.background, ArtboardBackground::White);
+    let artboard_layer = d.layer(boards[0].0).unwrap();
+    let children = artboard_layer.children().unwrap();
+    assert_eq!(children.len(), 1);
+    assert_eq!(children[0].name, "Layer 1");
+}

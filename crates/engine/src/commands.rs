@@ -1,7 +1,7 @@
 //! The command registry. Ids follow Photoshop's menu structure (see the parity checklist).
 
 use photocraft_color::{BlendMode, Color, ColorMode, SampleType};
-use photocraft_doc::{Adjustment, Document, Fill, Layer, LayerContent, LayerId, LayerMask, Size};
+use photocraft_doc::{Adjustment, Artboard, ArtboardBackground, Document, Fill, Layer, LayerContent, LayerId, LayerMask, Size};
 use photocraft_geom::Rect;
 use photocraft_raster::Surface;
 use serde_json::{Map, Value, json};
@@ -469,20 +469,52 @@ fn build() -> Vec<CommandSpec> {
                 let depth = sample_type(p.get("depth").and_then(Value::as_u64).unwrap_or(8)).unwrap_or(SampleType::U8);
                 let name = p.get("name").and_then(Value::as_str).unwrap_or("Untitled").to_string();
                 let res = p.get("resolution").and_then(Value::as_f64).unwrap_or(72.0).clamp(1.0, MAX_RESOLUTION) as f32;
-                let mut doc = match p.get("background").and_then(Value::as_str).unwrap_or("white") {
-                    "backgroundColor" => {
-                        let bgc = background_color(p, s.tools.background, "file.new")?;
-                        Document::with_background(name, Size::new(w, h), mode, depth, Color::rgba(bgc[0], bgc[1], bgc[2], 1.0))
+                let artboards = p.get("artboards").or_else(|| p.get("artboard")).and_then(Value::as_bool).unwrap_or(false);
+                let mut doc = if artboards {
+                    let mut d = Document::new(name, Size::new(w, h), mode, depth);
+                    let bg = match p.get("background").and_then(Value::as_str).unwrap_or("white") {
+                        "transparent" => ArtboardBackground::Transparent,
+                        "black" => ArtboardBackground::Black,
+                        "backgroundColor" => {
+                            let bgc = background_color(p, s.tools.background, "file.new")?;
+                            ArtboardBackground::Custom(Color::rgba(bgc[0], bgc[1], bgc[2], 1.0))
+                        }
+                        other => {
+                            if let Some(c) = parse_hex(other) {
+                                ArtboardBackground::Custom(Color::rgba(c[0], c[1], c[2], c[3]))
+                            } else {
+                                ArtboardBackground::White
+                            }
+                        }
+                    };
+                    let mut g = Layer::group("Artboard 1", vec![Layer::raster("Layer 1", d.pixel_format())]);
+                    if let LayerContent::Group(gr) = &mut g.content {
+                        gr.artboard = Some(Artboard {
+                            rect: Rect::from_xywh(0, 0, w, h),
+                            background: bg,
+                            preset: String::new(),
+                        });
+                        gr.expanded = true;
                     }
-                    "transparent" => {
-                        let mut d = Document::new(name, Size::new(w, h), mode, depth);
-                        d.layers.push(Layer::raster("Layer 1", d.pixel_format()));
-                        d
-                    }
-                    "black" => Document::with_background(name, Size::new(w, h), mode, depth, Color::BLACK),
-                    other => {
-                        let c = parse_hex(other).unwrap_or([1.0; 4]);
-                        Document::with_background(name, Size::new(w, h), mode, depth, Color::rgba(c[0], c[1], c[2], c[3]))
+                    g.clipped = false;
+                    d.layers.push(g);
+                    d
+                } else {
+                    match p.get("background").and_then(Value::as_str).unwrap_or("white") {
+                        "backgroundColor" => {
+                            let bgc = background_color(p, s.tools.background, "file.new")?;
+                            Document::with_background(name, Size::new(w, h), mode, depth, Color::rgba(bgc[0], bgc[1], bgc[2], 1.0))
+                        }
+                        "transparent" => {
+                            let mut d = Document::new(name, Size::new(w, h), mode, depth);
+                            d.layers.push(Layer::raster("Layer 1", d.pixel_format()));
+                            d
+                        }
+                        "black" => Document::with_background(name, Size::new(w, h), mode, depth, Color::BLACK),
+                        other => {
+                            let c = parse_hex(other).unwrap_or([1.0; 4]);
+                            Document::with_background(name, Size::new(w, h), mode, depth, Color::rgba(c[0], c[1], c[2], c[3]))
+                        }
                     }
                 };
                 doc.resolution_dpi = res;

@@ -78,6 +78,7 @@ pub(crate) fn validate_new_params(s: &Session, p: &Value) -> Result<()> {
                 continue;
             }
             "name" => (value.is_string(), "a string".into()),
+            "artboard" | "artboards" => (value.is_boolean(), "a boolean".into()),
             _ => return Err(bad(cmd, format!("unknown parameter `{key}`"))),
         };
         if !valid {
@@ -104,6 +105,8 @@ pub struct DocumentSettings {
     /// Display units only; width/height are always pixels and resolution is always ppi.
     pub unit: String,
     pub resolution_unit: String,
+    #[serde(default)]
+    pub artboards: bool,
 }
 
 impl DocumentSettings {
@@ -169,6 +172,9 @@ impl DocumentSettings {
             "mode":self.mode,"depth":self.depth,"background":self.background});
         if let Some(c) = self.background_color {
             p["backgroundColor"] = json!(c);
+        }
+        if self.artboards {
+            p["artboards"] = json!(true);
         }
         p
     }

@@ -223,12 +223,19 @@ pub fn at_pref_resolutions(p: &Preset, units: &UnitsAndRulers) -> Preset {
 pub fn apply_preset(f: &mut Map<String, Value>, p: &Preset, units: &UnitsAndRulers) {
     let (name, w, h, ppi) = at_pref_resolutions(p, units);
     let unit = preset_unit(p, f);
+    let is_web_or_mobile = CATEGORIES.iter().any(|(c, list)| (*c == "Web" || *c == "Mobile") && list.iter().any(|item| item.0 == p.0));
     f.remove("__savedPreset");
     f.insert("width".into(), json!(w));
     f.insert("height".into(), json!(h));
     f.insert("resolution".into(), json!(ppi));
     f.insert("__preset".into(), json!(name));
     f.insert("__unit".into(), json!(unit));
+    if is_web_or_mobile {
+        f.insert("artboards".into(), json!(true));
+    } else {
+        f.remove("artboards");
+        f.remove("artboard");
+    }
 }
 
 /// Fields `file.new` takes (drops the dialog's `__` UI keys).
@@ -642,15 +649,35 @@ pub fn body(app: &mut crate::PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<Strin
                     f.remove("__savedPreset");
                 }
             });
-            small_label(ui, tl!("Height"));
+            ui.horizontal(|ui| {
+                ui.allocate_ui_with_layout(vec2(110.0, 14.0), egui::Layout::left_to_right(egui::Align::Center), |ui| {
+                    small_label(ui, tl!("Height"));
+                });
+                ui.add_space(8.0);
+                ui.allocate_ui_with_layout(vec2(52.0, 14.0), egui::Layout::left_to_right(egui::Align::Center), |ui| {
+                    small_label(ui, crate::i18n::tr_ctx(crate::i18n::current(), "document", "Orientation"));
+                });
+                ui.add_space(8.0);
+                if ui
+                    .add(egui::Label::new(RichText::new(tl!("Artboards")).size(11.5).color(t.text_dim)).selectable(false).sense(Sense::click()))
+                    .on_hover_cursor(egui::CursorIcon::PointingHand)
+                    .clicked()
+                {
+                    let artboard = !f.get("artboards").or_else(|| f.get("artboard")).and_then(Value::as_bool).unwrap_or(false);
+                    if artboard {
+                        f.insert("artboards".into(), json!(true));
+                    } else {
+                        f.remove("artboards");
+                        f.remove("artboard");
+                    }
+                }
+            });
             ui.horizontal(|ui| {
                 let mut h = shown_size(f, "height", 1080.0, &unit, ppi);
                 if widgets::value_field_units(ui, &mut h, 0.0..=300_000.0, 110.0, widgets::unit_decimals(&unit), units).changed() {
                     set_size(f, "height", h, &unit, ppi);
                 }
-                ui.add_space(6.0);
-                // Page orientation (≠ Type › Orientation → Hướng chữ).
-                small_label(ui, crate::i18n::tr_ctx(crate::i18n::current(), "document", "Orientation"));
+                ui.add_space(8.0);
                 let (w, h) = (get_f(f, "width", 1920.0), get_f(f, "height", 1080.0));
                 for (icon, portrait) in [("rectangle-vertical", true), ("rectangle-horizontal", false)] {
                     // Tooltip strings are looked up via `icons::button` → `tl!`; enum/state is aspect swap only.
@@ -660,6 +687,21 @@ pub fn body(app: &mut crate::PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<Strin
                         if (h > w) != portrait {
                             swap_size(f);
                         }
+                    }
+                }
+                ui.add_space(16.0);
+                let mut artboard = f.get("artboards").or_else(|| f.get("artboard")).and_then(Value::as_bool).unwrap_or(false);
+                let (rect, resp) = ui.allocate_exact_size(vec2(14.0, 14.0), Sense::click());
+                let resp = resp.on_hover_cursor(egui::CursorIcon::PointingHand).on_hover_text(tl!("Artboards"));
+                let pressed = resp.is_pointer_button_down_on();
+                widgets::check_box(ui.painter(), rect, artboard, resp.hovered(), pressed, &t);
+                if resp.clicked() {
+                    artboard = !artboard;
+                    if artboard {
+                        f.insert("artboards".into(), json!(true));
+                    } else {
+                        f.remove("artboards");
+                        f.remove("artboard");
                     }
                 }
             });
