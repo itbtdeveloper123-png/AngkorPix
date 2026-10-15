@@ -3570,3 +3570,35 @@ curves	Smooth	បន្ទន់រលូន
 	Open color-less EXR as ACEScg	បើក EXR គ្មានពណ៌ជា ACEScg
 	Edit Selected Guides	Edit Selected Guides
 	Clear Selected Guides	Clear Selected Guides
+	Adjust Colors	កែសម្រួលពណ៌
+	Adjust colors	កែសម្រួលពណ៌
+	Select subject	ជ្រើសរើសប្រធានបទ
+	Remove background	លុបផ្ទៃខាងក្រោយ
+	Select Sky	ជ្រើសរើសផ្ទៃមេឃ
+	Select sky	ជ្រើសរើសផ្ទៃមេឃ
+	Free Transform (Cmd+T)	បំប្លែងទម្រង់សេរី (Cmd+T)
+	New Adjustment Layer…	ស្រទាប់កែសម្រួលថ្មី…
+	Task Bar Options	ជម្រើសរបារកិច្ចការ
+	Pin bar position	ខ្ទាស់ទីតាំងរបារកិច្ចការ
+	Reset bar position	កំណត់ទីតាំងរបារឡើងវិញ
+	Hide Contextual Task Bar	លាក់របារកិច្ចការឆ្លាតវៃ
+	Drag to reposition Contextual Task Bar	អូសដើម្បីផ្លាស់ប្តូរទីតាំងរបារកិច្ចការ
+	Deselect (Cmd+D)	ដោះការជ្រើសរើស (Cmd+D)
+	Text Layer	ស្រទាប់អក្សរ
+	Align Left	តម្រឹមឆ្វេង
+	Align Center	តម្រឹមកណ្តាល
+	Align Right	តម្រឹមស្តាំ
+	Commit Type	បញ្ជាក់អត្ថបទ
+	Cancel Type	បោះបង់អត្ថបទ
+	Straighten image	តម្រង់រូបភាពឱ្យត្រង់
+	Commit Crop (Enter)	បញ្ជាក់ការកាត់តម្រឹម (Enter)
+	Cancel Crop (Esc)	បោះបង់ការកាត់តម្រឹម (Esc)
+	To Selection	បម្លែងជាជម្រើស
+	Convert Shape to Selection	បម្លែងរូបរាងទៅជាជម្រើស
+	Rasterize Shape Layer	បម្លែងស្រទាប់រូបរាងជាភីកសែល
+	Refine selection edge (Cmd+Alt+R)	កែសម្រួលគែមជម្រើស (Cmd+Alt+R)
+	Inverse Selection (Cmd+Shift+I)	ច្រាសការជ្រើសរើស (Cmd+Shift+I)
+	Create Layer Mask from Selection	បង្កើតរបាំងស្រទាប់ពីជម្រើស
+	Automatically detect and select subject	ស្វែងរក និងជ្រើសរើសប្រធានបទស្វ័យប្រវត្តិ
+	Automatically isolate subject and mask out background	ញែកប្រធានបទ និងលុបផ្ទៃខាងក្រោយស្វ័យប្រវត្តិ
+	Automatically detect and select sky	ស្វែងរក និងជ្រើសរើសផ្ទៃមេឃស្វ័យប្រវត្តិ
