@@ -841,12 +841,21 @@ pub fn install_fonts_with(ctx: &egui::Context, cjk: crate::cjk_fonts::Sources) {
         fonts.font_data.insert(name.to_owned(), Arc::new(FontData::from_static(bytes)));
         Some(name.to_owned())
     };
+    let roboto = add(&mut fonts, "Roboto", photocraft_text::fonts::ROBOTO_EXTRA_BOLD.as_slice());
+    let kantumruy = add(&mut fonts, "Kantumruy Pro", photocraft_text::fonts::KANTUMRUY_PRO_SEMIBOLD.as_slice());
     let inter = add(&mut fonts, "Inter", photocraft_text::fonts::INTER_REGULAR.as_slice());
     let medium = add(&mut fonts, "Inter-Medium", photocraft_text::fonts::INTER_MEDIUM.as_slice());
     let semibold = add(&mut fonts, "Inter-SemiBold", photocraft_text::fonts::INTER_SEMIBOLD.as_slice());
     let mono = add(&mut fonts, "JetBrainsMono", photocraft_text::fonts::JETBRAINS_MONO_REGULAR.as_slice());
+    let prop = fonts.families.entry(FontFamily::Proportional).or_default();
     if let Some(inter) = inter {
-        fonts.families.entry(FontFamily::Proportional).or_default().insert(0, inter);
+        prop.insert(0, inter);
+    }
+    if let Some(k) = kantumruy {
+        prop.insert(0, k);
+    }
+    if let Some(r) = roboto {
+        prop.insert(0, r);
     }
     if let Some(mono) = mono {
         fonts.families.entry(FontFamily::Monospace).or_default().insert(0, mono);

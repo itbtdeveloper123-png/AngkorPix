@@ -1,0 +1,399 @@
+# Khmer (km) catalog for AngkorPix. Columns: context <TAB> source <TAB> translation
+# Clean-room Khmer localisation using natural and accurate Khmer computing terminology.
+
+# Menu Bar
+	File	ឯកសារ
+	Edit	កែសម្រួល
+	Image	រូបភាព
+	Layer	ស្រទាប់
+	Type	អក្សរ
+	Select	ជម្រើស
+	Filter	តម្រង
+	View	ទិដ្ឋភាព
+	Window	ផ្ទាំងបង្អួច
+	Help	ជំនួយ
+
+# File Menu
+	New…	បង្កើតថ្មី…
+	Open…	បើក…
+	Open As…	បើកជា…
+	Close	បិទ
+	Close All	បិទទាំងអស់
+	Close Others	បិទផ្ទាំងផ្សេងទៀត
+	Save	រក្សាទុក
+	Save As…	រក្សាទុកជា…
+	Save a Copy…	រក្សាទុកច្បាប់ចម្លង…
+	Revert	ត្រឡប់ដូចដើម
+	Export	នាំចេញ
+	Quick Export as PNG	នាំចេញរហ័សជា PNG
+	Export As…	នាំចេញជា…
+	Export Preferences…	ការកំណត់ការនាំចេញ…
+	Save for Web (Legacy)…	រក្សាទុកសម្រាប់វិប (Save for Web)…
+	Artboards to Files…	ផ្ទាំងគំនូរទៅជាឯកសារ…
+	Artboards to PDF…	ផ្ទាំងគំនូរទៅជា PDF…
+	Layers to Files…	ស្រទាប់ទៅជាឯកសារ…
+	Place Embedded…	បញ្ចូលរូបបង្កប់ (Embedded)…
+	Place Linked…	បញ្ចូលរូបភ្ជាប់ (Linked)…
+	Package…	ខ្ចប់ឯកសារ…
+	Automate	ស្វ័យប្រវត្តិកម្ម
+	Batch…	ដំណើរការជាបណ្តុំ…
+	Scripts	ស្គ្រីប
+	File Info…	ព័ត៌មានឯកសារ…
+	Print…	បោះពុម្ព…
+	Print One Copy	បោះពុម្ពមួយច្បាប់
+	Exit	ចាកចេញ
+
+# Edit Menu
+	Undo	មិនធ្វើវិញ
+	Redo	ធ្វើវិញ
+	Toggle Last State	ប្តូរស្ថានភាពចុងក្រោយ
+	Fade…	បន្ថយអាំងតង់ស៊ីតេ…
+	Cut	កាត់
+	Copy	ចម្លង
+	Copy Merged	ចម្លងរួមបញ្ចូលគ្នា
+	Paste	បិទភ្ជាប់
+	Paste Special	បិទភ្ជាប់ពិសេស
+	Paste in Place	បិទភ្ជាប់ចំទីតាំងដើម
+	Paste Into	បិទភ្ជាប់ក្នុងជម្រើស
+	Paste Outside	បិទភ្ជាប់ក្រៅជម្រើស
+	Clear	សម្អាត
+	Search…	ស្វែងរក…
+	Check Spelling…	ពិនិត្យអក្ខរាវិរុទ្ធ…
+	Find and Replace Text…	ស្វែងរក និងជំនួសអត្ថបទ…
+	Fill…	ចាក់ពណ៌…
+	Stroke…	គូសស៊ុម…
+	Content-Aware Fill…	បំពេញតាមបរិបទ (Content-Aware)…
+	Content-Aware Scale	ពង្រីកបង្រួមតាមបរិបទ…
+	Free Transform	បំប្លែងទម្រង់សេរី
+	Transform	បំប្លែងទម្រង់
+	Again	ម្តងទៀត
+	Scale	ពង្រីក/បង្រួម
+	Rotate	បង្វិល
+	Skew	ទ្រេត
+	Distort	បង្ខូចរាង
+	Perspective	យថាទស្សន៍
+	Warp	ពត់ពែន
+	Rotate 180°	បង្វិល ១៨០°
+	Rotate 90° Clockwise	បង្វិល ៩០° ស្របទ្រនិចនាឡិកា
+	Rotate 90° Counter Clockwise	បង្វិល ៩០° បញ្ច្រាសទ្រនិចនាឡិកា
+	Flip Horizontal	ត្រឡប់ផ្តេក
+	Flip Vertical	ត្រឡប់បញ្ឈរ
+	Puppet Warp	ពត់ពែនចំណុច (Puppet Warp)
+	Auto-Align Layers…	តម្រឹមស្រទាប់ស្វ័យប្រវត្តិ…
+	Auto-Blend Layers…	បញ្ចូលស្រទាប់ស្វ័យប្រវត្តិ…
+	Define Brush Preset…	កំណត់ជាជក់គំរូ…
+	Define Pattern…	កំណត់ជាលំនាំគំរូ…
+	Purge	សម្អាតអង្គចងចាំ
+	Keyboard Shortcuts…	គ្រាប់ចុចកាត់ (Shortcuts)…
+	Menus…	ម៉ឺនុយ…
+	Toolbar…	របារឧបករណ៍…
+	Preferences	ការកំណត់
+
+# Image Menu
+	Mode	ទម្រង់ពណ៌ (Mode)
+	Bitmap	ប៊ីតម៉េប (Bitmap)
+	Grayscale	សខ្មៅ (Grayscale)
+	Duotone	ពីរពណ៌ (Duotone)
+	Indexed Color…	ពណ៌តាមសន្ទស្សន៍…
+	RGB Color	ពណ៌ RGB
+	CMYK Color	ពណ៌ CMYK
+	Lab Color	ពណ៌ Lab
+	Multichannel	ពហុឆានែល (Multichannel)
+	8 Bits/Channel	៨ ប៊ីត/ឆានែល
+	16 Bits/Channel	១៦ ប៊ីត/ឆានែល
+	32 Bits/Channel	៣២ ប៊ីត/ឆានែល
+	Color Table…	តារាងពណ៌…
+	Adjustments	ការកែសម្រួលពណ៌
+	Brightness/Contrast…	ពន្លឺ/កម្រិតច្បាស់…
+	Levels…	កម្រិតពណ៌ (Levels)…
+	Curves…	ខ្សែកោងពណ៌ (Curves)…
+	Exposure…	កម្រិតពន្លឺ (Exposure)…
+	Vibrance…	ភាពរស់រវើកនៃពណ៌ (Vibrance)…
+	Hue/Saturation…	លាំពណ៌/ភាពឆ្អែតពណ៌ (Hue/Saturation)…
+	Color Balance…	តុល្យភាពពណ៌ (Color Balance)…
+	Black & White…	សខ្មៅ (Black & White)…
+	Photo Filter…	តម្រងពណ៌រូបថត (Photo Filter)…
+	Channel Mixer…	លាយឆានែលពណ៌…
+	Color Lookup…	តារាងរកពណ៌ (Color Lookup)…
+	Invert	ត្រឡប់ពណ៌ផ្ទុយ
+	Posterize…	បន្ថយស្រទាប់ពណ៌ (Posterize)…
+	Threshold…	កម្រិតព្រំដែនសខ្មៅ (Threshold)…
+	Gradient Map…	ផែនទីពណ៌ជម្រាល (Gradient Map)…
+	Selective Color…	ជ្រើសរើសកែពណ៌ជាក់លាក់…
+	Desaturate	បន្ថយពណ៌ឱ្យអស់ (សខ្មៅ)
+	Match Color…	ផ្គូផ្គងពណ៌…
+	Replace Color…	ជំនួសពណ៌…
+	Equalize	ធ្វើឱ្យពណ៌ស្មើគ្នា
+	Auto Tone	កម្រិតពណ៌ស្វ័យប្រវត្តិ
+	Auto Contrast	កម្រិតច្បាស់ស្វ័យប្រវត្តិ
+	Auto Color	តុល្យភាពពណ៌ស្វ័យប្រវត្តិ
+	Image Size…	ទំហំរូបភាព…
+	Canvas Size…	ទំហំផ្ទាំងក្រណាត់ (Canvas Size)…
+	Image Rotation	ការបង្វិលរូបភាព
+	Crop	កាត់តម្រឹម (Crop)
+	Trim…	កាត់គែមទំនេរ…
+	Reveal All	បង្ហាញទាំងអស់
+	Duplicate…	ចម្លងទ្វេដង…
+
+# Layer Menu
+	New	ថ្មី
+	Layer…	ស្រទាប់ថ្មី…
+	Layer from Background	ស្រទាប់ពីផ្ទៃខាងក្រោយ
+	Group…	ក្រុមថ្មី…
+	Group from Layers…	បង្កើតក្រុមពីស្រទាប់…
+	Artboard…	ផ្ទាំងគំនូរថ្មី…
+	Layer via Copy	បង្កើតស្រទាប់តាមការចម្លង
+	Layer via Cut	បង្កើតស្រទាប់តាមការកាត់
+	Duplicate Layer…	ចម្លងស្រទាប់ទ្វេដង…
+	Delete	លុប
+	Delete Layer	លុបស្រទាប់
+	Hidden Layers	ស្រទាប់ដែលលាក់
+	Rename Layer…	ប្តូរឈ្មោះស្រទាប់…
+	Layer Style	រចនាប័ទ្មស្រទាប់ (Layer Style)
+	Blending Options…	ជម្រើសនៃការបញ្ចូលគ្នា (Blending)…
+	Bevel & Emboss…	រាងផុស និងរាងលៀន…
+	Inner Shadow…	ស្រមោលខាងក្នុង…
+	Inner Glow…	ពន្លឺចាំងខាងក្នុង…
+	Color Overlay…	ស្រោបពណ៌…
+	Gradient Overlay…	ស្រោបពណ៌ជម្រាល…
+	Pattern Overlay…	ស្រោបលំនាំ…
+	Outer Glow…	ពន្លឺចាំងខាងក្រៅ…
+	Drop Shadow…	ស្រមោលធ្លាក់…
+	Copy Layer Style	ចម្លងរចនាប័ទ្មស្រទាប់
+	Paste Layer Style	បិទភ្ជាប់រចនាប័ទ្មស្រទាប់
+	Clear Layer Style	លុបរចនាប័ទ្មស្រទាប់
+	Smart Filter	តម្រងឆ្លាតវៃ (Smart Filter)
+	New Fill Layer	ស្រទាប់បំពេញពណ៌ថ្មី
+	Solid Color…	ពណ៌សុទ្ធ…
+	Gradient…	ពណ៌ជម្រាល…
+	Pattern…	លំនាំរូបភាព…
+	New Adjustment Layer	ស្រទាប់កែសម្រួលពណ៌ថ្មី
+	Layer Mask	របាំងស្រទាប់ (Layer Mask)
+	Reveal All	បង្ហាញទាំងអស់
+	Hide All	លាក់ទាំងអស់
+	Reveal Selection	បង្ហាញតាមជម្រើស
+	Hide Selection	លាក់តាមជម្រើស
+	From Transparency	ពីភាពថ្លា
+	Vector Mask	របាំងវ៉ិចទ័រ (Vector Mask)
+	Create Clipping Mask	បង្កើតរបាំងក្លីប (Clipping Mask)
+	Release Clipping Mask	ដោះរបាំងក្លីប
+	Smart Objects	វត្ថុឆ្លាតវៃ (Smart Objects)
+	Convert to Smart Object	បំប្លែងទៅជាវត្ថុឆ្លាតវៃ
+	Rasterize	បំប្លែងទៅជាភីកសែល (Rasterize)
+	Merge Layers	បញ្ចូលស្រទាប់ចូលគ្នា
+	Merge Visible	បញ្ចូលស្រទាប់ដែលមើលឃើញ
+	Flatten Image	បង្រួមស្រទាប់ទាំងអស់ចូលគ្នាតែមួយ
+
+# Select Menu
+	All	ជ្រើសរើសទាំងអស់
+	Deselect	ដោះការជ្រើសរើស
+	Reselect	ជ្រើសរើសឡើងវិញ
+	Inverse	ត្រឡប់ការជ្រើសរើសផ្ទុយ
+	All Layers	ស្រទាប់ទាំងអស់
+	Deselect Layers	ដោះការជ្រើសរើសស្រទាប់
+	Find Layers	ស្វែងរកស្រទាប់
+	Color Range…	តាមជួរពណ៌ (Color Range)…
+	Focus Area…	តាមតំបន់ផ្ដោត…
+	Subject	ជ្រើសរើសប្រធានបទ (Subject)
+	Sky	ជ្រើសរើសផ្ទៃមេឃ (Sky)
+	Select and Mask…	ជ្រើសរើស និងបាំង (Select and Mask)…
+	Modify	កែប្រែជម្រើស
+	Border…	បន្ទាត់ព្រំដែន…
+	Smooth…	ធ្វើឱ្យរលូន…
+	Expand…	ពង្រីកទំហំ…
+	Contract…	បង្រួមទំហំ…
+	Feather…	បន្ទន់គែម (Feather)…
+	Grow	ពង្រីកតាមពណ៌ដូចគ្នា
+	Similar	ជ្រើសរើសពណ៌ប្រហាក់ប្រហែល
+	Transform Selection	បំប្លែងទម្រង់ការជ្រើសរើស
+	Edit in Quick Mask Mode	កែប្រែក្នុងទម្រង់ Quick Mask
+	Load Selection…	ផ្ទុកជម្រើស…
+	Save Selection…	រក្សាទុកជម្រើស…
+
+# Filter Menu
+	Last Filter	តម្រងចុងក្រោយ
+	Filter Gallery…	វិចិត្រសាលតម្រង (Filter Gallery)…
+	Camera Raw Filter…	តម្រង Camera Raw…
+	Lens Correction…	កែតម្រូវកែវឡេន…
+	Liquify…	រំលាយ និងពត់រូប (Liquify)…
+	Vanishing Point…	ចំណុចបាត់ស្រមោល…
+	Blur	ធ្វើឱ្យព្រិល (Blur)
+	Box Blur…	ព្រិលរាងប្រអប់…
+	Gaussian Blur…	ព្រិលម៉ដ្ឋ (Gaussian Blur)…
+	Lens Blur…	ព្រិលបែបកែវឡេន…
+	Motion Blur…	ព្រិលបែបចលនា…
+	Radial Blur…	ព្រិលរង្វង់…
+	Smart Blur…	ព្រិលឆ្លាតវៃ…
+	Surface Blur…	ព្រិលលើផ្ទៃ…
+	Noise	គ្រាប់អុច (Noise)
+	Add Noise…	បន្ថែមគ្រាប់អុច…
+	Despeckle	កាត់បន្ថយគ្រាប់អុច
+	Dust & Scratches…	កម្ចាត់ធូលី និងស្នាមឆ្កូត…
+	Reduce Noise…	កាត់បន្ថយ Noise…
+	Pixelate	ធ្វើឱ្យបែកភីកសែល
+	Render	បង្កើតបែបផែន (Render)
+	Clouds	ពពក
+	Difference Clouds	ពពកផ្ទុយពណ៌
+	Fibers…	សរសៃអំបោះ…
+	Lens Flare…	ពន្លឺចាំងផ្លាត…
+	Sharpen	ធ្វើឱ្យច្បាស់ (Sharpen)
+	Sharpen More	ធ្វើឱ្យកាន់តែច្បាស់
+	Sharpen Edges	ធ្វើឱ្យគែមច្បាស់
+	Unsharp Mask…	របាំងធ្វើឱ្យច្បាស់ (Unsharp Mask)…
+	Smart Sharpen…	ធ្វើឱ្យច្បាស់ឆ្លាតវៃ…
+
+# View Menu
+	Proof Setup	ការកំណត់សាកល្បងពណ៌
+	Proof Colors	សាកល្បងពណ៌ (Proof Colors)
+	Zoom In	ពង្រីកទិដ្ឋភាព
+	Zoom Out	បង្រួមទិដ្ឋភាព
+	Fit on Screen	ពង្រីកពេញអេក្រង់
+	Actual Pixels	ទំហំភីកសែលពិត
+	100%	១០០%
+	200%	២០០%
+	Rotate View	បង្វិលទិដ្ឋភាព
+	Reset View	កំណត់ទិដ្ឋភាពដើម
+	Screen Mode	ទម្រង់បង្ហាញអេក្រង់
+	Standard Screen Mode	ទម្រង់អេក្រង់ស្តង់ដារ
+	Full Screen Mode with Menu Bar	ពេញអេក្រង់មានម៉ឺនុយ
+	Full Screen Mode	ពេញអេក្រង់ទាំងមូល
+	Rulers	បន្ទាត់រង្វាស់ (Rulers)
+	Snap	ស្រូបជាប់ (Snap)
+	Snap To	ស្រូបជាប់ទៅកាន់
+	Guides	បន្ទាត់ណែនាំ (Guides)
+	Lock Guides	ចាក់សោបន្ទាត់ណែនាំ
+	Clear Guides	លុบบន្ទាត់ណែនាំ
+	New Guide…	បន្ទាត់ណែនាំថ្មី…
+	New Guide Layout…	រៀបចំប្លង់បន្ទាត់ណែនាំ…
+
+# Window Menu
+	Arrange	រៀបចំផ្ទាំង
+	Workspace	កន្លែងធ្វើការ (Workspace)
+	Actions	សកម្មភាពស្វ័យប្រវត្តិ (Actions)
+	Adjustments	ការកែសម្រួល (Adjustments)
+	Brush Settings	ការកំណត់ជក់ (Brush Settings)
+	Brushes	ជក់ (Brushes)
+	Channels	ឆានែលពណ៌ (Channels)
+	Character	តួអក្សរ (Character)
+	Color	ពណ៌ (Color)
+	History	ប្រវត្តិ (History)
+	Info	ព័ត៌មាន (Info)
+	Layers	ស្រទាប់ (Layers)
+	Navigator	ផែនទីរុករក (Navigator)
+	Options	ជម្រើសឧបករណ៍ (Options)
+	Paths	ខ្សែបន្ទាត់ (Paths)
+	Properties	លក្ខណសម្បត្តិ (Properties)
+	Swatches	បន្ទះពណ៌ (Swatches)
+	Tools	ប្រអប់ឧបករណ៍ (Tools)
+	Contextual Task Bar	របារកិច្ចការឆ្លាតវៃ (Contextual Task Bar)
+
+# Tools & Common Buttons
+	Move Tool	ឧបករណ៍ផ្លាស់ទី (Move)
+	Rectangular Marquee Tool	ឧបករណ៍ជ្រើសរើសរាងចតុកោណ
+	Elliptical Marquee Tool	ឧបករណ៍ជ្រើសរើសរាងពងក្រពើ
+	Lasso Tool	ឧបករណ៍ឡាសូ (Lasso)
+	Polygonal Lasso Tool	ឧបករណ៍ឡាសូពហុកោណ
+	Magnetic Lasso Tool	ឧបករណ៍ឡាសូមេដែក
+	Object Selection Tool	ឧបករណ៍ជ្រើសរើសវត្ថុ
+	Quick Selection Tool	ឧបករណ៍ជ្រើសរើសរហ័ស
+	Magic Wand Tool	ដំបងវេទមន្ត (Magic Wand)
+	Crop Tool	ឧបករណ៍កាត់តម្រឹម (Crop)
+	Eyedropper Tool	ឧបករណ៍បឺតស្រង់ពណ៌ (Eyedropper)
+	Spot Healing Brush Tool	ជក់លុបស្នាមអុច
+	Healing Brush Tool	ជក់ជួសជុលស្នាម
+	Clone Stamp Tool	ត្រាចម្លងរូបភាព (Clone Stamp)
+	Brush Tool	ឧបករណ៍ជក់ (Brush)
+	Pencil Tool	ឧបករណ៍ខ្មៅដៃ (Pencil)
+	Eraser Tool	ឧបករណ៍ជ័រលុប (Eraser)
+	Gradient Tool	ឧបករណ៍លាយពណ៌ជម្រាល
+	Paint Bucket Tool	ធុងចាក់ពណ៌ (Paint Bucket)
+	Blur Tool	ឧបករណ៍ធ្វើឱ្យព្រិល
+	Sharpen Tool	ឧបករណ៍ធ្វើឱ្យច្បាស់
+	Smudge Tool	ឧបករណ៍ទាញលាបពណ៌ (Smudge)
+	Dodge Tool	ឧបករណ៍បន្ថែមពន្លឺ (Dodge)
+	Burn Tool	ឧបករណ៍បន្ថែមស្រមោលខ្មៅ (Burn)
+	Sponge Tool	ឧបករណ៍បឺត/បន្ថែមភាពឆ្អែតពណ៌ (Sponge)
+	Pen Tool	ឧបករណ៍ប៊ិចគូសខ្សែ (Pen)
+	Curvature Pen Tool	ឧបករណ៍ប៊ិចខ្សែកោង (Curvature Pen)
+	Horizontal Type Tool	ឧបករណ៍សរសេរអក្សរផ្ដេក
+	Vertical Type Tool	ឧបករណ៍សរសេរអក្សរបញ្ឈរ
+	Path Selection Tool	ឧបករណ៍ជ្រើសរើសខ្សែបន្ទាត់
+	Direct Selection Tool	ឧបករណ៍ជ្រើសរើសចំណុចផ្ទាល់
+	Rectangle Tool	ឧបករណ៍គូរចតុកោណ
+	Ellipse Tool	ឧបករណ៍គូររាងពងក្រពើ
+	Hand Tool	ឧបករណ៍ដៃអូសទិដ្ឋភាព (Hand)
+	Zoom Tool	ឧបករណ៍ពង្រីក/បង្រួម (Zoom)
+
+# Common Dialog & Panel Labels
+	OK	យល់ព្រម
+	Cancel	បោះបង់
+	Apply	អនុវត្ត
+	Reset	កំណត់ឡើងវិញ
+	Default	លំនាំដើម
+	Close	បិទ
+	Yes	បាទ/ចាស
+	No	ទេ
+	Width:	ទទឹង:
+	Height:	កម្ពស់:
+	Resolution:	កម្រិតភាពច្បាស់:
+	Pixels	ភីកសែល
+	Inches	អុីញ
+	Percent	ភាគរយ
+	Opacity:	ភាពស្រអាប់:
+	Fill:	កម្រិតបំពេញ:
+	Flow:	លំហូរ:
+	Hardness:	ភាពរឹង:
+	Size:	ទំហំ:
+	Radius:	កាំ:
+	Angle:	មុំ:
+	Distance:	ចម្ងាយ:
+	Spread:	ការសាយភាយ:
+	Color:	ពណ៌:
+	Normal	ធម្មតា
+	Dissolve	រលាយ
+	Darken	ងងឹត
+	Multiply	គុណពណ៌ (Multiply)
+	Color Burn	ដុតពណ៌
+	Linear Burn	ដុតពណ៌លីនេអ៊ែរ
+	Lighten	ភ្លឺ
+	Screen	បំភ្លឺ (Screen)
+	Color Dodge	គេចពណ៌
+	Linear Dodge (Add)	គេចពណ៌លីនេអ៊ែរ (បូកពណ៌)
+	Overlay	ជាន់លើ (Overlay)
+	Soft Light	ពន្លឺស្រាល
+	Hard Light	ពន្លឺខ្លាំង
+	Vivid Light	ពន្លឺច្បាស់ខ្លាំង
+	Linear Light	ពន្លឺលីនេអ៊ែរ
+	Pin Light	ពន្លឺចំណុច
+	Hard Mix	ល្បាយពណ៌ខ្លាំង
+	Difference	ពណ៌ផ្ទុយ (Difference)
+	Exclusion	មិនរាប់បញ្ចូល
+	Subtract	ដកពណ៌
+	Divide	ចែកពណ៌
+	Hue	លាំពណ៌
+	Saturation	ភាពឆ្អែតពណ៌
+	Luminosity	កម្រិតពន្លឺ
+
+# Modern Adjustment Presets & Task Bar
+	Adjustment Presets	ការកំណត់ពណ៌ស្រាប់
+	Single Adjustments	ការកែសម្រួលទោល
+	Add an adjustment	បន្ថែមការកែសម្រួល
+	Portraits	រូបមនុស្ស
+	Landscape	ទេសភាព
+	Photo Repair	ជួសជុលរូបថត
+	Creative	ភាពច្នៃប្រឌិត
+	Warm Glow	ពន្លឺកក់ក្តៅ
+	Cool Light	ពន្លឺត្រជាក់
+	Soft Bright	ពន្លឺស្រទន់
+	Moody Portrait	រូបបញ្ចេញអារម្មណ៍
+	Landscape Pop	ទេសភាពពណ៌ស្រស់
+	Golden Sunset	ថ្ងៃលិចពណ៌មាស
+	Select Subject	ជ្រើសរើសប្រធានបទ
+	Remove Background	លុបផ្ទៃខាងក្រោយ
+	Select Sky	ជ្រើសរើសផ្ទៃមេឃ
+	Pin task bar position	ខ្ទាស់ទីតាំងរបារកិច្ចការ
+	Reset task bar position	កំណត់ទីតាំងរបារឡើងវិញ
+	Hide contextual task bar	លាក់របារកិច្ចការឆ្លាតវៃ
+	Preferences…	ការកំណត់…
+	Interface	ផ្ទៃផ្ទាំងបញ្ជា (Interface)
+	Language:	ភាសា:
