@@ -10,49 +10,49 @@
 	Paper Width	ទទឹងក្រដាស
 	Paper Height	កម្ពស់ក្រដាស
 	Again	ម្តងទៀត
-	AI Integrations…	AI Integrations…
+	AI Integrations…	ការរួមបញ្ចូល AI…
 	All	ជ្រើសរើសទាំងអស់
 	Artboards to Files…	ផ្ទាំងគំនូរទៅជាឯកសារ…
 	Artboards to PDF…	ផ្ទាំងគំនូរទៅជា PDF…
-	Assign Profile…	Assign Profile…
+	Assign Profile…	កំណត់ Profile ពណ៌…
 	Auto-Align Layers…	តម្រឹមស្រទាប់ស្វ័យប្រវត្តិ…
 	Auto-Blend Layers…	បញ្ចូលស្រទាប់ស្វ័យប្រវត្តិ…
 	Automate	ស្វ័យប្រវត្តិកម្ម
 	Batch…	ដំណើរការជាបណ្តុំ…
-	Browse…	Browse…
-	Source Files	Source Files
-	Use:	Use:
-	Files	Files
-	Folder	Folder
-	Add Open Files	Add Open Files
-	Sort By Name	Sort By Name
-	Attempt to Automatically Align Source Images	Attempt to Automatically Align Source Images
-	Create Smart Object after Loading Layers	Create Smart Object after Loading Layers
+	Browse…	រុករក (Browse)…
+	Source Files	ឯកសារប្រភពដើម
+	Use:	ប្រើ៖
+	Files	ឯកសារ
+	Folder	ថត (Folder)
+	Add Open Files	បន្ថែមឯកសារដែលកំពុងបើក
+	Sort By Name	តម្រៀបតាមឈ្មោះ
+	Attempt to Automatically Align Source Images	ព្យាយាមតម្រឹមរូបភាពប្រភពស្វ័យប្រវត្តិ
+	Create Smart Object after Loading Layers	បង្កើត Smart Object បន្ទាប់ពីផ្ទុកស្រទាប់
 	Check Spelling…	ពិនិត្យអក្ខរាវិរុទ្ធ…
 	Clear	សម្អាត
-	Clear Recent Files	Clear Recent Files
-	Clipboard	Clipboard
+	Clear Recent Files	សម្អាតបញ្ជីឯកសារថ្មីៗ
+	Clipboard	ក្ដារចម្លង (Clipboard)
 	Close	បិទ
 	Close All	បិទទាំងអស់
 	Close Others	បិទផ្ទាំងផ្សេងទៀត
 	Color Lookup Tables…	តារាងពណ៌ Lookup…
 	Color Settings…	ការកំណត់ ពណ៌…
-	Conditional Mode Change…	Conditional Mode Change…
+	Conditional Mode Change…	ប្តូរ Mode តាមលក្ខខណ្ឌ…
 	Contact Sheet II…	Contact Sheet II…
 	Content-Aware Fill…	បំពេញតាមបរិបទ (Content-Aware)…
 	Content-Aware Scale	ពង្រីកបង្រួមតាមបរិបទ…
-	Convert to Profile…	Convert to Profile…
+	Convert to Profile…	បំប្លែងទៅជា Profile ពណ៌…
 	Copy	ចម្លង
 	Copy Merged	ចម្លងរួមបញ្ចូលគ្នា
-	Create Droplet…	Create Droplet…
-	Crop and Straighten Photos	Crop and Straighten Photos
+	Create Droplet…	បង្កើត Droplet…
+	Crop and Straighten Photos	កាត់តម្រឹម និងតម្រង់រូបថតស្វ័យប្រវត្តិ
 	Cursors…	ទស្សន៍ទ្រនិច…
 	Cut	កាត់
-	Data Sets as Files…	Data Sets as Files…
+	Data Sets as Files…	រក្សាទុកសំណុំទិន្នន័យជាឯកសារ…
 	Define Brush Preset…	កំណត់ជាជក់គំរូ…
 	Define Custom Shape…	កំណត់ជារូបរាងផ្ទាល់ខ្លួន…
 	Define Pattern…	កំណត់ជាលំនាំគំរូ…
-	Delete All Empty Layers	Delete All Empty Layers
+	Delete All Empty Layers	លុបស្រទាប់ទទេទាំងអស់
 	Distort	បង្ខូចរាង
 	Edit	កែសម្រួល
 	Enhanced Controls…	ការបញ្ជាកម្រិតខ្ពស់…
@@ -60,7 +60,7 @@
 	Export	នាំចេញ
 	Export As…	នាំចេញជា…
 	Export Preferences…	ការកំណត់ការនាំចេញ…
-	Export/Import Presets…	Export/Import Presets…
+	Export/Import Presets…	នាំចេញ/នាំចូល Presets…
 	Export…	នាំចេញ…
 	Fade…	បន្ថយអាំងតង់ស៊ីតេ…
 	File	ឯកសារ
@@ -69,40 +69,40 @@
 	Fill…	ចាក់ពណ៌…
 	Filter	តម្រង
 	Find and Replace Text…	ស្វែងរក និងជំនួសអត្ថបទ…
-	Add to Dictionary	Add to Dictionary
-	No Spelling Suggestions	No Spelling Suggestions
-	Fit Image…	Fit Image…
-	Flatten All Layer Effects	Flatten All Layer Effects
-	Flatten All Masks	Flatten All Masks
+	Add to Dictionary	បន្ថែមទៅវចនានុក្រម
+	No Spelling Suggestions	គ្មានការណែនាំអក្ខរាវិរុទ្ធទេ
+	Fit Image…	បង្រួម/ពង្រីករូបភាពឱ្យសមល្មម (Fit Image)…
+	Flatten All Layer Effects	ពង្រាប Effect ស្រទាប់ទាំងអស់
+	Flatten All Masks	ពង្រាបរបាំងទាំងអស់
 	Flip Horizontal	ត្រឡប់ផ្តេក
 	Flip Vertical	ត្រឡប់បញ្ឈរ
 	Free Transform	បំប្លែងទម្រង់សេរី (Free Transform)
-	Generate	Generate
+	Generate	បង្កើត (Generate)
 	Guides, Grid & Slices…	បន្ទាត់ណែនាំ ក្រឡាចត្រង្គ និងបន្ទះកាត់…
 	Help	ជំនួយ
-	Histories	Histories
+	Histories	ប្រវត្តិនានា (Histories)
 	History Log…	កំណត់ហេតុប្រវត្តិ…
 	Image	រូបភាព
-	Image Assets	Image Assets
-	Image Processor…	Image Processor…
-	Import	Import
+	Image Assets	ធនធានរូបភាព (Image Assets)
+	Image Processor…	ឧបករណ៍ដំណើរការរូបភាព (Image Processor)…
+	Import	នាំចូល (Import)
 	Interface…	ផ្ទៃផ្ទាំងបញ្ជា…
 	Keyboard Shortcuts…	គ្រាប់ចុចកាត់ (Shortcuts)…
 	Layer	ស្រទាប់
 	Layer Comps to Files…	ប្លង់ស្រទាប់ទៅជាឯកសារ…
 	Layers to Files…	ស្រទាប់ទៅជាឯកសារ…
 	Lens Correction…	កែតម្រូវកែវឡេន…
-	Load Files into Stack…	Load Files into Stack…
-	Maximize	Maximize
+	Load Files into Stack…	ផ្ទុកឯកសារចូលជង់ស្រទាប់…
+	Maximize	ពង្រីកអតិបរមា
 	Menus…	ម៉ឺនុយ…
-	Merge to HDR Pro…	Merge to HDR Pro…
-	Migrate Presets	Migrate Presets
-	Minimize	Minimize
-	New from Clipboard	New from Clipboard
+	Merge to HDR Pro…	បញ្ចូលទៅជា HDR Pro…
+	Migrate Presets	ផ្ទេរ Presets
+	Minimize	បង្រួមអប្បបរមា
+	New from Clipboard	បង្កើតថ្មីពីក្ដារចម្លង (New from Clipboard)
 	New…	បង្កើតថ្មី…
 	Notes…	កំណត់ចំណាំ…
 	Open As…	បើកជា…
-	Open Recent	Open Recent
+	Open Recent	បើកឯកសារថ្មីៗ (Open Recent)
 	Open…	បើក…
 	Package…	ខ្ចប់ឯកសារ…
 	Paste	បិទភ្ជាប់
@@ -110,53 +110,53 @@
 	Paste Into	បិទភ្ជាប់ក្នុងជម្រើស
 	Paste Outside	បិទភ្ជាប់ក្រៅជម្រើស
 	Paste Special	បិទភ្ជាប់ពិសេស
-	Paths to Illustrator…	Paths to Illustrator…
+	Paths to Illustrator…	នាំចេញខ្សែវណ្ឌទៅ Illustrator…
 	Performance…	ប្រសិទ្ធភាពដំណើរការ…
 	Perspective	យថាទស្សន៍
 	Perspective Warp	ពត់ពែនយថាទស្សន៍
-	Photomerge…	Photomerge…
+	Photomerge…	Photomerge (តរូបភាព)…
 	Place Embedded…	បញ្ចូលរូបបង្កប់ (Embedded)…
 	Place Linked…	បញ្ចូលរូបភ្ជាប់ (Linked)…
 	Plug-ins…	កម្មវិធីជំនួយ…
 	Preferences	ការកំណត់
-	Preset Manager…	Preset Manager…
-	Presets	Presets
+	Preset Manager…	កម្មវិធីគ្រប់គ្រង Presets…
+	Presets	Presets (ការកំណត់ទុកជាមុន)
 	Print One Copy	បោះពុម្ពមួយច្បាប់
 	Print…	បោះពុម្ព…
 	Puppet Warp	ពត់ពែនចំណុច (Puppet Warp)
 	Purge	សម្អាតអង្គចងចាំ
 	Quick Export as PNG	នាំចេញរហ័សជា PNG
-	Raw Defaults…	Raw Defaults…
+	Raw Defaults…	តម្លៃលំនាំដើម Camera Raw…
 	Redo	ធ្វើវិញ
-	Remove Warp Split	Remove Warp Split
-	Render Video…	Render Video…
-	Restore	Restore
+	Remove Warp Split	ដកការបំបែកការពត់កោងចេញ
+	Render Video…	Render វីដេអូ…
+	Restore	ស្តារឡើងវិញ
 	Revert	ត្រឡប់ដូចដើម
 	Rotate	បង្វិល
-	Set horizontal skew	Set horizontal skew
-	Set vertical skew	Set vertical skew
+	Set horizontal skew	កំណត់កម្រិតទ្រេតផ្ដេក
+	Set vertical skew	កំណត់កម្រិតទ្រេតបញ្ឈរ
 	Rotate 180°	បង្វិល ១៨០°
 	Rotate 90° Clockwise	បង្វិល ៩០° ស្របទ្រនិចនាឡិកា
 	Rotate 90° Counter Clockwise	បង្វិល ៩០° បញ្ច្រាសទ្រនិចនាឡិកា
 	Save	រក្សាទុក
 	Save a Copy…	រក្សាទុកច្បាប់ចម្លង…
-	{name} can't keep everything in this document	{name} can't keep everything in this document
+	{name} can't keep everything in this document	{name} មិនអាចរក្សាទុកអ្វីៗទាំងអស់នៅក្នុងឯកសារនេះបានទេ
 	Choose a format that keeps it, such as Photoshop (PSD), or save a copy.	Choose a format that keeps it, such as Photoshop (PSD), or save a copy
 	Save As…	រក្សាទុកជា…
 	Save for Web (Legacy)…	រក្សាទុកសម្រាប់វិប (Save for Web)…
 	Scale	ពង្រីក/បង្រួម
 	Scratch Disks…	ថាសបណ្ដោះអាសន្ន…
-	Script Events Manager…	Script Events Manager…
+	Script Events Manager…	កម្មវិធីគ្រប់គ្រងព្រឹត្តិការណ៍ Script…
 	Scripts	ស្គ្រីប
 	Search…	ស្វែងរក…
 	Select	ជម្រើស
-	Settings…	Settings…
+	Settings…	ការកំណត់…
 	Skew	ទ្រេត
-	Split Warp Crosswise	Split Warp Crosswise
-	Split Warp Horizontally	Split Warp Horizontally
-	Split Warp Vertically	Split Warp Vertically
-	Statistics…	Statistics…
-	Stroke…	គូសស៊ុម…
+	Split Warp Crosswise	បំបែកការពត់កោងជារាងបូក
+	Split Warp Horizontally	បំបែកការពត់កោងផ្ដេក
+	Split Warp Vertically	បំបែកការពត់កោងបញ្ឈរ
+	Statistics…	ស្ថិតិ…
+	Stroke…	ខ្សែបន្ទាត់គែម (Stroke)…
 	Toggle Last State	ប្តូរស្ថានភាពចុងក្រោយ
 	Toolbar…	របារឧបករណ៍…
 	Tools…	ប្រអប់ឧបករណ៍…
@@ -166,12 +166,12 @@
 	Type…	អក្សរ…
 	Undo	មិនធ្វើវិញ
 	Units & Rulers…	ឯកតារង្វាស់ និងបន្ទាត់…
-	Variable Data Sets…	Variable Data Sets…
-	Video Cache	Video Cache
-	Video Frames to Layers…	Video Frames to Layers…
+	Variable Data Sets…	សំណុំទិន្នន័យអថេរ…
+	Video Cache	សតិសម្ងាត់វីដេអូ (Video Cache)
+	Video Frames to Layers…	បំប្លែងគំនូសតាងវីដេអូទៅជាស្រទាប់…
 	View	ទិដ្ឋភាព
 	Warp	ពត់ពែន
-	WIA Support…	WIA Support…
+	WIA Support…	ការគាំទ្រ WIA…
 	Window	ផ្ទាំងបង្អួច
 	Workspace…	កន្លែងធ្វើការ…
 # Phase 3.2 — Image menu, Layer menu
@@ -179,28 +179,28 @@
 	180°	180°
 	32 Bits/Channel	៣២ ប៊ីត/ឆានែល
 	8 Bits/Channel	៨ ប៊ីត/ឆានែល
-	90° Clockwise	90° Clockwise
-	90° Counter Clockwise	90° Counter Clockwise
+	90° Clockwise	90° ស្របទ្រនិចនាឡិកា
+	90° Counter Clockwise	90° ច្រាសទ្រនិចនាឡិកា
 	Adjustments	ការកែសម្រួលពណ៌
-	Align	Align
-	All Layers	ស្រទាប់ទាំងអស់
-	Analysis	Analysis
+	Align	តម្រឹម (Align)
+	All Layers	គ្រប់ស្រទាប់ទាំងអស់
+	Analysis	ការវិភាគ (Analysis)
 	Apply	អនុវត្ត
-	Apply Data Set…	Apply Data Set…
+	Apply Data Set…	អនុវត្តសំណុំទិន្នន័យ…
 	Apply Image…	អនុវត្តរូបភាព…
-	Arbitrary…	Arbitrary…
+	Arbitrary…	តាមចិត្ត (Arbitrary)…
 	Arrange	រៀបចំផ្ទាំង
-	Artboard from Group…	Artboard from Group…
-	Artboard from Layers…	Artboard from Layers…
+	Artboard from Group…	Artboard ពីក្រុម…
+	Artboard from Layers…	Artboard ពីស្រទាប់…
 	Artboard…	ផ្ទាំងគំនូរថ្មី…
 	Auto Color	តុល្យភាពពណ៌ស្វ័យប្រវត្តិ
 	Auto Contrast	កម្រិតច្បាស់ស្វ័យប្រវត្តិ
 	Auto Tone	កម្រិតពណ៌ស្វ័យប្រវត្តិ
-	Bevel & Emboss…	រាងផុស និងរាងលៀន…
+	Bevel & Emboss…	កៀបផុស និងជ្រុងកោង (Bevel & Emboss)…
 	Bitmap	ប៊ីតម៉េប (Bitmap)
 	Black & White…	សខ្មៅ (Black & White)…
-	Blending Options…	ជម្រើសនៃការបញ្ចូលគ្នា (Blending)…
-	Bottom Edges	Bottom Edges
+	Blending Options…	ជម្រើសនៃការបញ្ចូលគ្នា (Blending Options)…
+	Bottom Edges	គែមខាងក្រោម
 	Brightness/Contrast…	ពន្លឺ/កម្រិតច្បាស់…
 	Bring Forward	នាំមកមុខមួយកម្រិត
 	Bring to Front	នាំមកមុខគេ
@@ -208,57 +208,57 @@
 	Canvas Size…	ទំហំផ្ទាំងក្រណាត់ (Canvas Size)…
 	Channel Mixer…	លាយឆានែលពណ៌…
 	Clear Layer Style	លុបរចនាប័ទ្មស្រទាប់
-	Clear Smart Filters	Clear Smart Filters
+	Clear Smart Filters	សម្អាត Smart Filters
 	CMYK Color	ពណ៌ CMYK
 	Color Balance…	តុល្យភាពពណ៌ (Color Balance)…
-	Color Decontaminate…	Color Decontaminate…
+	Color Decontaminate…	បន្សាបពណ៌ដែលជ្រាបគែម…
 	Color Lookup…	តារាងរកពណ៌ (Color Lookup)…
-	Color Overlay…	ស្រោបពណ៌…
+	Color Overlay…	ជាន់ពណ៌លើ (Color Overlay)…
 	Color Table…	តារាងពណ៌…
-	Combine Shapes	Combine Shapes
-	Convert to Embedded	Convert to Embedded
+	Combine Shapes	បញ្ចូលរាងចូលគ្នា
+	Convert to Embedded	បំប្លែងទៅជា Embedded
 	Convert to Layers	បំប្លែងទៅជា ស្រទាប់
 	Convert to Linked…	បំប្លែងទៅជាឯកសារភ្ជាប់…
 	Convert to Smart Object	បំប្លែងទៅជា Smart Object
 	Copy Layer Style	ចម្លងរចនាប័ទ្មស្រទាប់
-	Count Tool	Count Tool
+	Count Tool	ឧបករណ៍ ចំនួនរាប់ (Count Tool)
 	Create Clipping Mask	បង្កើតរបាំងក្លីប (Clipping Mask)
-	Create Layer	Create Layer
+	Create Layer	បង្កើត ស្រទាប់
 	Crop	កាត់តម្រឹម (Crop)
-	Current Path	Current Path
+	Current Path	បច្ចុប្បន្ន ខ្សែវណ្ឌ
 	Curves…	ខ្សែកោងពណ៌ (Curves)…
-	Data Sets…	Data Sets…
-	Define…	Define…
-	Defringe…	Defringe…
+	Data Sets…	សំណុំទិន្នន័យ…
+	Define…	កំណត់…
+	Defringe…	លុបគែមព្រាល (Defringe)…
 	Delete	លុប
-	Delete Filter Mask	Delete Filter Mask
-	Delete Frame	Delete Frame
+	Delete Filter Mask	លុប របាំង តម្រង
+	Delete Frame	លុប គំនូសតាង (Frame)
 	Desaturate	បន្ថយពណ៌ឱ្យអស់ (សខ្មៅ)
-	Disable Filter Mask	Disable Filter Mask
-	Disable Smart Filters	Disable Smart Filters
-	Distribute	Distribute
-	Drop Shadow…	ស្រមោលធ្លាក់…
+	Disable Filter Mask	របាំង តម្រង បិទដំណើរការ
+	Disable Smart Filters	បិទដំណើរការ Smart Filters
+	Distribute	ចែកចាយគម្លាត (Distribute)
+	Drop Shadow…	ស្រមោលធ្លាក់ក្រោម (Drop Shadow)…
 	Duotone	ពីរពណ៌ (Duotone)
-	Duplicate Frame	Duplicate Frame
+	Duplicate Frame	ស្ទួនគំនូសតាង (Duplicate Frame)
 	Duplicate Layer…	ចម្លងស្រទាប់ទ្វេដង…
 	Duplicate…	ចម្លងទ្វេដង…
-	Edit Contents	Edit Contents
-	Enable Layer Mask	Enable Layer Mask
-	Enable Vector Mask	Enable Vector Mask
+	Edit Contents	កែសម្រួល Contents
+	Enable Layer Mask	របាំង ស្រទាប់ បើកដំណើរការ
+	Enable Vector Mask	របាំង Enable Vector
 	Entropy	Entropy
 	Equalize	ធ្វើឱ្យពណ៌ស្មើគ្នា
-	Exclude Overlapping Shapes	Exclude Overlapping Shapes
-	Export Contents…	Export Contents…
+	Exclude Overlapping Shapes	ដកផ្នែកត្រួតស៊ីគ្នាចេញ (Exclude Overlap)
+	Export Contents…	នាំចេញ Contents…
 	Exposure…	កម្រិតពន្លឺ (Exposure)…
-	Fill Content	Fill Content
+	Fill Content	ពណ៌បំពេញ (Fill Content)
 	Flatten Image	ពង្រាបស្រទាប់ទាំងអស់ (Flatten Image)
-	Flip Canvas Horizontal	Flip Canvas Horizontal
-	Flip Canvas Vertical	Flip Canvas Vertical
-	Frame from Layers	Frame from Layers
+	Flip Canvas Horizontal	ត្រឡប់ Canvas ផ្ដេក
+	Flip Canvas Vertical	ត្រឡប់ Canvas បញ្ឈរ
+	Frame from Layers	Frame ពីស្រទាប់
 	From Transparency	ពីភាពថ្លា
-	Global Light…	Global Light…
+	Global Light…	ពន្លឺសកល (Global Light)…
 	Gradient Map…	ផែនទីពណ៌ជម្រាល (Gradient Map)…
-	Gradient Overlay…	ស្រោបពណ៌ជម្រាល…
+	Gradient Overlay…	ជាន់ពណ៌ជម្រាលលើ (Gradient Overlay)…
 	Gradient…	ពណ៌ជម្រាល…
 	Grayscale	សខ្មៅ (Grayscale)
 	Group from Layers…	បង្កើតក្រុមពីស្រទាប់…
@@ -267,192 +267,192 @@
 	HDR Toning…	ការកែតម្រូវ HDR…
 	Hidden Layers	ស្រទាប់ដែលលាក់
 	Hide All	លាក់ទាំងអស់
-	Hide All Effects	Hide All Effects
+	Hide All Effects	លាក់ Effect ទាំងអស់
 	Hide Layers	លាក់ស្រទាប់
 	Hide Selection	លាក់តាមជម្រើស
-	Horizontal Centers	Horizontal Centers
-	Horizontally	Horizontally
+	Horizontal Centers	ចំកណ្តាលផ្ដេក
+	Horizontally	ផ្ដេក
 	Hue/Saturation…	លាំពណ៌/ភាពឆ្អែតពណ៌ (Hue/Saturation)…
 	Image Rotation	ការបង្វិលរូបភាព
 	Image Size…	ទំហំរូបភាព (Image Size)…
-	Indexed Color	Indexed Color
-	Inner Glow…	ពន្លឺចាំងខាងក្នុង…
-	Inner Shadow…	ស្រមោលខាងក្នុង…
-	Insert Blank Frame	Insert Blank Frame
-	Interpret Footage…	Interpret Footage…
-	Intersect Shape Areas	Intersect Shape Areas
+	Indexed Color	ពណ៌ Indexed
+	Inner Glow…	ពន្លឺចាំងខាងក្នុង (Inner Glow)…
+	Inner Shadow…	ស្រមោលខាងក្នុង (Inner Shadow)…
+	Insert Blank Frame	បញ្ចូលគំនូសតាងទទេ
+	Interpret Footage…	បកស្រាយវីដេអូ…
+	Intersect Shape Areas	យកតែផ្នែកប្រសព្វ (Intersect Shape Areas)
 	Invert	ត្រឡប់ពណ៌ផ្ទុយ
 	Invert…	ត្រឡប់ពណ៌…
 	Kurtosis	Kurtosis
 	Lab Color	ពណ៌ Lab
-	Layer Content Options…	Layer Content Options…
-	Layer from Background…	Layer from Background…
+	Layer Content Options…	ជម្រើស Layer Content…
+	Layer from Background…	ស្រទាប់ពីផ្ទៃខាងក្រោយ…
 	Layer Mask	របាំងស្រទាប់ (Layer Mask)
 	Layer Style	រចនាប័ទ្មស្រទាប់ (Layer Style)
 	Layer via Copy	បង្កើតស្រទាប់តាមការចម្លង
 	Layer via Cut	បង្កើតស្រទាប់តាមការកាត់
 	Layer…	ស្រទាប់ថ្មី…
-	Left Edges	Left Edges
+	Left Edges	គែមខាងឆ្វេង
 	Levels…	កម្រិតពណ៌ (Levels)…
-	Link Layer Mask	Link Layer Mask
-	Link Layers	Link Layers
-	Link Vector Mask	Link Vector Mask
+	Link Layer Mask	របាំង ស្រទាប់ ភ្ជាប់តំណ
+	Link Layers	ភ្ជាប់តំណ ស្រទាប់
+	Link Vector Mask	របាំង Link Vector
 	Lock Layers…	ចាក់សោស្រទាប់…
-	Mask All Objects	Mask All Objects
+	Mask All Objects	បង្កើតរបាំងលើគ្រប់វត្ថុទាំងអស់
 	Match Color…	ផ្គូផ្គងពណ៌…
-	Matting	Matting
-	Maximum	Maximum
-	Mean	Mean
-	Median	Median
+	Matting	ការកាត់គែម Matting
+	Maximum	អតិបរមា (Maximum)
+	Mean	មធ្យមភាគ (Mean)
+	Median	មេដ្យាន (Median)
 	Merge Layers	បញ្ចូលស្រទាប់ចូលគ្នា
-	Merge Shape Components	Merge Shape Components
+	Merge Shape Components	បញ្ចូលសមាសភាគរាងចូលគ្នា
 	Merge Visible	បញ្ចូលស្រទាប់ដែលមើលឃើញ (Merge Visible)
-	Minimum	Minimum
+	Minimum	អប្បបរមា (Minimum)
 	Mode	ទម្រង់ពណ៌ (Mode)
 	Multichannel	ពហុឆានែល (Multichannel)
 	New	ថ្មី
 	New Adjustment Layer	ស្រទាប់កែសម្រួលពណ៌ថ្មី
-	New Blank Video Layer	New Blank Video Layer
+	New Blank Video Layer	ស្រទាប់ Blank Video ថ្មី
 	New Fill Layer	ស្រទាប់បំពេញពណ៌ថ្មី
-	New Layer Based Slice	New Layer Based Slice
-	New Smart Object via Copy	New Smart Object via Copy
-	New Video Layer from File…	New Video Layer from File…
-	Outer Glow…	ពន្លឺចាំងខាងក្រៅ…
+	New Layer Based Slice	Layer Based Slice ថ្មី
+	New Smart Object via Copy	Smart Object via Copy ថ្មី
+	New Video Layer from File…	Video Layer from File ថ្មី…
+	Outer Glow…	ពន្លឺចាំងខាងក្រៅ (Outer Glow)…
 	Paste Layer Style	បិទភ្ជាប់រចនាប័ទ្មស្រទាប់
-	Pattern Overlay…	ស្រោបលំនាំ…
+	Pattern Overlay…	ជាន់លំនាំក្បាច់លើ (Pattern Overlay)…
 	Pattern…	លំនាំរូបភាព…
 	Photo Filter…	តម្រងពណ៌រូបថត (Photo Filter)…
-	Place Scale Marker…	Place Scale Marker…
+	Place Scale Marker…	ដាក់សញ្ញាសម្គាល់មាត្រដ្ឋាន…
 	Posterize…	បន្ថយស្រទាប់ពណ៌ (Posterize)…
-	Range	Range
+	Range	ជួរទិន្នន័យ (Range)
 	Rasterize	បំប្លែងទៅជាភីកសែល (Rasterize)
-	Record Measurements	Record Measurements
-	Relink to File…	Relink to File…
-	Reload Frame	Reload Frame
-	Remove Black Matte	Remove Black Matte
-	Remove White Matte	Remove White Matte
+	Record Measurements	កត់ត្រារង្វាស់
+	Relink to File…	ភ្ជាប់តំណឡើងវិញទៅឯកសារ…
+	Reload Frame	ផ្ទុកគំនូសតាងឡើងវិញ
+	Remove Black Matte	ដក Black Matte
+	Remove White Matte	ដក White Matte
 	Rename Layer	ស្រទាប់ ប្តូរឈ្មោះ
 	Replace Color…	ជំនួសពណ៌…
-	Replace Contents…	Replace Contents…
-	Replace Footage…	Replace Footage…
-	Restore All Frames	Restore All Frames
-	Restore Frame	Restore Frame
+	Replace Contents…	ជំនួសមាតិកា…
+	Replace Footage…	ជំនួសវីដេអូ…
+	Restore All Frames	ស្តារគំនូសតាងទាំងអស់ឡើងវិញ
+	Restore Frame	ស្តារគំនូសតាងឡើងវិញ
 	Reveal All	បង្ហាញទាំងអស់
-	Reveal in Finder	Reveal in Finder
+	Reveal in Finder	បង្ហាញក្នុងថត File
 	Reveal Selection	បង្ហាញតាមជម្រើស
-	Reverse	Reverse
+	Reverse	ត្រឡប់លំដាប់ (Reverse)
 	RGB Color	ពណ៌ RGB
-	Right Edges	Right Edges
-	Ruler Tool	Ruler Tool
-	Satin…	សូត្រ (Satin)…
-	Scale Effects…	Scale Effects…
-	Select Data Points…	Select Data Points…
-	Select Linked Layers	Select Linked Layers
+	Right Edges	គែមខាងស្តាំ
+	Ruler Tool	ឧបករណ៍ បន្ទាត់រង្វាស់ (Ruler Tool)
+	Satin…	ក្រណាត់សូត្រ (Satin)…
+	Scale Effects…	ប្តូរមាត្រដ្ឋាន Effect…
+	Select Data Points…	ជ្រើសរើស Data Points…
+	Select Linked Layers	ជ្រើសរើស Linked Layers
 	Selective Color…	ជ្រើសរើសកែពណ៌ជាក់លាក់…
 	Send Backward	បញ្ជូនទៅក្រោយមួយកម្រិត
 	Send to Back	បញ្ជូនទៅក្រោយគេ
-	Set Measurement Scale…	Set Measurement Scale…
+	Set Measurement Scale…	កំណត់មាត្រដ្ឋានរង្វាស់…
 	Shadows/Highlights…	ស្រមោល/ពន្លឺខ្លាំង…
-	Shape	Shape
-	Show Altered Video	Show Altered Video
+	Shape	រាង
+	Show Altered Video	បង្ហាញ Altered Video
 	Skewness	Skewness
 	Smart Filter	តម្រងឆ្លាតវៃ (Smart Filter)
 	Smart Object	វត្ថុឆ្លាតវៃ (Smart Object)
 	Smart Objects	វត្ថុឆ្លាតវៃ (Smart Objects)
 	Solid Color…	ពណ៌សុទ្ធ…
-	Stack Mode	Stack Mode
-	Choose Stack Mode:	Choose Stack Mode:
-	Standard Deviation	Standard Deviation
-	Subtract Front Shape	Subtract Front Shape
-	Summation	Summation
+	Stack Mode	Mode Stack
+	Choose Stack Mode:	ជ្រើសរើស Stack Mode៖
+	Standard Deviation	គម្លាតស្តង់ដារ
+	Subtract Front Shape	ដករាងខាងមុខចេញ (Subtract Front Shape)
+	Summation	ផលបូកសរុប (Summation)
 	Threshold…	កម្រិតព្រំដែនសខ្មៅ (Threshold)…
-	Top Edges	Top Edges
-	Trap…	Trap…
+	Top Edges	គែមខាងលើ
+	Trap…	Trap (កែតម្រឹមពណ៌បោះពុម្ព)…
 	Trim…	កាត់គែមទំនេរ…
 	Ungroup Layers	បំបែកក្រុមស្រទាប់
-	Unite Shapes	Unite Shapes
-	Update All Modified Content	Update All Modified Content
-	Update Modified Content	Update Modified Content
+	Unite Shapes	បូកបញ្ចូលរាង (Unite Shapes)
+	Update All Modified Content	ធ្វើបច្ចុប្បន្នភាពមាតិកាកែប្រែទាំងអស់
+	Update Modified Content	ធ្វើបច្ចុប្បន្នភាពមាតិកាកែប្រែ
 	Variables	អថេរ
-	Variance	Variance
+	Variance	វ៉ារ្យ៉ង់ (Variance)
 	Vector Mask	របាំងវ៉ិចទ័រ (Vector Mask)
-	Vertical Centers	Vertical Centers
-	Vertically	Vertically
+	Vertical Centers	ចំកណ្តាលបញ្ឈរ
+	Vertically	បញ្ឈរ
 	Vibrance…	ភាពរស់រវើកនៃពណ៌ (Vibrance)…
-	Video	Video
-	Video Layers	Video Layers
+	Video	វីដេអូ
+	Video Layers	ស្រទាប់វីដេអូ (Video Layers)
 # Phase 3.3 — Type menu, Select menu
 	Anti-Alias	បន្ទន់គែមរលូន
 	Border…	បន្ទាត់ព្រំដែន…
-	Character Panel	Character Panel
-	Character Styles Panel	Character Styles Panel
+	Character Panel	ផ្ទាំងតួអក្សរ (Character Panel)
+	Character Styles Panel	ផ្ទាំងរចនាប័ទ្មតួអក្សរ
 	Color Range…	តាមជួរពណ៌ (Color Range)…
-	Contextual Alternates	Contextual Alternates
+	Contextual Alternates	តួអក្សរជំនួសតាមបរិបទ
 	Contract…	បង្រួមទំហំ…
 	Convert to Paragraph Text	បំប្លែងជាអត្ថបទកថាខណ្ឌ
 	Convert to Point Text	បំប្លែងជាអត្ថបទចំណុច
 	Convert to Shape	បំប្លែងជារូបរាង
 	Create Work Path	បង្កើតខ្សែបន្ទាត់ការងារ
-	Crisp	Crisp
-	Default Features	Default Features
+	Crisp	ច្បាស់ (Crisp)
+	Default Features	លក្ខណៈពិសេសលំនាំដើម
 	Deselect	ដោះការជ្រើសរើស (Deselect / Ctrl+D)
 	Deselect Layers	ដោះការជ្រើសរើសស្រទាប់
-	Discretionary Ligatures	Discretionary Ligatures
-	East Asian Features	East Asian Features
+	Discretionary Ligatures	តួអក្សរភ្ជាប់តាមជម្រើស
+	East Asian Features	លក្ខណៈពិសេសអាស៊ីបូព៌ា
 	Edit in Quick Mask Mode	កែប្រែក្នុងទម្រង់ Quick Mask
 	Expand…	ពង្រីកទំហំ…
-	Extra Large	Extra Large
+	Extra Large	ធំខ្លាំង
 	Feather…	បន្ទន់គែម (Feather)…
 	Find Layers	ស្វែងរកស្រទាប់
 	Focus Area…	តាមតំបន់ផ្ដោត…
-	Font Preview Size	Font Preview Size
-	Fractions	Fractions
-	Glyphs Panel	Glyphs Panel
+	Font Preview Size	ទំហំមើលពុម្ពអក្សរជាមុន
+	Fractions	ប្រភាគ
+	Glyphs Panel	ផ្ទាំង Glyphs
 	Grow	ពង្រីកតាមពណ៌ដូចគ្នា
 	Horizontal	ផ្តេក
 	Huge	ធំខ្លាំង
-	Inverse Selection	Inverse Selection
+	Inverse Selection	បញ្ច្រាសការជ្រើសរើស (Ctrl+Shift+I)
 	Isolate Layers	ញែកស្រទាប់ដាច់ដោយឡែក
 	Language Options	ជម្រើស ភាសា
 	Large	ធំ
-	Load Default Type Styles	Load Default Type Styles
+	Load Default Type Styles	ផ្ទុករចនាប័ទ្មអក្សរលំនាំដើម
 	Load Selection…	ផ្ទុកជម្រើស…
 	Medium	មធ្យម
-	Middle Eastern & South Asian Composer	Middle Eastern & South Asian Composer
-	Middle Eastern Features	Middle Eastern Features
+	Middle Eastern & South Asian Composer	អ្នករៀបចំអក្សរមជ្ឈិមបូព៌ា និងអាស៊ីខាងត្បូង
+	Middle Eastern Features	លក្ខណៈពិសេសមជ្ឈិមបូព៌ា
 	Modify	កែប្រែជម្រើស
-	Oldstyle	Oldstyle
+	Oldstyle	លេខទម្រង់បុរាណ (Oldstyle)
 	OpenType	OpenType
-	Ordinals	Ordinals
+	Ordinals	លេខលំដាប់ (Ordinals)
 	Orientation	ទិសដៅអក្សរ
-	Ornaments	Ornaments
-	Panels	Panels
-	Paragraph Panel	Paragraph Panel
-	Paragraph Styles Panel	Paragraph Styles Panel
-	Paste Lorem Ipsum	Paste Lorem Ipsum
+	Ornaments	ក្បូរក្បាច់លម្អ (Ornaments)
+	Panels	ផ្ទាំង Panels
+	Paragraph Panel	ផ្ទាំងកថាខណ្ឌ (Paragraph Panel)
+	Paragraph Styles Panel	ផ្ទាំងរចនាប័ទ្មសេចក្តី
+	Paste Lorem Ipsum	បិទភ្ជាប់អត្ថបទគំរូ Lorem Ipsum
 	Rasterize Type Layer	ស្រទាប់ បម្លែងអក្សរជាភីកសែល
-	Replace All Missing Fonts	Replace All Missing Fonts
+	Replace All Missing Fonts	ជំនួសពុម្ពអក្សរដែលបាត់ទាំងអស់
 	Reselect	ជ្រើសរើសឡើងវិញ (Reselect / Ctrl+Shift+D)
-	Resolve Missing Fonts…	Resolve Missing Fonts…
-	Save Default Type Styles	Save Default Type Styles
+	Resolve Missing Fonts…	ដោះស្រាយពុម្ពអក្សរដែលបាត់…
+	Save Default Type Styles	រក្សាទុករចនាប័ទ្មអក្សរលំនាំដើម
 	Save Selection…	រក្សាទុកជម្រើស…
 	Select and Mask…	ជ្រើសរើស និងបាំង (Select and Mask)…
-	Sharp	Sharp
+	Sharp	មុតស្រួច (Sharp)
 	Similar	ជ្រើសរើសពណ៌ប្រហាក់ប្រហែល
 	Sky	ជ្រើសរើសផ្ទៃមេឃ (Sky)
 	Small	តូច
-	Smooth	Smooth
+	Smooth	រលូន (Smooth)
 	Smooth…	ធ្វើឱ្យរលូន…
-	Standard Ligatures	Standard Ligatures
-	Strong	Strong
-	Stylistic Alternates	Stylistic Alternates
+	Standard Ligatures	តួអក្សរភ្ជាប់ស្តង់ដារ
+	Strong	ដិតខ្លាំង (Strong)
+	Stylistic Alternates	តួអក្សរជំនួសតាមរចនាប័ទ្ម
 	Subject	ជ្រើសរើសប្រធានបទ (Subject)
-	Swash	Swash
-	Titling Alternates	Titling Alternates
+	Swash	កន្ទុយអក្សរលម្អ (Swash)
+	Titling Alternates	តួអក្សរជំនួសចំណងជើង
 	Transform Selection	បំប្លែងទម្រង់ការជ្រើសរើស
-	Update All Text Layers	Update All Text Layers
+	Update All Text Layers	ធ្វើបច្ចុប្បន្នភាពស្រទាប់អក្សរទាំងអស់
 	Vertical	បញ្ឈរ
-	Warp Text…	Warp Text…
+	Warp Text…	ពត់កោងអត្ថបទ (Warp Text)…
 	Windows	Windows
 	Windows LCD	Windows LCD
 # Phase 3.4 — Filter menu
@@ -460,7 +460,7 @@
 	Add Noise…	បន្ថែមគ្រាប់អុច…
 	Average	មធ្យម
 	Blur	ធ្វើឱ្យព្រិល (Blur)
-	Blur Gallery	Blur Gallery
+	Blur Gallery	វិចិត្រសាលព្រាល (Blur Gallery)
 	Blur More	ព្រាលបន្ថែម
 	Box Blur…	ព្រិលរាងប្រអប់…
 	Camera Raw Filter…	តម្រង Camera Raw…
@@ -479,25 +479,25 @@
 	Extrude…	ទាញចេញ…
 	Facet	ផ្ទៃជ្រុង…
 	Fibers…	សរសៃអំបោះ…
-	Field Blur…	Field Blur…
+	Field Blur…	ភាពព្រាលតាមតំបន់ (Field Blur)…
 # Field Blur pins (#3373)
-	No pin selected	No pin selected
+	No pin selected	មិនមានម្ជុលខ្ទាស់ត្រូវបានជ្រើសរើសទេ
 	Click the image to add a pin; drag a pin to move it, or its ring to change its blur. Delete removes the selected pin.	Click the image to add a pin; drag a pin to move it, or its ring to change its blur. Delete removes the selected pin
 	Drag the handles on the outline to resize and turn it, the square to round its corners, and the dots inside to set where the blur starts.	Drag the handles on the outline to resize and turn it, the square to round its corners, and the dots inside to set where the blur starts
 	Drag the pin to move the band, or its ring to change its blur. Drag the solid lines to widen the sharp band, the dashed lines to set the transition, and the dots to turn it.	Drag the pin to move the band, or its ring to change its blur. Drag the solid lines to widen the sharp band, the dashed lines to set the transition, and the dots to turn it
 	Drag the handles on the outline to resize and turn it; the ring sets the blur angle.	Drag the handles on the outline to resize and turn it; the ring sets the blur angle
 	Filter Gallery…	វិចិត្រសាលតម្រង (Filter Gallery)…
 	Find Edges	ស្វែងរកគែម
-	Flame…	Flame…
+	Flame…	អណ្តាតភ្លើង…
 	Fragment	បំណែកតូចៗ
 	Gaussian Blur…	ព្រិលម៉ដ្ឋ (Gaussian Blur)…
 	High Pass…	ឆ្លងកាត់ប្រេកង់ខ្ពស់ (High Pass)…
 	HSB/HSL	HSB/HSL
-	Iris Blur…	Iris Blur…
+	Iris Blur…	ភាពព្រាលរង្វង់ភ្នែក (Iris Blur)…
 	Last Filter	តម្រងចុងក្រោយ
 	Lens Blur…	ព្រិលបែបកែវឡេន…
 	Lens Flare…	ពន្លឺចាំងផ្លាត…
-	Lighting Effects…	Lighting Effects…
+	Lighting Effects…	Effect ពន្លឺ (Lighting Effects)…
 	Liquify…	រំលាយ និងពត់រូប (Liquify)…
 	Maximum…	អតិបរមា…
 	Median…	មធ្យម Median…
@@ -506,12 +506,12 @@
 	Mosaic…	ម៉ូសេក (Mosaic)…
 	Motion Blur…	ព្រិលបែបចលនា…
 	Noise	គ្រាប់អុច (Noise)
-	NTSC Colors	NTSC Colors
+	NTSC Colors	ពណ៌ NTSC
 	Offset…	ផ្លាស់ប្តូរទីតាំង (Offset)…
-	Oil Paint…	Oil Paint…
+	Oil Paint…	គំនូរប្រេង (Oil Paint)…
 	Other…	ផ្សេងៗ…
-	Path Blur…	Path Blur…
-	Picture Frame…	Picture Frame…
+	Path Blur…	ភាពព្រាលតាមខ្សែវណ្ឌ (Path Blur)…
+	Picture Frame…	ស៊ុមរូបភាព…
 	Pinch…	ច្របាច់ចូល…
 	Pixelate	ធ្វើឱ្យបែកភីកសែល
 	Pointillize…	ចំណុចពណ៌…
@@ -529,13 +529,13 @@
 	Smart Sharpen…	ធ្វើឱ្យច្បាស់ឆ្លាតវៃ…
 	Solarize	សូឡារ៉ាយ (Solarize)
 	Spherize…	ធ្វើជារាងស្វ៊ែរ…
-	Spin Blur…	Spin Blur…
+	Spin Blur…	ភាពព្រាលវិលជុំវិញ (Spin Blur)…
 	Stylize	រចនាប័ទ្មបែបផែន
 	Surface Blur…	ព្រិលលើផ្ទៃ…
 	Tiles…	ក្បឿង…
-	Tilt-Shift…	Tilt-Shift…
+	Tilt-Shift…	Tilt-Shift (រូបភាពខ្នាតតូច)…
 	Trace Contour…	តាមដានវណ្ឌវង្ក…
-	Tree…	Tree…
+	Tree…	ដើមឈើ…
 	Twirl…	វិលកួច…
 	Unsharp Mask…	របាំងធ្វើឱ្យច្បាស់ (Unsharp Mask)…
 	Vanishing Point…	ចំណុចបាត់ស្រមោល…
@@ -545,29 +545,29 @@
 # Phase 3.5 — View menu
 	100%	១០០%
 	200%	២០០%
-	32-bit Preview Options…	32-bit Preview Options…
+	32-bit Preview Options…	ជម្រើស 32-bit Preview…
 	Anamorphic 2:1 (2)	Anamorphic 2:1 (2)
-	Artboard Guides	Artboard Guides
-	Brush Preview	Brush Preview
-	Canvas Guides	Canvas Guides
-	Clear Canvas Guides	Clear Canvas Guides
+	Artboard Guides	បន្ទាត់ណែនាំ Artboard
+	Brush Preview	មើលជក់ជាមុន
+	Canvas Guides	បន្ទាត់ណែនាំ Canvas
+	Clear Canvas Guides	សម្អាតបន្ទាត់ណែនាំ Canvas
 	Clear Guides	លុบบន្ទាត់ណែនាំ
-	Clear Selected Artboard Guides	Clear Selected Artboard Guides
+	Clear Selected Artboard Guides	សម្អាតបន្ទាត់ណែនាំ Artboard ដែលបានជ្រើស
 	Clear Slices	សម្អាតបន្ទះកាត់
-	Color Blindness — Deuteranopia-type	Color Blindness — Deuteranopia-type
-	Color Blindness — Protanopia-type	Color Blindness — Protanopia-type
-	Count	Count
-	Custom Pixel Aspect Ratio…	Custom Pixel Aspect Ratio…
+	Color Blindness — Deuteranopia-type	ពិការភ្នែកពណ៌ — ប្រភេទ Deuteranopia
+	Color Blindness — Protanopia-type	ពិការភ្នែកពណ៌ — ប្រភេទ Protanopia
+	Count	ចំនួនរាប់
+	Custom Pixel Aspect Ratio…	សមាមាត្រភីកសែលផ្ទាល់ខ្លួន…
 	D1/DV NTSC (0.91)	D1/DV NTSC (0.91)
 	D1/DV NTSC Widescreen (1.21)	D1/DV NTSC Widescreen (1.21)
 	D1/DV PAL (1.09)	D1/DV PAL (1.09)
 	D1/DV PAL Widescreen (1.46)	D1/DV PAL Widescreen (1.46)
 	Document Bounds	ព្រំប្រទល់ឯកសារ
 	DVCPRO HD 1080/HDV 1080 (1.5)	DVCPRO HD 1080/HDV 1080 (1.5)
-	Edit Pins	Edit Pins
-	Extras	Extras
-	Fit Artboard on Screen	Fit Artboard on Screen
-	Fit Layer(s) on Screen	Fit Layer(s) on Screen
+	Edit Pins	កែសម្រួលម្ជុលខ្ទាស់
+	Extras	មុខងារជំនួយ Extras (Ctrl+H)
+	Fit Artboard on Screen	បង្ហាញ Artboard ឱ្យសមល្មមលើអេក្រង់
+	Fit Layer(s) on Screen	បង្ហាញស្រទាប់ឱ្យសមល្មមលើអេក្រង់
 	Fit on Screen	ពង្រីកពេញអេក្រង់
 	Full Screen Mode	ពេញអេក្រង់ទាំងមូល
 	Full Screen Mode With Menu Bar	ពេញអេក្រង់មានរបារម៉ឺនុយ
@@ -575,115 +575,115 @@
 	Grid	ក្រឡាចត្រង្គ (Grid)
 	Guides	បន្ទាត់ណែនាំ (Guides)
 	HDV 1080/DVCPRO HD 720 (1.33)	HDV 1080/DVCPRO HD 720 (1.33)
-	Internet Standard RGB	Internet Standard RGB
-	Layer Edges	Layer Edges
+	Internet Standard RGB	RGB ស្តង់ដារអ៊ីនធឺណិត (sRGB)
+	Layer Edges	គែមស្រទាប់
 	Layers	ស្រទាប់ (Layers)
-	Legacy Macintosh RGB	Legacy Macintosh RGB
+	Legacy Macintosh RGB	Apple Macintosh RGB បុរាណ
 	Lock Guides	ចាក់សោបន្ទាត់ណែនាំ
 	Lock Slices	ចាក់សោបន្ទះកាត់
-	Mesh	Mesh
-	Monitor RGB	Monitor RGB
+	Mesh	សំណាញ់ Mesh
+	Monitor RGB	RGB ម៉ូនីទ័រ
 	New Guide Layout…	រៀបចំប្លង់បន្ទាត់ណែនាំ…
-	New Guides From Shape	New Guides From Shape
+	New Guides From Shape	Guides From Shape ថ្មី
 	New Guide…	បន្ទាត់ណែនាំថ្មី…
 	Notes	កំណត់ចំណាំ
-	Pattern Preview	Pattern Preview
-	Pixel Art Preview	Pixel Art Preview
-	Pixel Aspect Ratio	Pixel Aspect Ratio
-	Pixel Aspect Ratio Correction	Pixel Aspect Ratio Correction
-	Pixel Grid	Pixel Grid
+	Pattern Preview	ការមើលលំនាំក្បាច់ជាមុន (Pattern Preview)
+	Pixel Art Preview	ការមើល Pixel Art ជាមុន
+	Pixel Aspect Ratio	សមាមាត្រភីកសែល
+	Pixel Aspect Ratio Correction	កែតម្រូវសមាមាត្រភីកសែល
+	Pixel Grid	ក្រឡាចត្រង្គភីកសែល (Pixel Grid)
 	Print Size	ទំហំបោះពុម្ព
 	Proof Colors	សាកល្បងពណ៌ (Proof Colors)
 	Proof Setup	ការកំណត់សាកល្បងពណ៌
 	Rulers	បន្ទាត់រង្វាស់ (Rulers)
 	Screen Mode	ទម្រង់បង្ហាញអេក្រង់
-	Selection Edges	Selection Edges
+	Selection Edges	គែមការជ្រើសរើស
 	Show	បង្ហាញ
-	Show Extras Options…	Show Extras Options…
-	Slices	Slices
-	Smart Guides	Smart Guides
+	Show Extras Options…	បង្ហាញ ជម្រើស Extras…
+	Slices	Slices (ចំណិតរូបភាព)
+	Smart Guides	បន្ទាត់ណែនាំឆ្លាតវៃ (Smart Guides)
 	Snap	ស្រូបជាប់ (Snap)
 	Snap To	ស្រូបជាប់ទៅកាន់
-	Square	Square
+	Square	ការ៉េ
 	Standard Screen Mode	ទម្រង់អេក្រង់ស្តង់ដារ
-	Target Path	Target Path
-	Working Black Plate	Working Black Plate
-	Working CMY Plate	Working CMY Plate
-	Working CMYK	Working CMYK
-	Working Cyan Plate	Working Cyan Plate
-	Working Magenta Plate	Working Magenta Plate
-	Working Yellow Plate	Working Yellow Plate
+	Target Path	ខ្សែវណ្ឌគោលដៅ
+	Working Black Plate	ផ្ទាំងពណ៌ខ្មៅសម្រាប់ធ្វើការ
+	Working CMY Plate	ផ្ទាំង CMY សម្រាប់ធ្វើការ
+	Working CMYK	CMYK សម្រាប់ធ្វើការ
+	Working Cyan Plate	ផ្ទាំងពណ៌ខៀវ Cyan សម្រាប់ធ្វើការ
+	Working Magenta Plate	ផ្ទាំងពណ៌ស្វាយ Magenta សម្រាប់ធ្វើការ
+	Working Yellow Plate	ផ្ទាំងពណ៌លឿង Yellow សម្រាប់ធ្វើការ
 	Zoom In	ពង្រីកទិដ្ឋភាព
 	Zoom Out	បង្រួមទិដ្ឋភាព
 # Phase 3.6 — Window menu, Help menu
-	2-up Horizontal	2-up Horizontal
-	2-up Vertical	2-up Vertical
-	3-up Horizontal	3-up Horizontal
-	3-up Stacked	3-up Stacked
-	3-up Vertical	3-up Vertical
-	4-up	4-up
-	6-up	6-up
-	About PhotoCraft	About PhotoCraft
+	2-up Horizontal	២ ផ្ទាំងផ្ដេក
+	2-up Vertical	២ ផ្ទាំងបញ្ឈរ
+	3-up Horizontal	៣ ផ្ទាំងផ្ដេក
+	3-up Stacked	៣ ផ្ទាំងជង់គ្នា
+	3-up Vertical	៣ ផ្ទាំងបញ្ឈរ
+	4-up	៤ ផ្ទាំង
+	6-up	៦ ផ្ទាំង
+	About PhotoCraft	អំពី PhotoCraft
 	Actions	សកម្មភាពស្វ័យប្រវត្តិ (Actions)
-	ArtCraft Website	ArtCraft Website
+	ArtCraft Website	គេហទំព័រ ArtCraft
 	Brush Settings	ការកំណត់ជក់ (Brush Settings)
 	Brushes	ជក់ (Brushes)
 	Cascade	រៀបចំជាថ្នាក់
 	Channels	ឆានែលពណ៌ (Channels)
 	Character	តួអក្សរ (Character)
 	Character Styles	រចនាប័ទ្មតួអក្សរ
-	Classic Theme	Classic Theme
+	Classic Theme	Theme បុរាណ
 	Clone Source	ប្រភពត្រាចម្លង
-	Consolidate All to Tabs	Consolidate All to Tabs
+	Consolidate All to Tabs	បញ្ចូលផ្ទាំងទាំងអស់ជា Tabs
 	Delete Workspace…	លុបកន្លែងធ្វើការ…
 	Essentials	មូលដ្ឋាន (Essentials)
-	Float All in Windows	Float All in Windows
-	Float in Window	Float in Window
+	Float All in Windows	បំបែកផ្ទាំងទាំងអស់ជា Windows អណ្តែត
+	Float in Window	បំបែកជា Window អណ្តែត
 	Glyphs	តួអក្សរពិសេស
 	Gradients	ពណ៌ជម្រាល
 	Graphic and Web	ក្រាហ្វិក និងវិប
 	Histogram	អ៊ីស្តូក្រាម
 	History	ប្រវត្តិ (History)
 	Info	ព័ត៌មាន (Info)
-	Join the ArtCraft Discord…	Join the ArtCraft Discord…
+	Join the ArtCraft Discord…	ចូលរួម Discord របស់ ArtCraft…
 	Layer Comps	ប្លង់ស្រទាប់
 	Lock Workspace	ចាក់សោ កន្លែងធ្វើការ
-	Match All	Match All
-	Match Location	Match Location
-	Match Rotation	Match Rotation
-	Match Zoom	Match Zoom
+	Match All	ផ្គូផ្គងទាំងអស់
+	Match Location	ផ្គូផ្គងទីតាំង
+	Match Rotation	ផ្គូផ្គងការបង្វិល
+	Match Zoom	ផ្គូផ្គងកម្រិតពង្រីក
 	Measurement Log	កំណត់ហេតុរង្វាស់
-	Modifier Keys	Modifier Keys
+	Modifier Keys	គ្រាប់ចុចជំនួយ (Modifier Keys)
 	Motion	ចលនា
 	Navigator	ផែនទីរុករក (Navigator)
-	New Window for Document	New Window for Document
+	New Window for Document	Window for Document ថ្មី
 	New Workspace…	កន្លែងធ្វើការថ្មី…
-	Next Theme	Next Theme
+	Next Theme	Theme បន្ទាប់
 	Options	ជម្រើសឧបករណ៍ (Options)
 	Painting	គំនូរ
 	Paragraph	កថាខណ្ឌ
 	Paragraph Styles	រចនាប័ទ្មថាខណ្ឌ
 	Paths	ខ្សែបន្ទាត់ (Paths)
 	Patterns	លំនាំ
-	PhotoCraft on GitHub	PhotoCraft on GitHub
-	PhotoCraft Website	PhotoCraft Website
+	PhotoCraft on GitHub	PhotoCraft លើ GitHub
+	PhotoCraft Website	គេហទំព័រ PhotoCraft
 	Photography	ការថតរូប
 	Pixel Art	Pixel Art
-	Pro Medium Gray Theme	Pro Medium Gray Theme
-	Pro Theme	Pro Theme
+	Pro Medium Gray Theme	Theme ប្រផេះមធ្យម Pro
+	Pro Theme	Theme Pro
 	Properties	លក្ខណសម្បត្តិ (Properties)
-	Report an Issue…	Report an Issue…
+	Report an Issue…	រាយការណ៍បញ្ហា…
 	Reset Workspace	កំណត់ កន្លែងធ្វើការ ឡើងវិញ
-	Shapes	Shapes
-	Studio Light Theme	Studio Light Theme
-	Studio Theme	Studio Theme
-	Styles	Styles
+	Shapes	រាង
+	Studio Light Theme	Theme ភ្លឺ Studio
+	Studio Theme	Theme Studio
+	Styles	រចនាប័ទ្ម
 	Swatches	បន្ទះពណ៌ (Swatches)
-	System Info…	System Info…
-	Theme	Theme
+	System Info…	ព័ត៌មានប្រព័ន្ធ…
+	Theme	Theme (រចនាប័ទ្មពណ៌)
 	Tile	រៀបចំក្រឡា
-	Tile All Horizontally	Tile All Horizontally
-	Tile All Vertically	Tile All Vertically
+	Tile All Horizontally	រៀបចំផ្ទាំងទាំងអស់ផ្ដេក
+	Tile All Vertically	រៀបចំផ្ទាំងទាំងអស់បញ្ឈរ
 	Timeline	បន្ទាត់ពេលវេលា
 	Tool Presets	ឧបករណ៍កំណត់ស្រាប់
 	Tools	ប្រអប់ឧបករណ៍ (Tools)
@@ -695,270 +695,270 @@
 	Brush Tool	ឧបករណ៍ជក់ (Brush)
 	Pencil Tool	ឧបករណ៍ខ្មៅដៃ (Pencil)
 	Eraser Tool	ឧបករណ៍ជ័រលុប (Eraser)
-	Background Eraser Tool	Background Eraser Tool
-	Magic Eraser Tool	Magic Eraser Tool
+	Background Eraser Tool	ឧបករណ៍លុបផ្ទៃខាងក្រោយ (Background Eraser)
+	Magic Eraser Tool	ឧបករណ៍ជ័រលុបវេទមន្ត (Magic Eraser)
 	Eyedropper Tool	ឧបករណ៍បឺតស្រង់ពណ៌ (Eyedropper)
-	Note Tool	Note Tool
+	Note Tool	ឧបករណ៍ Note (Note Tool)
 	Lasso Tool	ឧបករណ៍ឡាសូ (Lasso)
 	Polygonal Lasso Tool	ឧបករណ៍ឡាសូពហុកោណ
 	Magnetic Lasso Tool	ឧបករណ៍ឡាសូមេដែក
 	Magic Wand Tool	ដំបងវេទមន្ត (Magic Wand)
 	Crop Tool	ឧបករណ៍កាត់តម្រឹម (Crop)
-	Slice Tool	Slice Tool
-	Slice Select Tool	Slice Select Tool
-	Gradient Tool	ឧបករណ៍លាយពណ៌ជម្រាល
-	Paint Bucket Tool	ធុងចាក់ពណ៌ (Paint Bucket)
-	Horizontal Type Tool	ឧបករណ៍សរសេរអក្សរផ្ដេក
-	Vertical Type Tool	ឧបករណ៍សរសេរអក្សរបញ្ឈរ
-	Hand Tool	ឧបករណ៍ដៃអូសទិដ្ឋភាព (Hand)
+	Slice Tool	ឧបករណ៍ Slice (Slice Tool)
+	Slice Select Tool	ឧបករណ៍ Slice Select (Slice Select Tool)
+	Gradient Tool	ឧបករណ៍ចាក់ពណ៌ជម្រាល (Gradient)
+	Paint Bucket Tool	ឧបករណ៍ចាក់ពណ៌ (Paint Bucket)
+	Horizontal Type Tool	ឧបករណ៍វាយអក្សរផ្ដេក (Type)
+	Vertical Type Tool	ឧបករណ៍វាយអក្សរបញ្ឈរ (Vertical Type)
+	Hand Tool	ឧបករណ៍ដៃរំកិលផ្ទាំងរូប (Hand)
 	Zoom Tool	ឧបករណ៍ពង្រីក/បង្រួម (Zoom)
-	Spot Healing Brush Tool	ជក់លុបស្នាមអុច
-	Healing Brush Tool	ជក់ជួសជុលស្នាម
+	Spot Healing Brush Tool	ឧបករណ៍ផាត់លុបស្នាមអុច (Spot Healing)
+	Healing Brush Tool	ឧបករណ៍ផាត់ជួសជុលស្នាម (Healing Brush)
 	Patch Tool	ឧបករណ៍ប៉ះស្នាម (Patch Tool)
 	Content-Aware Move Tool	ឧបករណ៍រំកិលតាមបរិបទ (Content-Aware Move)
-	Clone Stamp Tool	ត្រាចម្លងរូបភាព (Clone Stamp)
+	Clone Stamp Tool	ឧបករណ៍ត្រាចម្លង (Clone Stamp)
 	History Brush Tool	ឧបករណ៍ជក់ប្រវត្តិដើម (History Brush)
-	Blur Tool	ឧបករណ៍ធ្វើឱ្យព្រិល
-	Sharpen Tool	ឧបករណ៍ធ្វើឱ្យច្បាស់
-	Smudge Tool	ឧបករណ៍ទាញលាបពណ៌ (Smudge)
+	Blur Tool	ឧបករណ៍ធ្វើឱ្យព្រាល (Blur)
+	Sharpen Tool	ឧបករណ៍បង្កើនភាពច្បាស់ (Sharpen)
+	Smudge Tool	ឧបករណ៍រុញពណ៌ (Smudge)
 	Dodge Tool	ឧបករណ៍បន្ថែមពន្លឺ (Dodge)
-	Burn Tool	ឧបករណ៍បន្ថែមស្រមោលខ្មៅ (Burn)
-	Sponge Tool	ឧបករណ៍បឺត/បន្ថែមភាពឆ្អែតពណ៌ (Sponge)
+	Burn Tool	ឧបករណ៍បន្ថែមស្រមោល (Burn)
+	Sponge Tool	ឧបករណ៍ប៉ុងកែតិត្ថិភាព (Sponge)
 	Quick Selection Tool	ឧបករណ៍ជ្រើសរើសរហ័ស
 	Object Selection Tool	ឧបករណ៍ជ្រើសរើសវត្ថុ
 	Pen Tool	ឧបករណ៍ប៊ិចគូសខ្សែ (Pen)
-	Path Selection Tool	ឧបករណ៍ជ្រើសរើសខ្សែបន្ទាត់
-	Direct Selection Tool	ឧបករណ៍ជ្រើសរើសចំណុចផ្ទាល់
-	Rectangle Tool	ឧបករណ៍គូរចតុកោណ
-	Ellipse Tool	ឧបករណ៍គូររាងពងក្រពើ
-	Triangle Tool	Triangle Tool
-	Polygon Tool	Polygon Tool
-	Line Tool	Line Tool
-	Custom Shape Tool	Custom Shape Tool
-	Set foreground color	Set foreground color
-	Set background color	Set background color
-	Swap colours (X)	Swap colours (X)
-	Default colours (D)	Default colours (D)
-	Edit Toolbar…	Edit Toolbar…
-	Edit in Quick Mask Mode  (Q)	Edit in Quick Mask Mode  (Q)
-	Edit in Standard Mode  (Q)	Edit in Standard Mode  (Q)
-	Change Screen Mode  (F)	Change Screen Mode  (F)
+	Path Selection Tool	ឧបករណ៍ជ្រើសរើសខ្សែវណ្ឌទាំងមូល (Path Selection)
+	Direct Selection Tool	ឧបករណ៍ជ្រើសរើសចំណុចខ្សែវណ្ឌ (Direct Selection)
+	Rectangle Tool	ឧបករណ៍គូសចតុកោណកែង (Rectangle)
+	Ellipse Tool	ឧបករណ៍គូសរង្វង់/ពងក្រពើ (Ellipse)
+	Triangle Tool	ឧបករណ៍គូសត្រីកោណ (Triangle)
+	Polygon Tool	ឧបករណ៍គូសពហុកោណ (Polygon)
+	Line Tool	ឧបករណ៍គូសបន្ទាត់ត្រង់ (Line)
+	Custom Shape Tool	ឧបករណ៍គូសរាងផ្ទាល់ខ្លួន (Custom Shape)
+	Set foreground color	កំណត់ពណ៌ផ្ទៃមុខ (Foreground)
+	Set background color	កំណត់ពណ៌ផ្ទៃក្រោយ (Background)
+	Swap colours (X)	ប្តូរពណ៌មុខ/ក្រោយ (X)
+	Default colours (D)	ពណ៌លំនាំដើម ស-ខ្មៅ (D)
+	Edit Toolbar…	កែសម្រួល Toolbar…
+	Edit in Quick Mask Mode  (Q)	កែសម្រួល in Quick Mask Mode  (Q)
+	Edit in Standard Mode  (Q)	កែសម្រួល in Standard Mode  (Q)
+	Change Screen Mode  (F)	ប្តូររបៀបអេក្រង់ (F)
 	Opacity	ភាពស្រអាប់ (Opacity)
 	Opacity:	ភាពស្រអាប់:
-	Hardness	Hardness
-	Smoothing	Smoothing
-	Tolerance	Tolerance
-	Tolerance:	កម្រិតអត់ឱនពណ៌:
-	Contiguous	ពណ៌ជាប់គ្នា
-	Discontiguous	Discontiguous
-	Anti-alias	បន្ទន់គែមរលូន
-	Aligned	Aligned
-	New selection	New selection
-	Add to selection  ({key})	Add to selection  ({key})
-	Subtract from selection  ({key})	Subtract from selection  ({key})
-	Intersect with selection  ({key})	Intersect with selection  ({key})
+	Hardness	កម្រិតរឹង
+	Smoothing	ភាពរលូន (Smoothing)
+	Tolerance	កម្រិតអត់ឱន (Tolerance)
+	Tolerance:	កម្រិតអត់ឱន (Tolerance)៖
+	Contiguous	ជាប់ៗគ្នា (Contiguous)
+	Discontiguous	មិនជាប់គ្នា
+	Anti-alias	រំលូនគែម (Anti-alias)
+	Aligned	បានតម្រឹម (Aligned)
+	New selection	ការជ្រើសរើស ថ្មី
+	Add to selection  ({key})	បន្ថែមលើការជ្រើសរើស ({key})
+	Subtract from selection  ({key})	ដកចេញពីការជ្រើសរើស ({key})
+	Intersect with selection  ({key})	ប្រសព្វជាមួយការជ្រើសរើស ({key})
 	Fixed Ratio	សមាមាត្រថេរ
 	Fixed Size	ទំហំថេរ
-	Sample:	Sample:
-	Current Layer	Current Layer
-	Current & Below	Current & Below
+	Sample:	ស្រង់គំរូ៖
+	Current Layer	ស្រទាប់បច្ចុប្បន្ន
+	Current & Below	ស្រទាប់បច្ចុប្បន្ន និងខាងក្រោម
 	Mode:	ទម្រង់ពណ៌ (Mode):
-	Content-Aware	Content-Aware
-	Scrubby Zoom	Scrubby Zoom
-	Auto Erase	Auto Erase
-	Protect Tones	Protect Tones
-	Protect Detail	Protect Detail
-	Protect Foreground Color	Protect Foreground Color
+	Content-Aware	យល់ដឹងតាមបរិបទ (Content-Aware)
+	Scrubby Zoom	ពង្រីកតាមការអូស (Scrubby Zoom)
+	Auto Erase	លុបស្វ័យប្រវត្តិ
+	Protect Tones	ការពារស្រមោលពណ៌
+	Protect Detail	ការពារព័ត៌មានលម្អិត
+	Protect Foreground Color	ពណ៌ Protect Foreground
 	Width	ទទឹង
 	Height	កម្ពស់
-	Delete Cropped Pixels	Delete Cropped Pixels
+	Delete Cropped Pixels	លុប Cropped Pixels
 	Fill	បំពេញ (Fill)
 	Fill:	កម្រិតបំពេញ:
-	Stroke:	Stroke:
-	Weight:	Weight:
-	Sides:	Sides:
+	Stroke:	ខ្សែបន្ទាត់គែម៖
+	Weight:	ទម្ងន់/កម្រាស់៖
+	Sides:	ចំនួនជ្រុង៖
 	Radius:	កាំ:
-	Foreground	Foreground
-	Background	Background
-	Style	Style
+	Foreground	ពណ៌ផ្ទៃមុខ (Foreground)
+	Background	ពណ៌ផ្ទៃក្រោយ (Background)
+	Style	រចនាប័ទ្ម
 	Normal	ធម្មតា
 	None	គ្មាន
-	Pattern	Pattern
+	Pattern	លំនាំក្បាច់
 	Group	ក្រុម
-	Path	Path
+	Path	ខ្សែវណ្ឌ
 	Show Transform Controls	បង្ហាញចំណុចបញ្ជាបំប្លែងទម្រង់
 	Auto-Select:	ជ្រើសរើសស្វ័យប្រវត្តិ:
 	Pressure for Size	កម្លាំងសង្កត់កំណត់ទំហំ
 	Pressure for Opacity	កម្លាំងសង្កត់កំណត់ភាពស្រអាប់
-	Always use pressure for size	Always use pressure for size
-	Always use pressure for opacity	Always use pressure for opacity
-	Enable airbrush-style build-up effects	Enable airbrush-style build-up effects
-	Use tablet pressure to change pen width	Use tablet pressure to change pen width
-	Zoom	Zoom
-	Linear Gradient	Linear Gradient
-	Radial Gradient	Radial Gradient
-	Angle Gradient	Angle Gradient
-	Reflected Gradient	Reflected Gradient
-	Diamond Gradient	Diamond Gradient
-	Dither	Dither
-	Overlay: Rule of Thirds	Overlay: Rule of Thirds
-	Swaps height and width	Swaps height and width
-	Fit Screen	Fit Screen
-	Fill Screen	Fill Screen
+	Always use pressure for size	តែងតែប្រើកម្លាំងសង្កត់សម្រាប់ទំហំ
+	Always use pressure for opacity	តែងតែប្រើកម្លាំងសង្កត់សម្រាប់ភាពស្រអាប់
+	Enable airbrush-style build-up effects	បើក Effect បាញ់ពណ៌បែប Airbrush
+	Use tablet pressure to change pen width	ប្រើកម្លាំងសង្កត់ថេប្លេតដើម្បីប្តូរកម្រាស់ប៊ិច
+	Zoom	ពង្រីក/បង្រួម
+	Linear Gradient	ពណ៌ជម្រាលលីនេអ៊ែរ (Linear)
+	Radial Gradient	ពណ៌ជម្រាលរង្វង់មូល (Radial)
+	Angle Gradient	មុំ ពណ៌ជម្រាល
+	Reflected Gradient	ពណ៌ជម្រាលឆ្លុះ (Reflected)
+	Diamond Gradient	ពណ៌ជម្រាលរាងពេជ្រ (Diamond)
+	Dither	បំបែកគ្រាប់ពណ៌ (Dither)
+	Overlay: Rule of Thirds	Overlay៖ ក្បួនបីភាគ (Rule of Thirds)
+	Swaps height and width	ប្តូរកម្ពស់ និងទទឹង
+	Fit Screen	សមល្មមលើអេក្រង់ (Ctrl+0)
+	Fill Screen	ពេញអេក្រង់
 	Select Subject	ជ្រើសរើសតួអង្គ/ប្រធានបទ (Select Subject)
-	Frequency	Frequency
-	Limits:	Limits:
-	Sampling: Continuous	Sampling: Continuous
-	Sampling: Once	Sampling: Once
-	Sampling: Background Swatch	Sampling: Background Swatch
-	Strength:	Strength:
-	Exposure:	Exposure:
-	Range:	Range:
+	Frequency	ប្រេកង់ (Frequency)
+	Limits:	ដែនកំណត់៖
+	Sampling: Continuous	ការស្រង់គំរូ៖ បន្តបន្ទាប់
+	Sampling: Once	ការស្រង់គំរូ៖ ម្តង
+	Sampling: Background Swatch	ការស្រង់គំរូ៖ គំរូពណ៌ផ្ទៃក្រោយ
+	Strength:	កម្លាំង៖
+	Exposure:	កម្រិតពន្លឺ៖
+	Range:	ជួរ៖
 	Type:	អក្សរ:
-	Source	Source
-	Destination	Destination
-	Patch:	Patch:
-	Create Texture	Create Texture
-	Proximity Match	Proximity Match
-	Structure:	Structure:
-	Finger Painting	Finger Painting
-	Enhance Edge	Enhance Edge
-	Extend	Extend
-	Move	Move
-	Saturate	Saturate
+	Source	ប្រភព
+	Destination	គោលដៅ
+	Patch:	បំណះ៖
+	Create Texture	បង្កើត Texture
+	Proximity Match	ផ្គូផ្គងជិតបំផុត
+	Structure:	រចនាសម្ព័ន្ធ៖
+	Finger Painting	គូរដោយម្រាមដៃ
+	Enhance Edge	បង្កើនភាពច្បាស់គែម
+	Extend	ពង្រីកបន្ថែម
+	Move	រំកិល
+	Saturate	បង្កើនតិត្ថិភាព
 	Color:	ពណ៌:
-	{key}-click to set the source	{key}-click to set the source
-	{key} to subtract	{key} to subtract
-	Drag a rectangle around the object	Drag a rectangle around the object
-	Lasso around an area, then drag the selection	Lasso around an area, then drag the selection
-	Left align text	Left align text
-	Center text	Center text
-	Right align text	Right align text
-	Toggle text orientation	Toggle text orientation
-	Set the text color	Set the text color
-	Cancel any current edits (Esc)	Cancel any current edits (Esc)
-	Commit any current edits ({key})	Commit any current edits ({key})
-	Author:	Author:
+	{key}-click to set the source	{key}-click ដើម្បីកំណត់ចំណុចប្រភព
+	{key} to subtract	{key} ដើម្បីដកចេញ
+	Drag a rectangle around the object	អូសចតុកោណកែងជុំវិញវត្ថុ
+	Lasso around an area, then drag the selection	គូស Lasso ជុំវិញតំបន់ រួចអូសការជ្រើសរើស
+	Left align text	តម្រឹមអក្សរឆ្វេង
+	Center text	តម្រឹមអក្សរកណ្តាល
+	Right align text	តម្រឹមអក្សរស្តាំ
+	Toggle text orientation	បិទ/បើក text orientation
+	Set the text color	កំណត់ពណ៌អត្ថបទ
+	Cancel any current edits (Esc)	បោះបង់ការកែប្រែបច្ចុប្បន្ន (Esc)
+	Commit any current edits ({key})	យល់ព្រមការកែប្រែបច្ចុប្បន្ន ({key})
+	Author:	អ្នកនិពន្ធ៖
 	Clear All	សម្អាត ទាំងអស់
-	Count: {n}	Count: {n}
-	Create a new count group	Create a new count group
-	Delete count group	Delete count group
-	Toggle count group visibility	Toggle count group visibility
-	Label Size	Label Size
-	Marker Size	Marker Size
-	Show or hide the Notes panel	Show or hide the Notes panel
-	Straighten Layer	Straighten Layer
-	Use Measurement Scale	Use Measurement Scale
+	Count: {n}	ចំនួន៖ {n}
+	Create a new count group	បង្កើត a new count group
+	Delete count group	លុប count group
+	Toggle count group visibility	បិទ/បើក count group visibility
+	Label Size	ទំហំស្លាក Label
+	Marker Size	ទំហំសញ្ញាសម្គាល់ Marker
+	Show or hide the Notes panel	បង្ហាញ or hide the Notes panel
+	Straighten Layer	ស្រទាប់ Straighten
+	Use Measurement Scale	ប្រើមាត្រដ្ឋានរង្វាស់
 	Divide…	ចែកពណ៌ (Divide)…
-	Hide Auto Slices	Hide Auto Slices
-	Promote	Promote
-	Slice Options…	Slice Options…
-	Slices From Guides	Slices From Guides
-	Slices are locked (View › Lock Slices)	Slices are locked (View › Lock Slices)
-	Style: Normal	Style: Normal
-	Drag to move the active layer	Drag to move the active layer
-	Drag to pan  ·  hold Space with any tool	Drag to pan  ·  hold Space with any tool
-	Drag to draw a gradient	Drag to draw a gradient
-	Click to fill similar colours	Click to fill similar colours
-	Click to add text	Click to add text
-	Click to sample the foreground colour  ·  {key}-click for background	Click to sample the foreground colour  ·  {key}-click for background
-	Click to zoom in  ·  {key}-click to zoom out  ·  drag right/left to zoom in/out	Click to zoom in  ·  {key}-click to zoom out  ·  drag right/left to zoom in/out
-	Drag or click polygon points · hold Alt during lasso for straight segments · {add} add · {sub} before drawing subtracts	Drag or click polygon points · hold Alt during lasso for straight segments · {add} add · {sub} before drawing subtracts
-	Hold Alt while drawing for straight segments	Hold Alt while drawing for straight segments
-	Click the first point or press {key} to close · Esc cancels	Click the first point or press {key} to close · Esc cancels
-	Click the first point or press {key} to close · {del} removes a point · Esc cancels	Click the first point or press {key} to close · {del} removes a point · Esc cancels
-	Click, then move along an edge · click to fasten a point · {alt}-click for a straight segment · double-click to close	Click, then move along an edge · click to fasten a point · {alt}-click for a straight segment · double-click to close
-	Follows only edges this close to the pointer ([ and ] change it)	Follows only edges this close to the pointer ([ and ] change it)
-	Higher values follow only edges that contrast sharply with their surroundings	Higher values follow only edges that contrast sharply with their surroundings
-	How often fastening points are placed by themselves	How often fastening points are placed by themselves
-	Drag a crop box · drag inside to move · edges resize ({ratio} ratio, {centre} centre) · Space moves while drawing · {commit} commits · Esc cancels	Drag a crop box · drag inside to move · edges resize ({ratio} ratio, {centre} centre) · Space moves while drawing · {commit} commits · Esc cancels
-	Commit current crop operation  ({key})	Commit current crop operation  ({key})
-	Cancel current crop operation  (Esc)	Cancel current crop operation  (Esc)
-	Align and distribute	Align and distribute
-	Align left edges	Align left edges
-	Align horizontal centers	Align horizontal centers
-	Align right edges	Align right edges
-	Drag to move the active shape's path or the Work Path	Drag to move the active shape's path or the Work Path
-	Click: corner · Drag: smooth · Click first point: close · {key} finish · Esc cancel	Click: corner · Drag: smooth · Click first point: close · {key} finish · Esc cancel
-	Click: select anchor · Drag: move anchor, handle or segment · {shift}-click: add · {alt}-click: whole subpath	Click: select anchor · Drag: move anchor, handle or segment · {shift}-click: add · {alt}-click: whole subpath
+	Hide Auto Slices	លាក់ Auto Slices
+	Promote	លើកកម្ពស់
+	Slice Options…	ជម្រើស Slice…
+	Slices From Guides	បង្កើត Slices ពីបន្ទាត់ណែនាំ
+	Slices are locked (View › Lock Slices)	Slices ត្រូវបានចាក់សោ (View › Lock Slices)
+	Style: Normal	រចនាប័ទ្ម៖ ធម្មតា
+	Drag to move the active layer	អូសដើម្បីរំកិលស្រទាប់សកម្ម
+	Drag to pan  ·  hold Space with any tool	អូសដើម្បីរំកិលផ្ទាំង  ·  ចុចសង្កត់ Spacebar ជាមួយឧបករណ៍ណាក៏បាន
+	Drag to draw a gradient	អូសដើម្បីគូរពណ៌ជម្រាល
+	Click to fill similar colours	ចុចដើម្បីចាក់បំពេញពណ៌ស្រដៀងគ្នា
+	Click to add text	ចុចដើម្បីបន្ថែមអត្ថបទ
+	Click to sample the foreground colour  ·  {key}-click for background	ចុចដើម្បីស្រង់ពណ៌ផ្ទៃមុខ  ·  {key}-click សម្រាប់ពណ៌ផ្ទៃក្រោយ
+	Click to zoom in  ·  {key}-click to zoom out  ·  drag right/left to zoom in/out	ចុចដើម្បីពង្រីក  ·  {key}-click ដើម្បីបង្រួម  ·  អូសស្តាំ/ឆ្វេង ដើម្បីពង្រីក/បង្រួម
+	Drag or click polygon points · hold Alt during lasso for straight segments · {add} add · {sub} before drawing subtracts	អូស ឬចុចចំណុចពហុកោណ · ចុចសង្កត់ Alt សម្រាប់បន្ទាត់ត្រង់ · {add} បន្ថែម · {sub} ដកចេញ
+	Hold Alt while drawing for straight segments	ចុចសង្កត់ Alt អំឡុងពេលគូរសម្រាប់បន្ទាត់ត្រង់
+	Click the first point or press {key} to close · Esc cancels	ចុចចំណុចដំបូង ឬចុច {key} ដើម្បីបិទខ្សែ · Esc ដើម្បីបោះបង់
+	Click the first point or press {key} to close · {del} removes a point · Esc cancels	ចុចចំណុចដំបូង ឬចុច {key} ដើម្បីបិទខ្សែ · {del} លុបចំណុច · Esc បោះបង់
+	Click, then move along an edge · click to fasten a point · {alt}-click for a straight segment · double-click to close	ចុច រួចរំកិលតាមគែម · ចុចដើម្បីខ្ទាស់ចំណុច · {alt}-click សម្រាប់បន្ទាត់ត្រង់ · ចុចពីរដងដើម្បីបិទខ្សែ
+	Follows only edges this close to the pointer ([ and ] change it)	ចាប់យកតែគែមណាដែលនៅជិតព្រួញកណ្ដុរ ([ និង ] ដើម្បីប្តូរ)
+	Higher values follow only edges that contrast sharply with their surroundings	តម្លៃកាន់តែខ្ពស់ ចាប់យកតែគែមណាដែលមានកម្រិតច្បាស់ខ្លាំងជាមួយផ្ទៃជុំវិញ
+	How often fastening points are placed by themselves	ប្រេកង់នៃការដាក់ចំណុចខ្ទាស់ដោយស្វ័យប្រវត្តិ
+	Drag a crop box · drag inside to move · edges resize ({ratio} ratio, {centre} centre) · Space moves while drawing · {commit} commits · Esc cancels	អូសប្រអប់កាត់តម្រឹម · អូសខាងក្នុងដើម្បីរំកិល · អូសគែមដើម្បីប្តូរទំហំ · Spacebar រំកិលពេលគូរ · {commit} យល់ព្រម · Esc បោះបង់
+	Commit current crop operation  ({key})	យល់ព្រមការកាត់តម្រឹមបច្ចុប្បន្ន ({key})
+	Cancel current crop operation  (Esc)	បោះបង់ការកាត់តម្រឹមបច្ចុប្បន្ន (Esc)
+	Align and distribute	តម្រឹម និងចែកចាយគម្លាត
+	Align left edges	តម្រឹមគែមខាងឆ្វេង
+	Align horizontal centers	តម្រឹមចំកណ្តាលផ្ដេក
+	Align right edges	តម្រឹមគែមខាងស្តាំ
+	Drag to move the active shape's path or the Work Path	អូសដើម្បីរំកិលខ្សែវណ្ឌនៃរាងសកម្ម ឬ Work Path
+	Click: corner · Drag: smooth · Click first point: close · {key} finish · Esc cancel	ចុច៖ កែង · អូស៖ រលូន · ចុចចំណុចដំបូង៖ បិទខ្សែ · {key} បញ្ចប់ · Esc បោះបង់
+	Click: select anchor · Drag: move anchor, handle or segment · {shift}-click: add · {alt}-click: whole subpath	ចុច៖ រើសចំណុចយុថ្កា · អូស៖ រំកិលចំណុច ដៃកាច់ ឬបន្ទាត់ · {shift}-click៖ បន្ថែម · {alt}-click៖ ជ្រើសរើសខ្សែវណ្ឌរងទាំងមូល
 # Phase 3.8 — Layers + Properties + History panel internals
-	Pixel Layer	Pixel Layer
+	Pixel Layer	ស្រទាប់ ភីកសែល
 	Type Layer	ស្រទាប់ អក្សរ
-	Shape Layer	Shape Layer
+	Shape Layer	ស្រទាប់ រាង
 	Group Layer	ស្រទាប់ ក្រុម
-	Fill Layer	Fill Layer
-	Smart Object Layer	Smart Object Layer
-	Adjustment Layer	Adjustment Layer
-	Pixel	Pixel
-	Adjustment	Adjustment
-	Kind	Kind
-	Lock	Lock
-	Lock:	Lock:
-	Lock transparent pixels	Lock transparent pixels
-	Lock image pixels	Lock image pixels
-	Lock position	Lock position
-	Lock all	Lock all
-	Lock layer	Lock layer
-	Prevent auto-nesting in and out of Artboards and Frames	Prevent auto-nesting in and out of Artboards and Frames
-	Filter for pixel layers	Filter for pixel layers
-	Filter for adjustment layers	Filter for adjustment layers
-	Filter for type layers	Filter for type layers
-	Filter for shape layers	Filter for shape layers
-	Filter for smart objects	Filter for smart objects
-	Create a new layer	Create a new layer
-	Create a new group	Create a new group
-	Create new fill or adjustment layer	Create new fill or adjustment layer
-	Delete layer	Delete layer
-	Link layers	Link layers
-	Add a layer style	Add a layer style
-	Add a mask  (from the selection; {key} inverts)	Add a mask  (from the selection; {key} inverts)
+	Fill Layer	ស្រទាប់ បំពេញ
+	Smart Object Layer	ស្រទាប់ Smart Object
+	Adjustment Layer	ស្រទាប់ ការកែតម្រូវ
+	Pixel	ភីកសែល
+	Adjustment	ការកែតម្រូវ
+	Kind	ប្រភេទ (Kind)
+	Lock	ចាក់សោ
+	Lock:	ចាក់សោ៖
+	Lock transparent pixels	ចាក់សោ transparent pixels
+	Lock image pixels	ចាក់សោ រូបភាព ភីកសែល
+	Lock position	ចាក់សោ position
+	Lock all	ចាក់សោ ទាំងអស់
+	Lock layer	ចាក់សោ ស្រទាប់
+	Prevent auto-nesting in and out of Artboards and Frames	ទប់ស្កាត់ការដាក់ចូល/ចេញស្វ័យប្រវត្តិនៃ Artboards និង Frames
+	Filter for pixel layers	ត្រងយកតែស្រទាប់ភីកសែល (Pixel Layers)
+	Filter for adjustment layers	ត្រងយកតែស្រទាប់កែតម្រូវពណ៌ (Adjustment Layers)
+	Filter for type layers	ត្រងយកតែស្រទាប់អក្សរ (Type Layers)
+	Filter for shape layers	ត្រងយកតែស្រទាប់រាង (Shape Layers)
+	Filter for smart objects	ត្រងយកតែវត្ថុឆ្លាតវៃ (Smart Objects)
+	Create a new layer	បង្កើតស្រទាប់ថ្មី
+	Create a new group	បង្កើត a new group
+	Create new fill or adjustment layer	បង្កើត new fill or adjustment layer
+	Delete layer	លុប ស្រទាប់
+	Link layers	ភ្ជាប់តំណ ស្រទាប់
+	Add a layer style	បន្ថែមរចនាប័ទ្មស្រទាប់ (Layer Style)
+	Add a mask  (from the selection; {key} inverts)	បន្ថែមរបាំង (ពីការជ្រើសរើស; {key} បញ្ច្រាស)
 	No document	គ្មានឯកសារបើក
-	Collapse	Collapse
-	Expand	Expand
-	Collapse All Groups	Collapse All Groups
-	Collapse group  ({key}-click: all groups)	Collapse group  ({key}-click: all groups)
-	Expand group  ({key}-click: all groups)	Expand group  ({key}-click: all groups)
-	Hide the layer's effects  ({key}-click: all layers)	Hide the layer's effects  ({key}-click: all layers)
-	Show the layer's effects  ({key}-click: all layers)	Show the layer's effects  ({key}-click: all layers)
-	Link the mask to the layer	Link the mask to the layer
-	Unlink the mask from the layer	Unlink the mask from the layer
+	Collapse	បង្រួម
+	Expand	ពន្លាត
+	Collapse All Groups	បង្រួមក្រុមទាំងអស់
+	Collapse group  ({key}-click: all groups)	បង្រួមក្រុម ({key}-click៖ គ្រប់ក្រុមទាំងអស់)
+	Expand group  ({key}-click: all groups)	ពន្លាតក្រុម ({key}-click៖ គ្រប់ក្រុមទាំងអស់)
+	Hide the layer's effects  ({key}-click: all layers)	លាក់ Effect របស់ស្រទាប់ ({key}-click៖ គ្រប់ស្រទាប់)
+	Show the layer's effects  ({key}-click: all layers)	បង្ហាញ Effect របស់ស្រទាប់ ({key}-click៖ គ្រប់ស្រទាប់)
+	Link the mask to the layer	ភ្ជាប់តំណរបាំងទៅនឹងស្រទាប់
+	Unlink the mask from the layer	ផ្តាច់តំណរបាំងចេញពីស្រទាប់
 	Delete Layer	លុបស្រទាប់ (Delete Layer)
 	Delete Layers	លុប ស្រទាប់
 	Duplicate Layers…	ចម្លង ស្រទាប់ ទ្វេដង…
-	Add Layer Mask	Add Layer Mask
-	Apply Layer Mask	Apply Layer Mask
-	Add Mask to Selection	Add Mask to Selection
-	Subtract Mask from Selection	Subtract Mask from Selection
-	Intersect Mask with Selection	Intersect Mask with Selection
+	Add Layer Mask	របាំង ស្រទាប់ បន្ថែម
+	Apply Layer Mask	អនុវត្ត របាំង ស្រទាប់
+	Add Mask to Selection	បន្ថែមរបាំងទៅក្នុងការជ្រើសរើស
+	Subtract Mask from Selection	ដករបាំងចេញពីការជ្រើសរើស
+	Intersect Mask with Selection	ប្រសព្វរបាំងជាមួយការជ្រើសរើស
 	Delete Layer Mask	លុប របាំងស្រទាប់
-	Disable Layer Mask	Disable Layer Mask
+	Disable Layer Mask	របាំង ស្រទាប់ បិទដំណើរការ
 	Release Clipping Mask	ដោះរបាំងក្លីប
 	Merge Down	បញ្ចូលស្រទាប់ខាងក្រោម (Merge Down)
-	Merge Group	Merge Group
-	Quick Export As PNG	Quick Export As PNG
+	Merge Group	បញ្ចូល ក្រុម
+	Quick Export As PNG	នាំចេញរហ័សជា PNG
 	Rename Layer…	ប្តូរឈ្មោះស្រទាប់…
-	Frame from Layers…	Frame from Layers…
-	Create new document from current state	Create new document from current state
-	Create new snapshot	Create new snapshot
-	Delete current state	Delete current state
+	Frame from Layers…	Frame ពីស្រទាប់…
+	Create new document from current state	បង្កើតឯកសារថ្មីពីស្ថានភាពបច្ចុប្បន្ន
+	Create new snapshot	បង្កើត ថ្មី Snapshot
+	Delete current state	លុប current state
 	No properties	គ្មានលក្ខណសម្បត្តិ
 	Hide Properties	លាក់ លក្ខណសម្បត្តិ
-	{name} Properties	{name} Properties
-	Adjustment visible	Adjustment visible
-	Clip to layer below	Clip to layer below
-	Reset to defaults	Reset to defaults
-	Document	Document
-	Canvas	Canvas
-	Link width and height	Link width and height
+	{name} Properties	លក្ខណៈសម្បត្តិ {name}
+	Adjustment visible	ការកែតម្រូវពណ៌មើលឃើញ
+	Clip to layer below	ខ្ទាស់ទៅស្រទាប់ខាងក្រោម (Clipping Mask)
+	Reset to defaults	កំណត់ឡើងវិញ to defaults
+	Document	ឯកសារ
+	Canvas	Canvas (ផ្ទាំងក្រណាត់)
+	Link width and height	ភ្ជាប់សមាមាត្រទទឹង និងកម្ពស់
 	Landscape	ទេសភាព
-	Resolution: {dpi} pixels/inch	Resolution: {dpi} pixels/inch
-	Rulers & Grids	Rulers & Grids
-	Background Color	Background Color
-	Align and Distribute	Align and Distribute
-	Align {what}	Align {what}
+	Resolution: {dpi} pixels/inch	កម្រិតភាពច្បាស់៖ {dpi} ភីកសែល/អ៊ីញ
+	Rulers & Grids	បន្ទាត់រង្វាស់ និងក្រឡាចត្រង្គ
+	Background Color	ពណ៌ Background
+	Align and Distribute	តម្រឹម និងចែកចាយគម្លាត
+	Align {what}	តម្រឹម {what}
 	Add an adjustment	បន្ថែមការកែសម្រួល
-	Levels	Levels
-	Curves	Curves
+	Levels	កម្រិត
+	Curves	ខ្សែកោង
 	Hue/Saturation	Hue/Saturation
 	Brightness/Contrast	Brightness/Contrast
 	Color Balance	Color Balance
@@ -966,29 +966,29 @@
 	Channel Mixer	Channel Mixer
 	Gradient Map	Gradient Map
 	Color Lookup	Color Lookup
-	Photo Filter	Photo Filter
-	Selective Color	Selective Color
+	Photo Filter	តម្រង Photo
+	Selective Color	ពណ៌ Selective
 	Threshold	Threshold
 	Posterize	Posterize
-	Add Stop	Add Stop
-	Remove stop	Remove stop
+	Add Stop	បន្ថែមចំណុច Stop
+	Remove stop	ដក stop
 	Auto	ស្វ័យប្រវត្តិ
 	Black, White	Black, White
 	Blue, Red, Yellow	Blue, Red, Yellow
 	Brightness	Brightness
-	Channel:	Channel:
+	Channel:	ឆានែល
 	Click to add a point · drag off or {key}-click or Delete to remove	Click to add a point · drag off or {key}-click or Delete to remove
 	Colorize	Colorize
 	Constant	Constant
 	Copper	Copper
-	Custom	Custom
+	Custom	ផ្ទាល់ខ្លួន
 	Cyan  ·  Red	Cyan  ·  Red
 	Default	លំនាំដើម
 	Density	Density
 	Filter:	តម្រង:
 	Foreground to Background	Foreground to Background
 	Gamma Correction	Gamma Correction
-	Gray	Gray
+	Gray	ប្រផេះ
 	Input:	Input:
 	Invert has no settings.	Invert has no settings
 	Lightness	Lightness
@@ -1000,7 +1000,7 @@
 	Output Levels:	Output Levels:
 	Output:	Output:
 	Preserve Luminosity	Preserve Luminosity
-	Preset:	Preset:
+	Preset:	Preset
 	Threshold Level	Threshold Level
 	Tone:	Tone:
 	Total:	Total:
@@ -1008,17 +1008,17 @@
 	Violet, Orange	Violet, Orange
 	Yellow  ·  Blue	Yellow  ·  Blue
 # Phase 3.9 — Character + Paragraph + Glyphs typography panels
-	Font size	Font size
+	Font size	ពុម្ពអក្សរ ទំហំ
 	Leading	Leading
 	Leading (set to the font size × auto-leading when Auto)	Leading (set to the font size × auto-leading when Auto)
 	Tracking	Tracking
 	Tracking (1/1000 em)	Tracking (1/1000 em)
 	Kerning: Metrics, Optical or a value in 1/1000 em (Alt+←/→ at the caret)	Kerning: Metrics, Optical or a value in 1/1000 em (Alt+←/→ at the caret)
-	Vertical scale	Vertical scale
-	Horizontal scale	Horizontal scale
+	Vertical scale	បញ្ឈរ មាត្រដ្ឋាន
+	Horizontal scale	ផ្ដេក មាត្រដ្ឋាន
 	Baseline	Baseline
 	Baseline shift	Baseline shift
-	Text color	Text color
+	Text color	អត្ថបទ ពណ៌
 	Faux Bold	Faux Bold
 	Faux Italic	Faux Italic
 	All Caps	All Caps
@@ -1050,23 +1050,23 @@
 	Left	Left
 	Center	Center
 	Right	Right
-	Type Styles	Type Styles
+	Type Styles	អក្សរ រចនាប័ទ្ម
 	No character style	No character style
-	Click to apply, {key}-click to clear overrides, double-click for Style Options	Click to apply, {key}-click to clear overrides, double-click for Style Options
-	Clear Override	Clear Override
+	Click to apply, {key}-click to clear overrides, double-click for Style Options	ជម្រើស Click to apply, {key}-click to clear overrides, double-click for Style
+	Clear Override	សម្អាត Override
 	Redefine style by current selection	Redefine style by current selection
-	Delete style	Delete style
-	Create new style (from the selected type)	Create new style (from the selected type)
-	Duplicate style	Duplicate style
-	Style Options…	Style Options…
-	Style Options	Style Options
-	Close Style Options	Close Style Options
+	Delete style	លុប រចនាប័ទ្ម
+	Create new style (from the selected type)	បង្កើត new style (from the selected type)
+	Duplicate style	ស្ទួន រចនាប័ទ្ម
+	Style Options…	ជម្រើស រចនាប័ទ្ម…
+	Style Options	ជម្រើស រចនាប័ទ្ម
+	Close Style Options	ជម្រើស បិទ រចនាប័ទ្ម
 	Name	Name
-	Select text to apply a character style	Select text to apply a character style
+	Select text to apply a character style	ជ្រើសរើស text to apply a character style
 	Show:	បង្ហាញ:
 	Entire Font	Entire Font
-	Recently Used	Recently Used
-	Select a type layer or click into text to insert glyphs	Select a type layer or click into text to insert glyphs
+	Recently Used	បានប្រើថ្មីៗ
+	Select a type layer or click into text to insert glyphs	ជ្រើសរើស a type layer or click into text to insert glyphs
 	Basic Latin	Basic Latin
 	Latin 1	Latin 1
 	Latin Extended-A	Latin Extended-A
@@ -1095,10 +1095,10 @@
 	Flip	Flip
 	Angle:	មុំ:
 	Roundness:	ភាពមូល:
-	Spacing	Spacing
+	Spacing	គម្លាត
 	Off: the speed of the pointer sets the spacing	Off: the speed of the pointer sets the spacing
 	Drag the arrow to set the angle, the dots to set the roundness	Drag the arrow to set the angle, the dots to set the roundness
-	Restore original size	Restore original size
+	Restore original size	ស្តារ original size
 	Diameter:	Diameter:
 	Hardness:	ភាពរឹង:
 	Size Jitter	Size Jitter
@@ -1121,7 +1121,7 @@
 	Minimum Depth	Minimum Depth
 	Tilt Scale	Tilt Scale
 	Brush Projection	Brush Projection
-	Apply the pen's tilt and rotation to the tip shape	Apply the pen's tilt and rotation to the tip shape
+	Apply the pen's tilt and rotation to the tip shape	អនុវត្ត the pen's tilt and rotation to the tip shape
 	Control:	Control:
 	Off	Off
 	Fade	Fade
@@ -1134,12 +1134,12 @@
 	Direction	Direction
 	Scatter	Scatter
 	Both Axes	Both Axes
-	Pattern Size	Pattern Size
+	Pattern Size	លំនាំក្បាច់ ទំហំ
 	Texture Each Tip	Texture Each Tip
 	Depth	Depth
 	Paper	Paper
 	Dots	ចំណុចអុចៗ
-	Apply Per Tip	Apply Per Tip
+	Apply Per Tip	អនុវត្ត Per Tip
 	Purity	Purity
 	Tilt X	Tilt X
 	Tilt Y	Tilt Y
@@ -1147,21 +1147,21 @@
 	Override Rotation	Override Rotation
 	Override Pressure	Override Pressure
 	Pressure	Pressure
-	Pulled String Mode	Pulled String Mode
-	Stroke Catch-up	Stroke Catch-up
-	Catch-up on Stroke End	Catch-up on Stroke End
+	Pulled String Mode	Mode Pulled String
+	Stroke Catch-up	តាមទាន់បន្ទាត់គូស
+	Catch-up on Stroke End	តាមទាន់នៅពេលបញ្ចប់ការគូស
 	Adjust for Zoom	Adjust for Zoom
 	Airbrush: keeps depositing paint while the pointer rests.	Airbrush: keeps depositing paint while the pointer rests
 	Rate	Rate
 	Enable {name}	Enable {name}
-	Create new brush from these settings	Create new brush from these settings
-	Reset the brush to the defaults	Reset the brush to the defaults
-	Lock: keep these settings when picking another preset	Lock: keep these settings when picking another preset
-	Unlock: picking a preset replaces these settings	Unlock: picking a preset replaces these settings
+	Create new brush from these settings	បង្កើត new brush from these settings
+	Reset the brush to the defaults	កំណត់ឡើងវិញ the brush to the defaults
+	Lock: keep these settings when picking another preset	ចាក់សោ៖ រក្សាការកំណត់ទាំងនេះនៅពេលរើស Preset ផ្សេង
+	Unlock: picking a preset replaces these settings	ដោះសោ៖ ការរើស Preset នឹងជំនួសការកំណត់ទាំងនេះ
 	Search Brushes	Search Brushes
 	No brush presets	No brush presets
 	Rename Brush…	Rename Brush…
-	Delete Brush	Delete Brush
+	Delete Brush	លុប ជក់
 	Rename Group…	Rename Group…
 	Delete Group	លុបក្រុម
 	Brush name	Brush name
@@ -1176,21 +1176,21 @@
 	Hard Mix	ល្បាយពណ៌ខ្លាំង
 	Linear Height	Linear Height
 # Phase 3.11 — Gradients + Patterns + Swatches asset panels
-	Gradient	Gradient
-	Gradient Options	Gradient Options
+	Gradient	ពណ៌ជម្រាល
+	Gradient Options	ជម្រើស ពណ៌ជម្រាល
 	Linear	Linear
 	Radial	Radial
-	Angle	Angle
+	Angle	មុំ
 	Reflected	Reflected
 	Diamond	Diamond
 	Align with layer	Align with layer
-	Reset Alignment	Reset Alignment
+	Reset Alignment	កំណត់ឡើងវិញ Alignment
 	Centre the gradient (offset 0, 0)	Centre the gradient (offset 0, 0)
 	The current gradient (pick one in Window › Gradients)	The current gradient (pick one in Window › Gradients)
 	Click to edit the gradient	Click to edit the gradient
-	Create new gradient	Create new gradient
-	Create new pattern from the selection	Create new pattern from the selection
-	Create new group	Create new group
+	Create new gradient	បង្កើត ថ្មី ពណ៌ជម្រាល
+	Create new pattern from the selection	បង្កើត new pattern from the selection
+	Create new group	បង្កើត ថ្មី ក្រុម
 	Move to	Move to
 	Name:	Name:
 	Rename…	ប្តូរឈ្មោះ…
@@ -1198,49 +1198,49 @@
 	Color & Swatches	Color & Swatches
 	Click sets foreground · right-click sets background	Click sets foreground · right-click sets background
 # Phase 3.12 — Channels + Paths + Navigator + Info + Histogram
-	Show the layer mask as an overlay	Show the layer mask as an overlay
-	Toggle visibility	Toggle visibility
+	Show the layer mask as an overlay	បង្ហាញ the layer mask as an overlay
+	Toggle visibility	បិទ/បើក visibility
 	Load channel as selection	Load channel as selection
-	Save selection as channel	Save selection as channel
-	Delete current channel	Delete current channel
-	Create new channel	Create new channel
-	Overlay Color	Overlay Color
+	Save selection as channel	រក្សាទុក selection as channel
+	Delete current channel	លុប បច្ចុប្បន្ន ឆានែល
+	Create new channel	បង្កើត ថ្មី ឆានែល
+	Overlay Color	ពណ៌ Overlay
 	Overlay Opacity	Overlay Opacity
 	Cyan	Cyan
-	Black	Black
+	Black	ខ្មៅ
 	RGB	RGB
-	Quick Mask	Quick Mask
-	Duplicate Channel	Duplicate Channel
-	Delete Channel	Delete Channel
-	Rename Channel…	Rename Channel…
-	Merge Spot Channel	Merge Spot Channel
-	Convert to Alpha Channel	Convert to Alpha Channel
-	Exit Quick Mask	Exit Quick Mask
-	New Channel…	New Channel…
-	New Spot Channel…	New Spot Channel…
+	Quick Mask	របាំង Quick
+	Duplicate Channel	ស្ទួន ឆានែល
+	Delete Channel	លុប ឆានែល
+	Rename Channel…	ឆានែល Rename…
+	Merge Spot Channel	ឆានែល Merge Spot
+	Convert to Alpha Channel	បំប្លែងទៅជា ឆានែល Alpha
+	Exit Quick Mask	របាំង Exit Quick
+	New Channel…	ឆានែល ថ្មី…
+	New Spot Channel…	ឆានែល Spot ថ្មី…
 	Split Channels	Split Channels
-	Merge Channels…	Merge Channels…
+	Merge Channels…	បញ្ចូល ឆានែល…
 	Color Indicates Masked Areas	Color Indicates Masked Areas
 	Color Indicates Selected Areas	Color Indicates Selected Areas
 	✓ Color Indicates Masked Areas	✓ Color Indicates Masked Areas
 	✓ Color Indicates Selected Areas	✓ Color Indicates Selected Areas
 	Work Path	Work Path
 	Make Selection	Make Selection
-	Fill Path	Fill Path
-	Stroke Path	Stroke Path
-	Save Path	Save Path
-	Duplicate Path	Duplicate Path
-	Delete Path	Delete Path
+	Fill Path	បំពេញ ខ្សែវណ្ឌ
+	Stroke Path	គូសពណ៌តាមខ្សែវណ្ឌ (Stroke Path)
+	Save Path	រក្សាទុក ខ្សែវណ្ឌ
+	Duplicate Path	ស្ទួន ខ្សែវណ្ឌ
+	Delete Path	លុប ខ្សែវណ្ឌ
 	Delete Vector Mask	លុប របាំងវ៉ិចទ័រ
 	Draw with the Pen tool (P) or make a work path from a selection.	Draw with the Pen tool (P) or make a work path from a selection
 	Fill path with foreground color	Fill path with foreground color
-	Stroke path with brush	Stroke path with brush
+	Stroke path with brush	គូសពណ៌តាមខ្សែវណ្ឌដោយប្រើជក់
 	Load path as a selection	Load path as a selection
 	Make work path from selection	Make work path from selection
 	Add vector mask	Add vector mask
-	Create new path	Create new path
-	Delete path	Delete path
-	Delete vector mask	Delete vector mask
+	Create new path	បង្កើត ថ្មី ខ្សែវណ្ឌ
+	Delete path	លុប ខ្សែវណ្ឌ
+	Delete vector mask	លុប vector mask
 	No path to make a selection from: draw one with the Pen tool or select one in the Paths panel.	No path to make a selection from: draw one with the Pen tool or select one in the Paths panel
 	Fit	Fit
 	Doc: {w} × {h} px	Doc: {w} × {h} px
@@ -1251,11 +1251,11 @@
 	Cache Level:	Cache Level:
 # Mixer Brush (required for every registered non-English language)
 	Mixer Brush	Mixer Brush
-	Mixer Brush Tool	Mixer Brush Tool
+	Mixer Brush Tool	ឧបករណ៍ Mixer Brush (Mixer Brush Tool)
 	Wet	Wet
 	Load	Load
 	Mix	Mix
-	Flow	Flow
+	Flow	លំហូរ
 	Sample All Layers	ស្រង់គំរូគ្រប់ស្រទាប់
 # Camera Raw labels (required for every registered non-English language)
 	Amount	Amount
@@ -1263,14 +1263,14 @@
 	Balance	Balance
 	Before (Y)	Before (Y)
 	Save Settings…	ការកំណត់ រក្សាទុក…
-	Load Settings…	Load Settings…
-	Save these settings as a Camera Raw .xmp file	Save these settings as a Camera Raw .xmp file
+	Load Settings…	ការកំណត់ Load…
+	Save these settings as a Camera Raw .xmp file	រក្សាទុក these settings as a Camera Raw .xmp file
 	Load settings from a Camera Raw .xmp file	Load settings from a Camera Raw .xmp file
 	Loaded Camera Raw settings from {file}	Loaded Camera Raw settings from {file}
 	Loaded Camera Raw settings from {file} ({n} not supported)	Loaded Camera Raw settings from {file} ({n} not supported)
 	Blacks	Blacks
 	Blending	Blending
-	Blue	Blue
+	Blue	ខៀវ
 	Camera Raw Filter ({layer})	Camera Raw Filter ({layer})
 	Camera Raw isn't open	Camera Raw isn't open
 	Cancel	បោះបង់
@@ -1281,17 +1281,17 @@
 	Color Mixer	Color Mixer
 	Color Priority	Color Priority
 	Contrast	Contrast
-	Curve	Curve
+	Curve	ខ្សែកោង
 	Darks	Darks
 	Dehaze	Dehaze
 	Detail	Detail
-	Effects	Effects
+	Effects	Effect ស្រទាប់ (Effects)
 	Exposure	Exposure
 	Feather	ភាពព្រាលគែម (Feather)
 	Full-resolution preview unavailable	Full-resolution preview unavailable
 	Global	Global
 	Grain	Grain
-	Green	Green
+	Green	បៃតង
 	Highlight Clipping Warning (O)	Highlight Clipping Warning (O)
 	Highlight Priority	Highlight Priority
 	Highlights	Highlights
@@ -1310,19 +1310,19 @@
 	Paint Overlay	Paint Overlay
 	Purple	Purple
 	Radius	Radius
-	Red	Red
+	Red	ក្រហម
 	Roughness	Roughness
-	Roundness	Roundness
+	Roundness	កម្រិតមូល
 	Saturation	ភាពឆ្អែតពណ៌
 	Shadow Clipping Warning (U)	Shadow Clipping Warning (U)
-	Shadows	Shadows
+	Shadows	ស្រមោល
 	Sharpening	Sharpening
-	Show Lab Color Readouts	Show Lab Color Readouts
-	Show Red at 3 o'clock	Show Red at 3 o'clock
-	Show Selected Region	Show Selected Region
-	Show Skin Tone Indicator	Show Skin Tone Indicator
-	Show Vectorscope	Show Vectorscope
-	Size	Size
+	Show Lab Color Readouts	បង្ហាញ Lab Color Readouts
+	Show Red at 3 o'clock	បង្ហាញ Red at 3 o'clock
+	Show Selected Region	បង្ហាញ Selected Region
+	Show Skin Tone Indicator	បង្ហាញ Skin Tone Indicator
+	Show Vectorscope	បង្ហាញ Vectorscope
+	Size	ទំហំ
 	Temperature	Temperature
 	Texture	Texture
 	Tint	Tint
@@ -1331,7 +1331,7 @@
 	Vignetting	Vignetting
 	White Balance: As Shot	White Balance: As Shot
 	Whites	Whites
-	Yellow	Yellow
+	Yellow	លឿង
 cameraRaw	Light	ពន្លឺ
 cameraRaw	Lights	ពន្លឺមធ្យម
 cameraRaw	Darks	ស្រមោលមធ្យម
@@ -1376,7 +1376,7 @@ cameraRaw	Shadows	ស្រមោល (Shadows)
 	Centimeters	សង់ទីម៉ែត្រ
 	Classic	Classic
 	Concise	Concise
-	Convert to srgb	Convert to srgb
+	Convert to srgb	បំប្លែងទៅជា srgb
 	Copyright	Copyright
 	CPU (no GPU acceleration)	CPU (no GPU acceleration)
 	CPU / Compatibility	CPU / ភាពត្រូវគ្នា
@@ -1393,7 +1393,7 @@ cameraRaw	Shadows	ស្រមោល (Shadows)
 	Enhanced Controls	ការបញ្ជាកម្រិតខ្ពស់
 	Erase	Erase
 	File Handling	ការគ្រប់គ្រងឯកសារ
-	File path	File path
+	File path	ឯកសារ ខ្សែវណ្ឌ
 	Full size tip	Full size tip
 	Gamut warning color	Gamut warning color
 	Gamut warning opacity	Gamut warning opacity
@@ -1402,14 +1402,14 @@ cameraRaw	Shadows	ស្រមោល (Shadows)
 	GPU	GPU
 	GPU Backend	ផ្នែកខាងក្រោយ GPU
 	Graphics	Graphics
-	Grid color	Grid color
-	Grid colors	Grid colors
-	Grid size	Grid size
-	Grid style	Grid style
+	Grid color	ក្រឡាចត្រង្គ ពណ៌
+	Grid colors	ក្រឡាចត្រង្គ ពណ៌
+	Grid size	ក្រឡាចត្រង្គ ទំហំ
+	Grid style	ក្រឡាចត្រង្គ រចនាប័ទ្ម
 	Grid unit	Grid unit
 	Gridline every	Gridline every
-	Guide color	Guide color
-	Guide style	Guide style
+	Guide color	បន្ទាត់ណែនាំ ពណ៌
+	Guide style	បន្ទាត់ណែនាំ រចនាប័ទ្ម
 	Guides, Grid & Slices	បន្ទាត់ណែនាំ ក្រឡាចត្រង្គ និងបន្ទះកាត់
 	History Log	កំណត់ហេតុប្រវត្តិ
 	History states	History states
@@ -1441,7 +1441,7 @@ cameraRaw	Shadows	ស្រមោល (Shadows)
 	Pixels	ភីកសែល
 	Plug-ins	កម្មវិធីជំនួយ
 	Png	Png
-	Point size	Point size
+	Point size	ចំណុច ទំហំ
 	Points	ពិន្ទុ (Points)
 	PostScript (72 points/inch)	PostScript (72 points/inch)
 	Precise	Precise
@@ -1451,8 +1451,8 @@ cameraRaw	Shadows	ស្រមោល (Shadows)
 	Quality	គុណភាព
 	Quick export format	Quick export format
 	Quick export location	Quick export location
-	Recent file count	Recent file count
-	Recent files	Recent files
+	Recent file count	ចំនួនឯកសារថ្មីៗ
+	Recent files	ឯកសារថ្មីៗ
 	Recover on launch	Recover on launch
 	Remember workspace changes	Remember workspace changes
 	Rendering Mode	របៀបបង្ហាញរូបភាព (Rendering Mode)
@@ -1462,11 +1462,11 @@ cameraRaw	Shadows	ស្រមោល (Shadows)
 	Scratch Disks	ថាសបណ្ដោះអាសន្ន
 	Scratch disks	Scratch disks
 	Sessions only	Sessions only
-	Show bounding box when dragging layer	Show bounding box when dragging layer
-	Show crosshair in brush tip	Show crosshair in brush tip
+	Show bounding box when dragging layer	បង្ហាញ bounding box when dragging layer
+	Show crosshair in brush tip	បង្ហាញ crosshair in brush tip
 	Show menu colors	បង្ហាញពណ៌ម៉ឺនុយ
-	Show only crosshair while painting	Show only crosshair while painting
-	Show slice numbers	Show slice numbers
+	Show only crosshair while painting	បង្ហាញ only crosshair while painting
+	Show slice numbers	បង្ហាញ slice numbers
 	Show tooltips	បង្ហាញព័ត៌មានជំនួយ
 	Slice color	Slice color
 	Smart guide color	Smart guide color
@@ -1476,7 +1476,7 @@ cameraRaw	Shadows	ស្រមោល (Shadows)
 	Studio light	Studio light
 	Subdivisions	Subdivisions
 	System title bar	System title bar
-	Text file	Text file
+	Text file	អត្ថបទ ឯកសារ
 	These settings aren't available in PhotoCraft yet.	ការកំណត់ទាំងនេះមិនទាន់មាននៅក្នុង AngkorPix នៅឡើយទេ។
 	Tiny	តូចខ្លាំង
 	Traditional (72.27 points/inch)	Traditional (72.27 points/inch)
@@ -1495,7 +1495,7 @@ cameraRaw	Shadows	ស្រមោល (Shadows)
 	Yes	បាទ/ចាស
 	No	ទេ
 	Don't Save	Don't Save
-	Create	Create
+	Create	បង្កើត
 	Dismiss	Dismiss
 	Done	រួចរាល់
 	Error	Error
@@ -1527,9 +1527,9 @@ cameraRaw	Shadows	ស្រមោល (Shadows)
 	Cancelled {label}	Cancelled {label}
 	Cancel transform (Esc)	Cancel transform (Esc)
 	Cancel warp (Esc)	Cancel warp (Esc)
-	Save cancelled	Save cancelled
+	Save cancelled	រក្សាទុក cancelled
 	Spell check complete.	Spell check complete
-	Save failed: {error}	Save failed: {error}
+	Save failed: {error}	រក្សាទុក failed: {error}
 	Couldn't place {name}: {error}	Couldn't place {name}: {error}
 	Invalid {mode} profile	Invalid {mode} profile
 	Embedded Profile Mismatch	Embedded Profile Mismatch
@@ -1556,25 +1556,25 @@ cameraRaw	Shadows	ស្រមោល (Shadows)
 	Shortcut removed.	Shortcut removed
 	Use Default	Use Default
 	Default restored.	Default restored
-	Delete Shortcut	Delete Shortcut
-	Reset All to Defaults	Reset All to Defaults
+	Delete Shortcut	លុប ផ្លូវកាត់
+	Reset All to Defaults	កំណត់ឡើងវិញ All to Defaults
 	All shortcuts reset to Photoshop defaults.	All shortcuts reset to Photoshop defaults
-	Show All Menu Items	Show All Menu Items
-	Restore Defaults	Restore Defaults
+	Show All Menu Items	បង្ហាញ All Menu Items
+	Restore Defaults	ស្តារ Defaults
 	Visible	Visible
 	Cmd	Cmd
 	Ctrl	Ctrl
 	Alt	Alt
 	Shift	Shift
 	Temporary	Temporary
-	none	none
-	red	red
+	none	គ្មាន
+	red	ក្រហម
 	orange	orange
-	yellow	yellow
-	green	green
-	blue	blue
+	yellow	លឿង
+	green	បៃតង
+	blue	ខៀវ
 	violet	violet
-	gray	gray
+	gray	ប្រផេះ
 # Phase 4.4 — Color Settings dialog
 	Color Settings	ការកំណត់ ពណ៌
 	Black Point Compensation	Black Point Compensation
@@ -1585,7 +1585,7 @@ cameraRaw	Shadows	ស្រមោល (Shadows)
 	Policy Cmyk	Policy Cmyk
 	Policy Gray	Policy Gray
 	Preserve	Preserve
-	Convert	Convert
+	Convert	បំប្លែង
 	Ask On Mismatch	Ask On Mismatch
 	Ask On Paste	Ask On Paste
 	Ask On Missing	Ask On Missing
@@ -1612,20 +1612,20 @@ cameraRaw	Shadows	ស្រមោល (Shadows)
 # Phase 4.5 — Preset Manager + Export/Import Presets
 	Preset Manager	Preset Manager
 	Export/Import Presets	Export/Import Presets
-	Preset Type	Preset Type
+	Preset Type	Preset អក្សរ
 	No presets of this type.	No presets of this type
-	Custom Shapes	Custom Shapes
+	Custom Shapes	ផ្ទាល់ខ្លួន រាង
 	Rename	ប្តូរឈ្មោះ
 	Load…	Load…
-	Import Photoshop brushes (.abr)	Import Photoshop brushes (.abr)
+	Import Photoshop brushes (.abr)	នាំចូល Photoshop brushes (.abr)
 	Action	Action
-	Export Presets	Export Presets
-	Import Presets	Import Presets
+	Export Presets	នាំចេញ Presets (ការកំណត់ទុកជាមុន)
+	Import Presets	នាំចូល Presets (ការកំណត់ទុកជាមុន)
 # Phase 4.6 — Camera Raw chrome + Light/Color basics (tone, WB, presence)
 	Fit in View	Fit in View
 	Camera Raw	Camera Raw
 cameraRaw	Color	ពណ៌
-cameraRaw	Effects	ផលប៉ះពាល់/បែបផែន
+cameraRaw	Effects	Effect ស្រទាប់ (Effects)
 cameraRaw	Whites	ពណ៌ស
 cameraRaw	Exposure	កម្រិតពន្លឺ (Exposure)
 cameraRaw	Contrast	កម្រិតពណ៌ខុសគ្នា (Contrast)
@@ -1665,16 +1665,16 @@ cameraRaw	Roughness	ភាពគគ្រើម
 cameraRaw	Size	ទំហំ
 # Phase 4.13 — New Document + Home + Image Size
 	Home	Home
-	Recent	Recent
+	Recent	ថ្មីៗ (Recent)
 	Photo	Photo
 	Print	Print
 	Art & Illustration	Art & Illustration
 	Web	Web
 	Mobile	Mobile
 	Film & Video	Film & Video
-	New Document	New Document
-	Create a new document or open an existing file.	Create a new document or open an existing file
-	Drop an image or PSD anywhere to open it.	Drop an image or PSD anywhere to open it
+	New Document	ឯកសារថ្មី (New Document)
+	Create a new document or open an existing file.	បង្កើតឯកសារថ្មី ឬបើកឯកសារដែលមានស្រាប់។
+	Drop an image or PSD anywhere to open it.	ទម្លាក់រូបភាព ឬឯកសារ PSD ទីនេះដើម្បីបើក។
 	Use File › Open to open an image.	Use File › Open to open an image
 	BLANK DOCUMENT PRESETS ({n})	BLANK DOCUMENT PRESETS ({n})
 	PRESET DETAILS	PRESET DETAILS
@@ -1687,13 +1687,13 @@ cameraRaw	Size	ទំហំ
 	Custom background color	Custom background color
 	Pixels/Inch	Pixels/Inch
 	Pixels/Centimeter	Pixels/Centimeter
-	White	White
+	White	ស
 	Transparent	Transparent
 	Portrait	Portrait
 	Default Photoshop Size	Default Photoshop Size
 document	Orientation	ទិសដៅក្រដាស
-	Image Size	Image Size
-	Image Size:	Image Size:
+	Image Size	រូបភាព ទំហំ
+	Image Size:	រូបភាព ទំហំ
 	Dimensions:	Dimensions:
 	Constrain proportions	Constrain proportions
 	Maintain aspect ratio	Maintain aspect ratio
@@ -1703,8 +1703,8 @@ document	Orientation	ទិសដៅក្រដាស
 	Lanczos (sharp)	Lanczos (sharp)
 	Nearest Neighbor (hard edges)	Nearest Neighbor (hard edges)
 	Nearest Neighbor	Nearest Neighbor
-	Current Size	Current Size
-	New Size	New Size
+	Current Size	បច្ចុប្បន្ន ទំហំ
+	New Size	ទំហំ ថ្មី
 	Size:	ទំហំ:
 	Width:	ទទឹង:
 	Height:	កម្ពស់:
@@ -1716,12 +1716,12 @@ document	Orientation	ទិសដៅក្រដាស
 # Phase 4.14 — Export / Save for Web / TIFF options
 	File Settings	ការកំណត់ ឯកសារ
 	Transparency	Transparency
-	TIFF Options	TIFF Options
+	TIFF Options	ជម្រើស TIFF
 	Including layers will increase file size.	Including layers will increase file size
 	Discard Layers and Save a Copy	Discard Layers and Save a Copy
 	Don't show again	Don't show again
 	Save…	រក្សាទុក…
-	Export As	Export As
+	Export As	នាំចេញ As
 	Original	Original
 	Optimized	Optimized
 	Preset	Preset
@@ -1729,16 +1729,16 @@ document	Orientation	ទិសដៅក្រដាស
 	Adaptive	Adaptive
 	Restrictive (Web)	Restrictive (Web)
 	Exact	Exact
-	Colors	Colors
+	Colors	ពណ៌
 	No Dither	No Dither
 	Diffusion	Diffusion
 	Interlaced	Interlaced
 	Web Snap	Web Snap
 	Progressive	Progressive
 	Embed Color Profile	Embed Color Profile
-	Convert to sRGB	Convert to sRGB
+	Convert to sRGB	បំប្លែងទៅជា sRGB
 	Copyright and Contact Info	Copyright and Contact Info
-	Save HTML and Images	Save HTML and Images
+	Save HTML and Images	រក្សាទុក HTML and Images
 	All Slices	All Slices
 	All User Slices	All User Slices
 	Matte	Matte
@@ -1771,38 +1771,38 @@ document	Orientation	ទិសដៅក្រដាស
 	Twist	Twist
 	Liquify is not open	Liquify is not open
 	Freeze Lasso: drag to freeze an area, Alt-drag to thaw it (L)	Freeze Lasso: drag to freeze an area, Alt-drag to thaw it (L)
-	Brush Tool Options	Brush Tool Options
-	Brush Reconstruct Options	Brush Reconstruct Options
+	Brush Tool Options	ជម្រើស ឧបករណ៍ ជក់ (Brush Tool)
+	Brush Reconstruct Options	ជម្រើស Brush Reconstruct
 	Reconstruct	Reconstruct
-	Restore All	Restore All
-	Mask Options	Mask Options
-	Mask All	Mask All
-	Invert All	Invert All
+	Restore All	ស្តារ ទាំងអស់
+	Mask Options	ជម្រើស របាំង
+	Mask All	របាំង ទាំងអស់
+	Invert All	បញ្ច្រាស ទាំងអស់
 	View Options	ជម្រើស ទិដ្ឋភាព
-	Show Mesh	Show Mesh
+	Show Mesh	បង្ហាញ សំណាញ់ Mesh
 	Mesh Size	Mesh Size
 	Show Mask	របាំង បង្ហាញ
-	Show Backdrop	Show Backdrop
+	Show Backdrop	បង្ហាញ Backdrop
 	Forward Warp	Forward Warp
 	Twirl Clockwise	Twirl Clockwise
 	Twirl Counterclockwise	Twirl Counterclockwise
 	Pucker	Pucker
 	Bloat	Bloat
 	Push Left	Push Left
-	Freeze Mask	Freeze Mask
-	Thaw Mask	Thaw Mask
+	Freeze Mask	របាំង Freeze
+	Thaw Mask	របាំង Thaw
 	Freeze Lasso	Freeze Lasso
 	Reconstruct All	Reconstruct All
-	Mask None	Mask None
+	Mask None	របាំង គ្មាន
 	Invert Mask	របាំង ត្រឡប់ពណ៌
 	Perspective Warp is not active	Perspective Warp is not active
 	Perspective Warp: draw planes along the image's perspective, then switch to Warp	Perspective Warp: draw planes along the image's perspective, then switch to Warp
 	Straighten	Straighten
-	Level	Level
+	Level	កម្រិត
 	Automatically straighten near-vertical line segments	Automatically straighten near-vertical line segments
 	Automatically level near-horizontal line segments	Automatically level near-horizontal line segments
 	Automatically straighten and level	Automatically straighten and level
-	Remove Planes	Remove Planes
+	Remove Planes	ដក Planes
 	Commit Perspective Warp ({key})	Commit Perspective Warp ({key})
 	Puppet Warp is not active	Puppet Warp is not active
 	Rigid	Rigid
@@ -1815,43 +1815,43 @@ document	Orientation	ទិសដៅក្រដាស
 	Send the selected pin backward	Send the selected pin backward
 	Rotate:	Rotate:
 	Fixed	Fixed
-	Remove All Pins	Remove All Pins
+	Remove All Pins	ដក All Pins
 	Commit Puppet Warp ({key})	Commit Puppet Warp ({key})
 	Last Document State	Last Document State
 	Capture the visibility, position and style of every layer with + below, then switch between versions.	Capture the visibility, position and style of every layer with + below, then switch between versions
 	Visibility	Visibility
 	Position	Position
 	Appearance (Layer Style)	Appearance (Layer Style)
-	Apply previous selected layer comp	Apply previous selected layer comp
-	Apply next selected layer comp	Apply next selected layer comp
-	Delete layer comp	Delete layer comp
-	Create new layer comp	Create new layer comp
+	Apply previous selected layer comp	អនុវត្ត previous selected layer comp
+	Apply next selected layer comp	អនុវត្ត next selected layer comp
+	Delete layer comp	លុប layer comp
+	Create new layer comp	បង្កើត new layer comp
 	Update layer comp (visibility, position and appearance)	Update layer comp (visibility, position and appearance)
-	Blending Options	Blending Options
-	Bevel & Emboss	Bevel & Emboss
-	Stroke	Stroke
-	Inner Shadow	Inner Shadow
-	Inner Glow	Inner Glow
-	Satin	Satin
-	Color Overlay	Color Overlay
-	Gradient Overlay	Gradient Overlay
-	Pattern Overlay	Pattern Overlay
-	Outer Glow	Outer Glow
-	Drop Shadow	Drop Shadow
-	New Style…	New Style…
+	Blending Options	ជម្រើសនៃការបញ្ចូលគ្នា (Blending Options)
+	Bevel & Emboss	កៀបផុស និងជ្រុងកោង (Bevel & Emboss)
+	Stroke	ខ្សែបន្ទាត់គែម (Stroke)
+	Inner Shadow	ស្រមោលខាងក្នុង (Inner Shadow)
+	Inner Glow	ពន្លឺចាំងខាងក្នុង (Inner Glow)
+	Satin	ក្រណាត់សូត្រ (Satin)
+	Color Overlay	ជាន់ពណ៌លើ (Color Overlay)
+	Gradient Overlay	ជាន់ពណ៌ជម្រាលលើ (Gradient Overlay)
+	Pattern Overlay	ជាន់លំនាំក្បាច់លើ (Pattern Overlay)
+	Outer Glow	ពន្លឺចាំងខាងក្រៅ (Outer Glow)
+	Drop Shadow	ស្រមោលធ្លាក់ក្រោម (Drop Shadow)
+	New Style…	រចនាប័ទ្ម ថ្មី…
 	Style {name} saved	Style {name} saved
-	Reset to Default	Reset to Default
+	Reset to Default	កំណត់ឡើងវិញ to Default
 	Make Default	Make Default
-	Preview	Preview
+	Preview	មើលជាមុន
 	Blend Mode	របៀបលាយពណ៌ (Blend Mode)
 	Use Global Light	Use Global Light
 	Distance	Distance
 	Spread	Spread
 	Choke	Choke
 	Contour	Contour
-	Layer Knocks Out Drop Shadow	Layer Knocks Out Drop Shadow
-	Fill Opacity	Fill Opacity
-	Link with Layer	Link with Layer
+	Layer Knocks Out Drop Shadow	ស្រទាប់បាំងទម្លុះស្រមោល
+	Fill Opacity	បំពេញ ភាពស្រអាប់
+	Link with Layer	ស្រទាប់ Link with
 	Soften	Soften
 	Altitude	Altitude
 	Outside	Outside
@@ -1878,8 +1878,8 @@ document	Orientation	ទិសដៅក្រដាស
 	Subtract from Sample	Subtract from Sample
 	Sample: foreground colour	Sample: foreground colour
 	{added}, {removed} subtracted	{added}, {removed} subtracted
-	Clear Samples	Clear Samples
-	Selection	Selection
+	Clear Samples	សម្អាត Samples
+	Selection	ការជ្រើសរើស
 	Open a document to select a colour range.	Open a document to select a colour range
 	Sampled Colors	Sampled Colors
 	Reds	Reds
@@ -1899,20 +1899,20 @@ colorRange	Invert	ត្រឡប់ពណ៌
 	Search commands, tools and panels…	Search commands, tools and panels…
 	No matching commands	No matching commands
 	↑↓ navigate   {key} run   esc close	↑↓ navigate   {key} run   esc close
-	Tool	Tool
-	New document…	New document…
-	Join us on Discord	Join us on Discord
+	Tool	ឧបករណ៍
+	New document…	ឯកសារថ្មី…
+	Join us on Discord	ចូលរួម Discord របស់យើង
 	PhotoCraft website	PhotoCraft website
-	Anchor:	Anchor:
+	Anchor:	យុថ្កា (Anchor)
 	Canvas extension color:	Canvas extension color:
 layers	Fill	កម្រិតចាក់ពណ៌
 layers	Fill:	កម្រិតចាក់ពណ៌:
-	Pattern Stamp Tool	Pattern Stamp Tool
+	Pattern Stamp Tool	ឧបករណ៍ត្រាលំនាំក្បាច់ (Pattern Stamp)
 	Pattern Stamp	Pattern Stamp
 	Impressionist	Impressionist
 	Scope	Scope
 	Selected	Selected
-	Open	Open
+	Open	បើក
 	Camera Raw ({name})	Camera Raw ({name})
 	Developing {name}	Developing {name}
 # Phase 5.1 — tools / paths / assets / filters / layers
@@ -1924,13 +1924,13 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	51 by 51 Average	51 by 51 Average
 	Add pair	Add pair
 	Add to Swatches	Add to Swatches
-	Add Vector Mask	Add Vector Mask
+	Add Vector Mask	របាំង Add Vector
 	Adds the current gradient to the Gradients panel	Adds the current gradient to the Gradients panel
-	Adjustment Preview	Adjustment Preview
+	Adjustment Preview	ការកែតម្រូវ មើលជាមុន
 	All Layers No Adjustments	All Layers No Adjustments
 	Alt-click to define a source point to clone from	Alt-click to define a source point to clone from
 	Artboard	Artboard
-	Artboard Background Color	Artboard Background Color
+	Artboard Background Color	ពណ៌ Artboard Background
 	Auto Adjust Opacity	Auto Adjust Opacity
 	Bitmap…	ប៊ីតម៉េប (Bitmap)…
 	Blend If	Blend If
@@ -1938,8 +1938,8 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Bottom Left	Bottom Left
 	Bottom Right	Bottom Right
 	Brush Name	Brush Name
-	Brush Preset Options	Brush Preset Options
-	Brush Stroke	Brush Stroke
+	Brush Preset Options	ជម្រើស Preset ជក់
+	Brush Stroke	បន្ទាត់គូសជក់
 	Brush Tip	Brush Tip
 	Channels:	ឆានែល:
 	Click a red pupil to neutralize it	Click a red pupil to neutralize it
@@ -1950,10 +1950,10 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Color Picker (Text Color)	Color Picker (Text Color)
 	Color to Alpha…	Color to Alpha…
 	Corner radius	Corner radius
-	Create new shape from the current path	Create new shape from the current path
-	Create new style from the selected layer	Create new style from the selected layer
-	Create new swatch	Create new swatch
-	Create new tool preset	Create new tool preset
+	Create new shape from the current path	បង្កើត new shape from the current path
+	Create new style from the selected layer	បង្កើត new style from the selected layer
+	Create new swatch	បង្កើត ថ្មី គំរូពណ៌
+	Create new tool preset	បង្កើត ថ្មី ឧបករណ៍ Preset
 	Crop Shield color	Crop Shield color
 	Current & Below No Adjustments	Current & Below No Adjustments
 	Current Tool Only	Current Tool Only
@@ -1961,23 +1961,23 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Darken Amount	Darken Amount
 	Dash / gap lengths × stroke width	Dash / gap lengths × stroke width
 	Dashed line	Dashed line
-	Delete effect layer	Delete effect layer
-	Delete Tool Preset	Delete Tool Preset
-	Delete tool preset	Delete tool preset
+	Delete effect layer	លុប Effect ស្រទាប់
+	Delete Tool Preset	លុប Preset ឧបករណ៍
+	Delete tool preset	លុប ឧបករណ៍ Preset
 	Diagonal	Diagonal
 	Dual Axis	Dual Axis
-	Edit Type	Edit Type
+	Edit Type	កែសម្រួល អក្សរ
 	Enable Crop Shield	Enable Crop Shield
-	Export Swatches for Exchange…	Export Swatches for Exchange…
+	Export Swatches for Exchange…	នាំចេញ Swatches for Exchange…
 	Export Swatches…	នាំចេញ បន្ទះពណ៌…
 	Eyedroppers:	Eyedroppers:
 	From Center	From Center
-	Glow Color	Glow Color
+	Glow Color	ពណ៌ ពន្លឺចាំង
 	Gradient Editor	Gradient Editor
 	Gradient picker	Gradient picker
 	Gradient stops	Gradient stops
 	Heart	Heart
-	Import brushes (.abr)	Import brushes (.abr)
+	Import brushes (.abr)	នាំចូល brushes (.abr)
 	Import Brushes…	នាំចូល ជក់…
 	Import Swatches…	នាំចូល បន្ទះពណ៌…
 	Knockout	Knockout
@@ -1985,16 +1985,16 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Match Canvas	Match Canvas
 	Move effect layer down	Move effect layer down
 	Move effect layer up	Move effect layer up
-	New Brush Preset…	New Brush Preset…
-	Capture Brush Size in Preset	Capture Brush Size in Preset
-	Include Tool Settings	Include Tool Settings
-	Include Color	Include Color
+	New Brush Preset…	Preset ជក់ ថ្មី…
+	Capture Brush Size in Preset	Preset Capture Brush Size in
+	Include Tool Settings	ការកំណត់ ឧបករណ៍ Include (Include Tool)
+	Include Color	ពណ៌ Include
 	Enter a name for the brush preset	Enter a name for the brush preset
 	A brush preset with this name already exists	A brush preset with this name already exists
-	New effect layer	New effect layer
-	New Swatch Group…	New Swatch Group…
-	New Swatch…	New Swatch…
-	No Color	No Color
+	New effect layer	Effect ស្រទាប់ ថ្មី
+	New Swatch Group…	គំរូពណ៌ ក្រុម ថ្មី…
+	New Swatch…	គំរូពណ៌ ថ្មី…
+	No Color	ពណ៌ No
 	No patterns	No patterns
 	No presets for the current tool.	No presets for the current tool
 	No subject found — try a rectangle around the object	No subject found — try a rectangle around the object
@@ -2004,7 +2004,7 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Now drag the selection onto another area	Now drag the selection onto another area
 	Object Selection found nothing there — try a tighter rectangle	Object Selection found nothing there — try a tighter rectangle
 	Only Web Colors	Only Web Colors
-	Open paths use centered strokes	Open paths use centered strokes
+	Open paths use centered strokes	ខ្សែវណ្ឌចំហប្រើបន្ទាត់គែមចំកណ្តាល
 	Option-click to define a source point to clone from	Option-click to define a source point to clone from
 	Out of gamut for printing: click for the nearest printable colour	Out of gamut for printing: click for the nearest printable colour
 	Pick screen color	Pick screen color
@@ -2013,35 +2013,35 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Pupil Size	Pupil Size
 	Quick Selection found nothing there	Quick Selection found nothing there
 	Rasterize Type	បម្លែងអក្សរជាភីកសែល
-	Remove pair	Remove pair
-	Rename Tool Preset…	Rename Tool Preset…
+	Remove pair	ដក pair
+	Rename Tool Preset…	Preset ឧបករណ៍ Rename (Rename Tool)…
 	Replace Swatches…	Replace Swatches…
 	Reset Swatches	កំណត់ បន្ទះពណ៌ ឡើងវិញ
-	Reset Transform	Reset Transform
+	Reset Transform	កំណត់ឡើងវិញ Transform
 	Sample a pixel anywhere on the screen	Sample a pixel anywhere on the screen
 	Sample Size:	Sample Size:
-	Save As Preset	Save As Preset
+	Save As Preset	រក្សាទុក Preset As
 	Scroll to zoom	Scroll to zoom
 	Drag to pan · Scroll to zoom · Double-click to fit	Drag to pan · Scroll to zoom · Double-click to fit
-	Selection Preview:	Selection Preview:
+	Selection Preview:	ការជ្រើសរើស មើលជាមុន
 	Set additional Crop options	Set additional Crop options
 	Set Black Point	Set Black Point
 	Set Neutral Gray Point	Set Neutral Gray Point
 	Set painting symmetry options	Set painting symmetry options
 	Set shape fill type	Set shape fill type
-	Set shape stroke type	Set shape stroke type
+	Set shape stroke type	កំណត់ប្រភេទខ្សែបន្ទាត់គែមនៃរាង
 	Set the overlay options for the Crop tool	Set the overlay options for the Crop tool
 	Set White Point	Set White Point
-	Show Cropped Area	Show Cropped Area
+	Show Cropped Area	បង្ហាញ Cropped Area
 	Show Overlay	បង្ហាញ ត្រួតលើគ្នា (Overlay)
-	Show Sampling Ring	Show Sampling Ring
+	Show Sampling Ring	បង្ហាញ Sampling Ring
 	Sides	Sides
 	Source: not set ({key}-click with Clone Stamp)	Source: not set ({key}-click with Clone Stamp)
 	Star ratio	Star ratio
 	Star Ratio:	Star Ratio:
 	Straighten the image by drawing a line on it	Straighten the image by drawing a line on it
-	Stroke color	Stroke color
-	Stroke Options	Stroke Options
+	Stroke color	ពណ៌ខ្សែបន្ទាត់គែម
+	Stroke Options	ជម្រើសខ្សែបន្ទាត់គែម
 	Symmetry Off	Symmetry Off
 	The gradient the Gradient tool paints with	The gradient the Gradient tool paints with
 	Top Left	Top Left
@@ -2059,34 +2059,34 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Adwaita Light Theme	Adwaita Light Theme
 	All shortcuts reset to PhotoCraft defaults.	All shortcuts reset to PhotoCraft defaults
 	Appearance Mode	ទម្រង់រូបរាង
-	Auto Hide	Auto Hide
+	Auto Hide	ស្វ័យប្រវត្តិ លាក់
 	Click to add a point, right-click to remove	Click to add a point, right-click to remove
 	Close Tab Group	Close Tab Group
 	Collapse Panel Group	Collapse Panel Group
 	Color Picker (Fill Color)	Color Picker (Fill Color)
-	Color Picker (Stroke Color)	Color Picker (Stroke Color)
+	Color Picker (Stroke Color)	ផ្ទាំងជ្រើសរើសពណ៌ (ពណ៌ខ្សែបន្ទាត់គែម)
 	Contents:	Contents:
-	Custom Pattern:	Custom Pattern:
-	Cycle Screen Mode	Cycle Screen Mode
+	Custom Pattern:	ផ្ទាល់ខ្លួន លំនាំក្បាច់
+	Cycle Screen Mode	Mode Cycle Screen
 	Define	Define
-	Delete layer ‘{name}’?	Delete layer ‘{name}’?
-	Delete layer?	Delete layer?
-	Delete {count} layers? {names}	Delete {count} layers? {names}
+	Delete layer ‘{name}’?	លុប layer ‘{name}’?
+	Delete layer?	លុប layer?
+	Delete {count} layers? {names}	លុប {count} layers? {names}
 	Description	Description
 	Doc: {flat}/{layered}	Doc: {flat}/{layered}
 	Duotone…	ពីរពណ៌ (Duotone)…
-	Edit › Paste	Edit › Paste
+	Edit › Paste	កែសម្រួល › Paste
 	Edits that change the whole document, such as a layer's blend mode, opacity or visibility, redraw all of it.	Edits that change the whole document, such as a layer's blend mode, opacity or visibility, redraw all of it
 	Efficiency: 100%	Efficiency: 100%
 	Expand Panel Group	Expand Panel Group
 	Exposure and Gamma	Exposure and Gamma
 	Factor:	Factor:
-	Fill color	Fill color
+	Fill color	បំពេញ ពណ៌
 	Free	Free
 	Free Transform a Copy	Free Transform a Copy
 	Gamma:	Gamma:
 	Highlight Compression	Highlight Compression
-	Import Shortcuts…	Import Shortcuts…
+	Import Shortcuts…	នាំចូល ផ្លូវកាត់…
 	Imported	Imported
 	Imported {n} shortcuts from {file}. Click OK to keep them.	Imported {n} shortcuts from {file}. Click OK to keep them
 	Indexed Color…	ពណ៌តាមសន្ទស្សន៍…
@@ -2104,21 +2104,21 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	More panels	More panels
 	Move Group Down	Move Group Down
 	Move Group Up	Move Group Up
-	New Shape Layer	New Shape Layer
-	New Type Layer	New Type Layer
-	Next Appearance Mode	Next Appearance Mode
+	New Shape Layer	ស្រទាប់ រាង ថ្មី
+	New Type Layer	ស្រទាប់ អក្សរ ថ្មី
+	Next Appearance Mode	Mode Next Appearance
 	No saved presets yet.	No saved presets yet
-	open source	open source
+	open source	ប្រភពបើកចំហ (Open Source)
 	Panel locations are saved in the workspace. Keyboard shortcuts, menus and toolbar are optional.	Panel locations are saved in the workspace. Keyboard shortcuts, menus and toolbar are optional
 	Pick a screen pixel or press Esc to cancel	Pick a screen pixel or press Esc to cancel
 	Position and Size	Position and Size
 	Preserve Transparency	Preserve Transparency
 	Preset Name	Preset Name
-	Rasterize Shape	Rasterize Shape
+	Rasterize Shape	បំប្លែងជា Raster រាង
 	Relight…	Relight…
 	Reset View	កំណត់ទិដ្ឋភាពដើម
 	Rotate View	បង្វិលទិដ្ឋភាព
-	Save as PDF	Save as PDF
+	Save as PDF	រក្សាទុក as PDF
 	Save Preset…	រក្សាទុក គំរូ…
 	Saved	Saved
 	Saving {name}	Saving {name}
@@ -2133,7 +2133,7 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	The GPU compositor wasn't used: {reason}	The GPU compositor wasn't used: {reason}
 	This redraw took {seconds} s on the CPU.	This redraw took {seconds} s on the CPU
 	Transform Symmetry	Transform Symmetry
-	Unlink Layer Mask	Unlink Layer Mask
+	Unlink Layer Mask	របាំង ស្រទាប់ ផ្តាច់តំណ
 	Unnamed {mode} profile	Unnamed {mode} profile
 	Untagged {mode}	Untagged {mode}
 	Use File › Open, or paste a copied image with {paste}.	Use File › Open, or paste a copied image with {paste}
@@ -2173,31 +2173,31 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Click with the Note tool to add a note.	Click with the Note tool to add a note
 	Constraints ({n})	Constraints ({n})
 	Contact Sheet II	Contact Sheet II
-	Create Droplet	Create Droplet
-	Create new action	Create new action
-	Create Video Timeline	Create Video Timeline
+	Create Droplet	បង្កើត Droplet
+	Create new action	បង្កើត new action
+	Create Video Timeline	បង្កើត Video Timeline
 	Crop Factor	Crop Factor
 	Data Sets	Data Sets
 	Define at least one variable first.	Define at least one variable first
-	Delete note	Delete note
-	Delete selected measurements	Delete selected measurements
+	Delete note	លុប note
+	Delete selected measurements	លុប selected measurements
 	Delete Timeline	លុប បន្ទាត់ពេលវេលា
-	Deselect All	Deselect All
+	Deselect All	ដោះការជ្រើសរើស ទាំងអស់
 	Display Text	Display Text
 	Drag on the image to add a constraint; Shift for horizontal/vertical; right-click to delete.	Drag on the image to add a constraint; Shift for horizontal/vertical; right-click to delete
-	Export selected measurements (CSV)	Export selected measurements (CSV)
+	Export selected measurements (CSV)	នាំចេញ selected measurements (CSV)
 	Focal Length	Focal Length
-	Font Size:	Font Size:
+	Font Size:	ពុម្ពអក្សរ ទំហំ
 	Full Spherical	Full Spherical
 	Ignore	Ignore
 	Ignore All	Ignore All
-	image file path	image file path
+	image file path	រូបភាព ឯកសារ ខ្សែវណ្ឌ
 	Length:	Length:
 	Load 3D LUT…	Load 3D LUT…
 	Logical Length:	Logical Length:
 	Logical Units:	Logical Units:
 	name	name
-	new	new
+	new	ថ្មី
 	Next frame	Next frame
 	Next note	Next note
 	No author	No author
@@ -2208,14 +2208,14 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Pixel Length:	Pixel Length:
 	Play	Play
 	Play selection	Play selection
-	Presets:	Presets:
+	Presets:	Preset
 	Previous frame	Previous frame
 	Previous note	Previous note
 	Record ● a sequence of edits, then play ▶ it on any document.	Record ● a sequence of edits, then play ▶ it on any document
-	Remove variable	Remove variable
+	Remove variable	ដក variable
 	Select All	ជ្រើសរើស ទាំងអស់
 	Selections	Selections
-	Shape:	Shape:
+	Shape:	រាង
 	Stop playing/recording	Stop playing/recording
 	Suggestions:	Suggestions:
 	Text Position:	Text Position:
@@ -2253,7 +2253,7 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Version	Version
 # Phase 5.5 — final stable-key completion
 	Active	កំពុងប្រើ
-	Add	Add
+	Add	បន្ថែម
 	Appearance	រូបរាង
 shape	Appearance	រូបរាង
 	ArtCraft	ArtCraft
@@ -2262,7 +2262,7 @@ shape	Appearance	រូបរាង
 	Change	Change
 	Clipped	Clipped
 	Correction	Correction
-	current	current
+	current	បច្ចុប្បន្ន
 	Cycle Orientation	Cycle Orientation
 	Difference	ពណ៌ផ្ទុយ (Difference)
 	Discord	Discord
@@ -2280,40 +2280,40 @@ shape	Appearance	រូបរាង
 	Trilinear	Trilinear
 # Phase 5.6 — upstream kys first-launch import prompt
 	Show channels in color	បង្ហាញឆានែលជាពណ៌
-	Import keyboard shortcuts?	Import keyboard shortcuts?
+	Import keyboard shortcuts?	នាំចូល keyboard shortcuts?
 	PhotoCraft found your keyboard shortcut set {set} from another image editor on this computer: {n} of its shortcuts differ from PhotoCraft's. Import it?	PhotoCraft found your keyboard shortcut set {set} from another image editor on this computer: {n} of its shortcuts differ from PhotoCraft's. Import it?
 	Edit › Keyboard Shortcuts › Reset All to Defaults undoes an import.	Edit › Keyboard Shortcuts › Reset All to Defaults undoes an import
 	Don't Import	Don't Import
 	The keyboard shortcut set was not imported: {error}	The keyboard shortcut set was not imported: {error}
 	Auto Center Preview	Auto Center Preview
-	Brush	Brush
+	Brush	ជក់
 	Color Picker ({name})	Color Picker ({name})
 	Front Image	Front Image
 	Next Document	Next Document
 	Open EXR Parts…	បើកផ្នែក EXR…
-	Pencil	Pencil
+	Pencil	ខ្មៅដៃ
 	PhotoCraft — Screen Color Picker	PhotoCraft — Screen Color Picker
 	Previous Document	Previous Document
 	Refine	Refine
-	Remove from Recent	Remove from Recent
-	Remove {name} from Recent	Remove {name} from Recent
-	Use Classic Mode	Use Classic Mode
+	Remove from Recent	ដកចេញពីបញ្ជីថ្មីៗ
+	Remove {name} from Recent	ដក {name} ចេញពីបញ្ជីថ្មីៗ
+	Use Classic Mode	Mode Use Classic
 	W x H x Resolution	W x H x Resolution
 	Block	Block
 	(No neutral color exists for {mode} mode.)	(No neutral color exists for {mode} mode.)
 	24 bits/pixel	24 bits/pixel
 	32 bits/pixel	32 bits/pixel
-	Activate Panel	Activate Panel
+	Activate Panel	ផ្ទាំង Activate
 	Add New Artboard	Add New Artboard
 	Add to favorites	Add to favorites
 	Alignment	Alignment
 	Amount:	Amount:
 	Anti-aliased	Anti-aliased
 	Appearance Settings…	ការកំណត់ រូបរាង…
-	Apply Vanishing Point ({key})	Apply Vanishing Point ({key})
+	Apply Vanishing Point ({key})	អនុវត្ត Vanishing Point ({key})
 	Automatic	ស្វ័យប្រវត្តិ
-	Background From Layer	Background From Layer
-	Background from Layer	Background from Layer
+	Background From Layer	ស្រទាប់ Background From
+	Background from Layer	ស្រទាប់ Background from
 	Bicubic Sharper (reduction)	Bicubic Sharper (reduction)
 	Bicubic Smoother (enlargement)	Bicubic Smoother (enlargement)
 	Bottom:	Bottom:
@@ -2327,30 +2327,30 @@ shape	Appearance	រូបរាង
 	Center Columns	Center Columns
 	Change Panel Group	Change Panel Group
 	Change Panel Layout	Change Panel Layout
-	Clear Brush Strokes	Clear Brush Strokes
-	Clear Existing Guides	Clear Existing Guides
+	Clear Brush Strokes	សម្អាតបន្ទាត់គូសជក់
+	Clear Existing Guides	សម្អាត Existing Guides
 	Click a segment to add an anchor point · {alt}-click an anchor to delete it	Click a segment to add an anchor point · {alt}-click an anchor to delete it
 	Click an anchor point to delete it · {alt}-click a segment to add one	Click an anchor point to delete it · {alt}-click a segment to add one
 	Click to place · Alt-click or drag off-canvas to remove	Click to place · Alt-click or drag off-canvas to remove
 	Click: corner · Drag: smooth · {alt}-drag: break handle · Click or drag first point: close · {key} finish · Esc cancel	Click: corner · Drag: smooth · {alt}-drag: break handle · Click or drag first point: close · {key} finish · Esc cancel
 	Click: smooth point · Double-click: corner · Drag a point: move · Click first point: close · {key} finish	Click: smooth point · Double-click: corner · Drag a point: move · Click first point: close · {key} finish
-	Close Panel	Close Panel
+	Close Panel	ផ្ទាំង បិទ
 	Columns	Columns
 	Contour Editor	Contour Editor
 	Corner	Corner
 	Corners	Corners
-	Create Plane	Create Plane
-	Create a new elliptical frame	Create a new elliptical frame
-	Create a new rectangular frame	Create a new rectangular frame
+	Create Plane	បង្កើត Plane
+	Create a new elliptical frame	បង្កើត a new elliptical frame
+	Create a new rectangular frame	បង្កើត a new rectangular frame
 	Curve Fit:	Curve Fit:
 	Dash offset	Dash offset
-	Delete Crop Preset…	Delete Crop Preset…
-	Dock Panel	Dock Panel
+	Delete Crop Preset…	លុប Preset Crop…
+	Dock Panel	ផ្ទាំង Dock
 	Drag to draw the curve · {key}-click draws a straight line	Drag to draw the curve · {key}-click draws a straight line
 	Drag: draw freehand · {alt}-click: straight segment · Release on the start point: close	Drag: draw freehand · {alt}-click: straight segment · Release on the start point: close
 	Draw to modify the curve	Draw to modify the curve
-	Edit Plane	Edit Plane
-	Edit points to modify the curve	Edit points to modify the curve
+	Edit Plane	កែសម្រួល Plane
+	Edit points to modify the curve	កែសម្រួល points to modify the curve
 	Emulsion Down	Emulsion Down
 	Enter a name for the crop preset	Enter a name for the crop preset
 	Expand Detection Area	Expand Detection Area
@@ -2359,9 +2359,9 @@ shape	Appearance	រូបរាង
 	Fill with {mode}-neutral color (black)	Fill with {mode}-neutral color (black)
 	Fill with {mode}-neutral color (white)	Fill with {mode}-neutral color (white)
 	Fix the red plane first: its corners must form a convex quad	Fix the red plane first: its corners must form a convex quad
-	Float Panel	Float Panel
+	Float Panel	ផ្ទាំង Float
 	Functions	Functions
-	Grid Size:	Grid Size:
+	Grid Size:	ក្រឡាចត្រង្គ ទំហំ
 	Group with	Group with
 	H	H
 	Include in playback	Include in playback
@@ -2379,8 +2379,8 @@ shape	Appearance	រូបរាង
 	Margin	Margin
 	Medium Blue	Medium Blue
 	Miter limit	Miter limit
-	Move Panel	Move Panel
-	New Crop Preset…	New Crop Preset…
+	Move Panel	ផ្ទាំង Move
+	New Crop Preset…	Preset Crop ថ្មី…
 	New Layer	បង្កើតស្រទាប់ថ្មី (New Layer)
 	No document open	No document open
 	No matching settings	No matching settings
@@ -2389,45 +2389,45 @@ shape	Appearance	រូបរាង
 	On Layers	On Layers
 	On White	On White
 	Onion Skin	Onion Skin
-	Opened {name}	Opened {name}
+	Opened {name}	បានបើក {name}
 	Paint over hair or fur on the image; Alt paints the other mode	Paint over hair or fur on the image; Alt paints the other mode
-	Panel menu	Panel menu
+	Panel menu	ផ្ទាំង ម៉ឺនុយ
 	Print Resolution:	Print Resolution:
 	Pro Light Gray Theme	Pro Light Gray Theme
 	Pro Light Theme	Pro Light Theme
 	Protect skin tones	Protect skin tones
 	Protect:	Protect:
 	Refine Edge Brush (R)	Refine Edge Brush (R)
-	Remove from favorites	Remove from favorites
-	Reset All Tools	Reset All Tools
+	Remove from favorites	ដក from favorites
+	Reset All Tools	កំណត់ឡើងវិញ ទាំងអស់ ឧបករណ៍
 	Reset Tool	ឧបករណ៍ កំណត់ឡើងវិញ
-	Reset all tools to their default settings?	Reset all tools to their default settings?
+	Reset all tools to their default settings?	កំណត់ឡើងវិញ all tools to their default settings?
 	Resize panel window	Resize panel window
 	Resize panels	Resize panels
-	Restore Original Edge	Restore Original Edge
+	Restore Original Edge	ស្តារ Original Edge
 	Right:	Right:
 	Rows	Rows
 	Saved {name}	Saved {name}
 	Saving {percent}	Saving {percent}
 	Scale or rotate the moved area, then press {key}	Scale or rotate the moved area, then press {key}
-	Scale:	Scale:
+	Scale:	មាត្រដ្ឋាន
 	Search settings…	ស្វែងរកការកំណត់…
-	Select the crop presets to delete	Select the crop presets to delete
-	Select the crop presets to delete:	Select the crop presets to delete:
-	Show Edge	Show Edge
+	Select the crop presets to delete	ជ្រើសរើស the crop presets to delete
+	Select the crop presets to delete:	ជ្រើសរើស the crop presets to delete:
+	Show Edge	បង្ហាញ Edge
 	Show Grid	បង្ហាញ ក្រឡាចត្រង្គ (Grid)
-	Show Original	Show Original
+	Show Original	បង្ហាញ Original
 	Slant	Slant
 	Smooth the curve values	Smooth the curve values
 	Snap to Origin	Snap to Origin
 	Solid	Solid
-	Targa Options	Targa Options
+	Targa Options	ជម្រើស Targa
 	Target:	Target:
 	The layer or its mask changed. Drag the mask onto the Trash again.	The layer or its mask changed. Drag the mask onto the Trash again
 	There is no crop size or ratio to save	There is no crop size or ratio to save
 	Top:	Top:
 	Transform On Drop	Transform On Drop
-	Use Previous Layer to Create Clipping Mask	Use Previous Layer to Create Clipping Mask
+	Use Previous Layer to Create Clipping Mask	របាំង Use Previous Layer to Create Clipping
 	Vanishing Point is not active	Vanishing Point is not active
 	Vanishing Point: click four corners to create a plane	Vanishing Point: click four corners to create a plane
 	W	W
@@ -2449,18 +2449,18 @@ shape	Appearance	រូបរាង
 @plural	{what} with {n} warning|{what} with {n} warnings	{what} ដែលមានការព្រមាន {n}
 	(coming soon)	(coming soon)
 	Add beauty precomp from the AOVs	Add beauty precomp from the AOVs
-	Show in Explorer	Show in Explorer
-	Show in Folder	Show in Folder
-	Delete and Fill Selection	Delete and Fill Selection
+	Show in Explorer	បង្ហាញ in Explorer
+	Show in Folder	បង្ហាញ in Folder
+	Delete and Fill Selection	លុប and Fill Selection
 	Transform Again on a Copy	Transform Again on a Copy
 	General…	ទូទៅ…
 	Camera Raw…	Camera Raw…
 	Integrations…	ការតភ្ជាប់ប្រព័ន្ធ…
 	Stamp Visible	Stamp Visible
-	Select Layer Above	Select Layer Above
-	Select Layer Below	Select Layer Below
-	Select Top Layer	Select Top Layer
-	Select Bottom Layer	Select Bottom Layer
+	Select Layer Above	ជ្រើសរើស Layer Above
+	Select Layer Below	ជ្រើសរើស Layer Below
+	Select Top Layer	ជ្រើសរើស ស្រទាប់ Top
+	Select Bottom Layer	ជ្រើសរើស ស្រទាប់ Bottom
 	Add Layer Above to Selection	Add Layer Above to Selection
 	Add Layer Below to Selection	Add Layer Below to Selection
 	Stamp Down	Stamp Down
@@ -2484,9 +2484,9 @@ shape	Appearance	រូបរាង
 	Optical	Optical
 	PSD	PSD
 	Quick Actions	Quick Actions
-	Remove	Remove
+	Remove	ដកចេញ
 	Remove Background	លុបផ្ទៃខាងក្រោយ (Remove Background)
-	Remove Tool	Remove Tool
+	Remove Tool	ឧបករណ៍លុប (Remove Tool)
 	Keyboard shortcuts imported	Keyboard shortcuts imported
 	Your keyboard shortcut set {set} is in use here: {n} shortcuts differ from the defaults. Edit › Keyboard Shortcuts shows them; Reset All to Defaults undoes this.	Your keyboard shortcut set {set} is in use here: {n} shortcuts differ from the defaults. Edit › Keyboard Shortcuts shows them; Reset All to Defaults undoes this
 	Set additional smoothing options	Set additional smoothing options
@@ -2505,21 +2505,21 @@ shape	Appearance	រូបរាង
 	Could not use Puppet Warp: no opaque pixels	Could not use Puppet Warp: no opaque pixels
 	Could not use Puppet Warp: the layer is empty	Could not use Puppet Warp: the layer is empty
 	Crosswise	Crosswise
-	Current Tool	Current Tool
+	Current Tool	ឧបករណ៍ បច្ចុប្បន្ន (Current Tool)
 	Default PhotoCraft Size	Default PhotoCraft Size
 	Delete Workspace	លុប កន្លែងធ្វើការ
 	Document Dimensions	Document Dimensions
-	Document Profile	Document Profile
+	Document Profile	ឯកសារ Profile ពណ៌
 	Document Sizes	Document Sizes
 	Efficiency	Efficiency
-	Single Row Marquee Tool	Single Row Marquee Tool
-	Single Column Marquee Tool	Single Column Marquee Tool
-	Eraser	Eraser
+	Single Row Marquee Tool	ឧបករណ៍ Single Row Marquee (Single Row Marquee Tool)
+	Single Column Marquee Tool	ឧបករណ៍ Single Column Marquee (Single Column Marquee Tool)
+	Eraser	ជ័រលុប
 	ExtraBold	ExtraBold
 	ExtraLight	ExtraLight
-	Hard	Hard
-	Horizontal Type Mask Tool	Horizontal Type Mask Tool
-	Vertical Type Mask Tool	Vertical Type Mask Tool
+	Hard	រឹង
+	Horizontal Type Mask Tool	ឧបករណ៍របាំងអក្សរផ្ដេក
+	Vertical Type Mask Tool	ឧបករណ៍របាំងអក្សរបញ្ឈរ
 	Indexed	Indexed
 	Lab	Lab
 	Landscape, 10 x 8	Landscape, 10 x 8
@@ -2540,8 +2540,8 @@ shape	Appearance	រូបរាង
 	New Workspace	បង្កើត កន្លែងធ្វើការ ថ្មី
 	Original Ratio	Original Ratio
 	Paints from the document's opening state	Paints from the document's opening state
-	Add Anchor Point Tool	Add Anchor Point Tool
-	Delete Anchor Point Tool	Delete Anchor Point Tool
+	Add Anchor Point Tool	ឧបករណ៍បន្ថែមចំណុចយុថ្កា (Add Anchor)
+	Delete Anchor Point Tool	ឧបករណ៍លុបចំណុចយុថ្កា (Delete Anchor)
 	Pixel Replacement	Pixel Replacement
 	Portrait, 4 x 6	Portrait, 4 x 6
 	Portrait, 5 x 7	Portrait, 5 x 7
@@ -2554,13 +2554,13 @@ shape	Appearance	រូបរាង
 	Rasterize Layer	បម្លែងស្រទាប់ជាភីកសែល
 	Rasterize Layers	បម្លែង ស្រទាប់ ជាភីកសែល
 	Ratio	Ratio
-	Save Pixel Aspect Ratio	Save Pixel Aspect Ratio
+	Save Pixel Aspect Ratio	រក្សាទុក Pixel Aspect Ratio
 	Scratch Sizes	Scratch Sizes
-	Select Data Points	Select Data Points
+	Select Data Points	ជ្រើសរើស Data Points
 	SemiBold	SemiBold
-	Show Extras Options	Show Extras Options
+	Show Extras Options	បង្ហាញ ជម្រើស Extras
 	Smart Filters	Smart Filters
-	Soft	Soft
+	Soft	ស្រទន់
 	Source: set	Source: set
 	Square, 12 x 12	Square, 12 x 12
 	Square, 5 x 5	Square, 5 x 5
@@ -2580,12 +2580,12 @@ shape	Appearance	រូបរាង
 	Allow scripts to connect	Allow scripts to connect
 	Always create smart objects when placing	Always create smart objects when placing
 	Animated zoom	Animated zoom
-	Apply auto tone	Apply auto tone
+	Apply auto tone	អនុវត្ត auto tone
 	Auto collapse icon panels	Auto collapse icon panels
 	Auto show hidden panels	Auto show hidden panels
 	Beep when done	Beep when done
 	Bit depth	Bit depth
-	Brush preview color	Brush preview color
+	Brush preview color	ជក់ មើលជាមុន ពណ៌
 	Cache levels	Cache levels
 	Show canvas dots	បង្ហាញចំណុចអុចលើផ្ទៃក្រណាត់
 	Clip thumbnails to layer bounds	កាត់តម្រឹមរូបតូចៗតាមទំហំស្រទាប់
@@ -2603,10 +2603,10 @@ shape	Appearance	រូបរាង
 	Enable flick panning	Enable flick panning
 	Enable floating document window docking	Enable floating document window docking
 	Enable narrow options bar	Enable narrow options bar
-	Export clipboard	Export clipboard
+	Export clipboard	នាំចេញ clipboard
 	Extra large	Extra large
 	Fill new type layers with placeholder	Fill new type layers with placeholder
-	Font preview	Font preview
+	Font preview	ពុម្ពអក្សរ មើលជាមុន
 	Generator enabled	Generator enabled
 	Glossy	Glossy
 	Gutter	Gutter
@@ -2619,25 +2619,25 @@ shape	Appearance	រូបរាង
 	Low resolution previews	Low resolution previews
 	Missing glyph protection	Missing glyph protection
 	Modern	Modern
-	Open as smart object	Open as smart object
-	Open in camera raw	Open in camera raw
-	Open documents as tabs	Open documents as tabs
+	Open as smart object	បើក as smart object
+	Open in camera raw	បើក in camera raw
+	Open documents as tabs	បើក documents as tabs
 	Print resolution	Print resolution
 	Pro light	Pro light
 	Pro light gray	Pro light gray
 	Pro photo	Pro photo
-	Recent fonts	Recent fonts
+	Recent fonts	ពុម្ពអក្សរប្រើថ្មីៗ
 	Resize image during place	Resize image during place
 	Rotate view with trackpad	Rotate view with trackpad
-	Save in background	Save in background
+	Save in background	រក្សាទុក in background
 	Screen	បំភ្លឺ (Screen)
 	Screen resolution	Screen resolution
 	Scrubby slider acceleration	Scrubby slider acceleration
 	Sharpen for	Sharpen for
-	Show extension panels	Show extension panels
-	Show font names in english	Show font names in english
-	Show highlight on rollover	Show highlight on rollover
-	Show transformation values	Show transformation values
+	Show extension panels	បង្ហាញ extension panels
+	Show font names in english	បង្ហាញ font names in english
+	Show highlight on rollover	បង្ហាញ highlight on rollover
+	Show transformation values	បង្ហាញ transformation values
 	Smart quotes	Smart quotes
 	Adwaita	Adwaita
 	Adwaita dark	Adwaita dark
@@ -2664,30 +2664,30 @@ shape	Appearance	រូបរាង
 	Pin Light	ពន្លឺចំណុច
 	Exclusion	មិនរាប់បញ្ចូល
 	Divide	ចែកពណ៌
-	Create new brush from the current settings	Create new brush from the current settings
-	Delete brush	Delete brush
-	Import Brushes… (.abr)	Import Brushes… (.abr)
+	Create new brush from the current settings	បង្កើត new brush from the current settings
+	Delete brush	លុប ជក់
+	Import Brushes… (.abr)	នាំចូល Brushes… (.abr)
 	System Info	System Info
 	Reset GPU Backend	កំណត់ ផ្នែកខាងក្រោយ GPU ឡើងវិញ
-	Create Warped Text	Create Warped Text
+	Create Warped Text	បង្កើត Warped Text
 	Rasterize Smart Object	Rasterize Smart Object
 	Rasterize Fill Content	Rasterize Fill Content
 	Rasterize Layer Style	បម្លែងរចនាប័ទ្មស្រទាប់ជាភីកសែល
-	Toggle the Brush Settings panel  (F5)	Toggle the Brush Settings panel  (F5)
-	Create new brush preset from the current settings	Create new brush preset from the current settings
+	Toggle the Brush Settings panel  (F5)	បិទ/បើក the Brush Settings panel  (F5)
+	Create new brush preset from the current settings	បង្កើត new brush preset from the current settings
 	Brush Settings…  (F5): every option of this brush	Brush Settings…  (F5): every option of this brush
-	Color Replacement Tool	Color Replacement Tool
+	Color Replacement Tool	ឧបករណ៍ Color Replacement (Color Replacement Tool)
 	Color Replacement	Color Replacement
-	Horizontal type	Horizontal type
-	Vertical type	Vertical type
+	Horizontal type	ផ្ដេក អក្សរ
+	Vertical type	បញ្ឈរ អក្សរ
 	GPU backend	GPU backend
 	Linux display server	Linux display server
 	X11	X11
 	Rendering mode	Rendering mode
-	Apply At Canvas Bounds	Apply At Canvas Bounds
+	Apply At Canvas Bounds	អនុវត្ត At Canvas Bounds
 	Could not open	Could not open
 	{path}: the path is not valid Unicode; rename the file and open it again.	{path}: the path is not valid Unicode; rename the file and open it again
-	Foreground Color	Foreground Color
+	Foreground Color	ពណ៌ Foreground
 	Color…	ពណ៌…
 	50% Gray	50% Gray
 	Color Adaptation	Color Adaptation
@@ -2698,7 +2698,7 @@ shape	Appearance	រូបរាង
 	Diagonal (Descending)	Diagonal (Descending)
 	Gaussian	Gaussian
 	Ring	Ring
-	Red Eye Tool	Red Eye Tool
+	Red Eye Tool	ឧបករណ៍លុបភ្នែកក្រហម (Red Eye Tool)
 	Red Eye	Red Eye
 	Black Matte	Black Matte
 	White Matte	White Matte
@@ -2716,7 +2716,7 @@ fontWeight	Bold	ដិត (Bold)
 fontWeight	ExtraBold	ដិតខ្លាំង (ExtraBold)
 fontWeight	Black	ខ្មៅដិត (Black)
 fontWeight	Italic	ទ្រេត (Italic)
-	Rotate View Tool	Rotate View Tool
+	Rotate View Tool	ឧបករណ៍បង្វិលទិដ្ឋភាព (Rotate View)
 	Drag around the centre to rotate the view  ·  Shift constrains to 15°	Drag around the centre to rotate the view  ·  Shift constrains to 15°
 	Transparency Threshold	Transparency Threshold
 	Opacity Threshold	Opacity Threshold
@@ -2738,10 +2738,10 @@ fontWeight	Italic	ទ្រេត (Italic)
 	Studio Light	Studio Light
 	Color Picker (Solid Color)	Color Picker (Solid Color)
 	Color Picker (Crop Shield Color)	Color Picker (Crop Shield Color)
-	Create Rectangle	Create Rectangle
-	Create Ellipse	Create Ellipse
-	Create Triangle	Create Triangle
-	Create Polygon	Create Polygon
+	Create Rectangle	បង្កើត Rectangle
+	Create Ellipse	បង្កើត Ellipse
+	Create Triangle	បង្កើត Triangle
+	Create Polygon	បង្កើត Polygon
 	Pressure curve	Pressure curve
 	Some brush presets could not be loaded	Some brush presets could not be loaded
 	Retry saving presets	Retry saving presets
@@ -2750,7 +2750,7 @@ fontWeight	Italic	ទ្រេត (Italic)
 	Browser storage is unavailable; brushes are session-only. Keep this tab open to retain them.	Browser storage is unavailable; brushes are session-only. Keep this tab open to retain them
 	Saving brush presets… Keep this tab open until saving finishes.	Saving brush presets… Keep this tab open until saving finishes
 	Reflect	Reflect
-	Glow	Glow
+	Glow	ពន្លឺចាំង
 	Negation	Negation
 	XOR	XOR
 	Color Burn (Paint.NET)	Color Burn (Paint.NET)
@@ -2775,12 +2775,12 @@ cameraData	ISO Speed	ល្បឿន ISO
 cameraData	Focal Length	ប្រវែងប្រសព្វ (Focal Length)
 cameraData	Focal Length (35 mm)	ប្រវែងប្រសព្វ (35 mm)
 cameraData	Lens	កញ្ចក់ឡេន
-	Perspective Crop Tool	Perspective Crop Tool
+	Perspective Crop Tool	ឧបករណ៍ Perspective Crop (Perspective Crop Tool)
 	Drag a box or click four corners · drag the corners onto the edges of a skewed shape · {commit} commits · Esc cancels	Drag a box or click four corners · drag the corners onto the edges of a skewed shape · {commit} commits · Esc cancels
-	Artboard Tool	Artboard Tool
-	Freeform Pen Tool	Freeform Pen Tool
-	Curvature Pen Tool	ឧបករណ៍ប៊ិចខ្សែកោង (Curvature Pen)
-	32-bit Preview Options	32-bit Preview Options
+	Artboard Tool	ឧបករណ៍ Artboard (Artboard Tool)
+	Freeform Pen Tool	ឧបករណ៍ប៊ិចគូរសេរី (Freeform Pen)
+	Curvature Pen Tool	ឧបករណ៍ប៊ិចគូសខ្សែរាងកោង (Curvature Pen)
+	32-bit Preview Options	ជម្រើស 32-bit Preview
 	3D	3D
 	Accented Edges	Accented Edges
 	Accurate	Accurate
@@ -2797,12 +2797,12 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Ambient	Ambient
 	Amplitude Max	Amplitude Max
 	Amplitude Min	Amplitude Min
-	Angled Strokes	Angled Strokes
+	Angled Strokes	បន្ទាត់គូសទ្រេត
 	Anisotropic	Anisotropic
 	Aperture	Aperture
-	Apply Data Set	Apply Data Set
-	Apply Image	Apply Image
-	Apply Layer Comp	Apply Layer Comp
+	Apply Data Set	អនុវត្ត Data Set
+	Apply Image	អនុវត្ត រូបភាព
+	Apply Layer Comp	អនុវត្ត Layer Comp
 	Arbitrary	Arbitrary
 	Area	Area
 	Around Center	Around Center
@@ -2814,7 +2814,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Assign Profile	Assign Profile
 	At	At
 	Author	Author
-	Auto Scale	Auto Scale
+	Auto Scale	ស្វ័យប្រវត្តិ មាត្រដ្ឋាន
 	Auto-Align Layers	Auto-Align Layers
 	Auto-Blend Layers	Auto-Blend Layers
 	Background Level	Background Level
@@ -2825,36 +2825,36 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Batch	Batch
 	Berries	Berries
 	Best	Best
-	Black Clip	Black Clip
+	Black Clip	ខ្មៅ ឃ្លីប
 	Black Intensity	Black Intensity
 	Blade Curvature	Blade Curvature
 	Blast	Blast
 	Bleach Bypass	Bleach Bypass
 	Blend	Blend
 	Blocks	Blocks
-	Blue Yellow	Blue Yellow
+	Blue Yellow	ខៀវ លឿង
 	Blur Angle	Blur Angle
 	Bold Italic	Bold Italic
 	Border	Border
 	Border Thickness	Border Thickness
 	Box Blur	Box Blur
-	Branches Color	Branches Color
+	Branches Color	ពណ៌ Branches
 	Branches Height	Branches Height
 	Branches Thickness	Branches Thickness
 	Brick	Brick
 	Bristle Detail	Bristle Detail
 	Browse	Browse
 	Brush Detail	Brush Detail
-	Brush Size	Brush Size
-	Brush Strokes	Brush Strokes
-	Brush Type	Brush Type
+	Brush Size	ជក់ ទំហំ
+	Brush Strokes	បន្ទាត់គូសជក់ (Brush Strokes)
+	Brush Type	ជក់ អក្សរ
 	Burlap	Burlap
 	Burn	Burn
 	Calculations	Calculations
 	Camera Calibration	Camera Calibration
-	Camera Raw Filter	Camera Raw Filter
+	Camera Raw Filter	តម្រង Camera Raw
 	Candle Light	Candle Light
-	Canvas Size	Canvas Size
+	Canvas Size	Canvas ទំហំ
 	Caption	Caption
 	Category	Category
 	Cell Size	Cell Size
@@ -2862,7 +2862,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Center Y	Center Y
 	Chalk & Charcoal	Chalk & Charcoal
 	Chalk Area	Chalk Area
-	Channel	Channel
+	Channel	ឆានែល
 	Channel1	Channel1
 	Channel2	Channel2
 	Channel3	Channel3
@@ -2874,7 +2874,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Circle	Circle
 	Circularity	Circularity
 	Cleanliness	Cleanliness
-	Clear Amount	Clear Amount
+	Clear Amount	សម្អាត Amount
 	Clipping Path	Clipping Path
 	Clone	Clone
 	Clone Stamp	Clone Stamp
@@ -2883,7 +2883,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Color Decontaminate	Color Decontaminate
 	Color Halftone	Color Halftone
 	Color Lookup Tables	Color Lookup Tables
-	Color Profile	Color Profile
+	Color Profile	ពណ៌ Profile ពណ៌
 	Color Range	Color Range
 	Color Table	Color Table
 	Color indicates	Color indicates
@@ -2898,8 +2898,8 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Contract	Contract
 	Contrasty	Contrasty
 	Conté Crayon	Conté Crayon
-	Convert to Linked	Convert to Linked
-	Convert to Profile	Convert to Profile
+	Convert to Linked	បំប្លែងទៅជា Linked
+	Convert to Profile	បំប្លែងទៅជា Profile ពណ៌
 	Cool	Cool
 	Cooling L B B	Cooling L B B
 	Cooling80	Cooling80
@@ -2913,23 +2913,23 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Crack Depth	Crack Depth
 	Crack Spacing	Crack Spacing
 	Craquelure	Craquelure
-	Create By	Create By
+	Create By	បង្កើត By
 	Cross	Cross
 	Cross Process	Cross Process
 	Crosshatch	Crosshatch
 	Crystallize	Crystallize
-	Current	Current
+	Current	បច្ចុប្បន្ន
 	Curve Darks	Curve Darks
 	Curve Highlights	Curve Highlights
 	Curve Lights	Curve Lights
-	Curve Shadows	Curve Shadows
+	Curve Shadows	ខ្សែកោង ស្រមោល
 	Curve Splits	Curve Splits
-	Custom Branch Color	Custom Branch Color
+	Custom Branch Color	ពណ៌ Custom Branch
 	Cutout	Cutout
 	Daisies	Daisies
 	Dark Intensity	Dark Intensity
 	Dark Rough	Dark Rough
-	Dark Strokes	Dark Strokes
+	Dark Strokes	បន្ទាត់គូសងងឹត
 	Darken Only	Darken Only
 	Darkness	Darkness
 	Data	Data
@@ -2942,13 +2942,13 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Deep Yellow	Deep Yellow
 	Default Foreground and Background Colors	Default Foreground and Background Colors
 	Default Leaves	Default Leaves
-	Define Brush Preset	Define Brush Preset
+	Define Brush Preset	Preset Define Brush
 	Define Custom Shape	Define Custom Shape
 	Define Pattern	Define Pattern
 	Definition	Definition
 	Defringe	Defringe
 	Depth Map	Depth Map
-	Depth Mode	Depth Mode
+	Depth Mode	Mode Depth
 	Diffuse	Diffuse
 	Diffuse Glow	Diffuse Glow
 	Digits	Digits
@@ -2963,7 +2963,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Dry Brush	Dry Brush
 	Duplicate	ចម្លងទ្វេដង
 	Duplicate Layer	ស្ទួនស្រទាប់ (Duplicate Layer)
-	Duplicate Layer Comp	Duplicate Layer Comp
+	Duplicate Layer Comp	ស្ទួន Layer Comp
 	Duplicate Layers	ចម្លង ស្រទាប់ ទ្វេដង
 	Duplication	Duplication
 	Duration	Duration
@@ -2985,15 +2985,15 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Enlarged	Enlarged
 	Errors	Errors
 	Even Fields	Even Fields
-	Export Contents	Export Contents
-	Export Preferences	Export Preferences
+	Export Contents	នាំចេញ Contents
+	Export Preferences	នាំចេញ ចំណូលចិត្ត
 	Extensions	ផ្នែកបន្ថែម
 	Extra Bold	Extra Bold
 	Extra Light	Extra Light
 	Extrude	Extrude
 	F	F
 	Faded Film	Faded Film
-	Fast	Fast
+	Fast	លឿន
 	Fiber Length	Fiber Length
 	Fibers	Fibers
 	Field Blur	Field Blur
@@ -3013,13 +3013,13 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Flash	Flash
 	Flat	Flat
 	Flat Shading	Flat Shading
-	Flower Color	Flower Color
+	Flower Color	ពណ៌ Flower
 	Focal Distance	Focal Distance
 	Focal Length35mm	Focal Length35mm
 	Focus	Focus
 	Focus Area	Focus Area
 	Foreground Level	Foreground Level
-	Frame	Frame
+	Frame	គំនូសតាង (Frame)
 	Fresco	Fresco
 	From Left	From Left
 	From Right	From Right
@@ -3034,7 +3034,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Gloss	Gloss
 	Glow Amount	Glow Amount
 	Glow Brightness	Glow Brightness
-	Glow Size	Glow Size
+	Glow Size	ពន្លឺចាំង ទំហំ
 	Glowing Edges	Glowing Edges
 	Glyph	Glyph
 	Good	Good
@@ -3065,16 +3065,16 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Hearts	Hearts
 	Heptagon	Heptagon
 	Hexagon	Hexagon
-	Hide	Hide
+	Hide	លាក់
 	High	High
 	High Pass	High Pass
-	Highlight	Highlight
+	Highlight	ពន្លឺចាំង
 	Highlight Amount	Highlight Amount
 	Highlight Area	Highlight Area
 	Highlight Radius	Highlight Radius
 	Highlight Strength	Highlight Strength
 	Highlight Tone	Highlight Tone
-	History Brush	History Brush
+	History Brush	ប្រវត្តិ ជក់
 	Horizontal Only	Horizontal Only
 	Hotspot	Hotspot
 	Hsb	Hsb
@@ -3092,7 +3092,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	In White	In White
 	Infinite	Infinite
 	Ink Outlines	Ink Outlines
-	Input Mode	Input Mode
+	Input Mode	Mode Input
 	Integrated Density	Integrated Density
 	Intensity	Intensity
 	Interpolation	Interpolation
@@ -3107,12 +3107,12 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Keywords	Keywords
 	Label	Label
 	Layer Comp	Layer Comp
-	Layer Content Options	Layer Content Options
+	Layer Content Options	ជម្រើស Layer Content
 	Layer From Background	Layer From Background
 	Layer Properties	Layer Properties
-	Leaf Color	Leaf Color
+	Leaf Color	ពណ៌ Leaf
 	Leaves Amount	Leaves Amount
-	Leaves Color	Leaves Color
+	Leaves Color	ពណ៌ Leaves
 	Leaves Size	Leaves Size
 	Left Diagonal	Left Diagonal
 	Legacy	Legacy
@@ -3137,13 +3137,13 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Lighten Grout	Lighten Grout
 	Lighten Only	Lighten Only
 	Lighting	Lighting
-	Lighting Effects	Lighting Effects
+	Lighting Effects	Effect ពន្លឺ (Lighting Effects)
 	Liquify	Liquify
 	List	List
 	Load Selection	Load Selection
 	Lock Layers	ចាក់សោ ស្រទាប់
 	Long Lines	Long Lines
-	Long Strokes	Long Strokes
+	Long Strokes	បន្ទាត់គូសវែង
 	Loop	Loop
 	Low	Low
 	Lower	Lower
@@ -3153,18 +3153,18 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Make	Make
 	Make Work Path	Make Work Path
 	Map Document	Map Document
-	Map Layer	Map Layer
+	Map Layer	ស្រទាប់ Map
 	Map Path	Map Path
-	Mask	Mask
+	Mask	របាំង
 	Mask Incomplete Blocks	Mask Incomplete Blocks
 	Masked Areas	តំបន់របាំង
-	Match Color	Match Color
+	Match Color	ពណ៌ Match
 	Max Offset	Max Offset
 	Max Radius	Max Radius
 	Measure	Measure
 	Medium Dots	Medium Dots
 	Medium Lines	Medium Lines
-	Medium Strokes	Medium Strokes
+	Medium Strokes	បន្ទាត់គូសប្រវែងមធ្យម
 	Metallic	Metallic
 	Method	Method
 	Mezzotint	Mezzotint
@@ -3174,7 +3174,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Mosaic	Mosaic
 	Mosaic Tiles	Mosaic Tiles
 	Motion Blur	Motion Blur
-	Move Layer	Move Layer
+	Move Layer	ស្រទាប់ Move
 	Movie Prime	Movie Prime
 	Multiple Flames Along Path	Multiple Flames Along Path
 	Multiple Flames One Direction	Multiple Flames One Direction
@@ -3182,16 +3182,16 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Multiple Flames Various Length	Multiple Flames Various Length
 	Neon Glow	Neon Glow
 	Neutralize	Neutralize
-	New Channel	New Channel
+	New Channel	ឆានែល ថ្មី
 	New Group	បង្កើត ក្រុម ថ្មី
-	New Guide	New Guide
-	New Guide Layout	New Guide Layout
-	New Layer Comp	New Layer Comp
+	New Guide	បន្ទាត់ណែនាំ ថ្មី
+	New Guide Layout	Guide Layout ថ្មី
+	New Layer Comp	Layer Comp ថ្មី
 	New Layer…	បង្កើត ស្រទាប់ ថ្មី…
-	New Video Layer from File	New Video Layer from File
-	New document	New document
-	New document…     ⌘N	New document…     ⌘N
-	Noise Color	Noise Color
+	New Video Layer from File	Video Layer from File ថ្មី
+	New document	ឯកសារថ្មី
+	New document…     ⌘N	document…     ⌘N ថ្មី
+	Noise Color	ពណ៌ Noise
 	Noise Color Detail	Noise Color Detail
 	Noise Luminance	Noise Luminance
 	Noise Luminance Detail	Noise Luminance Detail
@@ -3202,7 +3202,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Odd Fields	Odd Fields
 	Oil Paint	Oil Paint
 	One Flame Along Path	One Flame Along Path
-	Open As	Open As
+	Open As	បើក As
 	Opening	Opening
 	Operation	Operation
 	Out	Out
@@ -3219,9 +3219,9 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Patch	Patch
 	Patchwork	Patchwork
 	Path Blur	Path Blur
-	Pattern Type	Pattern Type
+	Pattern Type	លំនាំក្បាច់ អក្សរ
 	Pen	Pen
-	Pencil Width	Pencil Width
+	Pencil Width	ខ្មៅដៃ ទទឹង
 	Pentagon	Pentagon
 	Perimeter	Perimeter
 	Perspective Crop	Perspective Crop
@@ -3238,11 +3238,11 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Planes	Planes
 	Plaster	Plaster
 	Plastic Wrap	Plastic Wrap
-	Point	Point
-	Point Curve	Point Curve
-	Point Curve Blue	Point Curve Blue
-	Point Curve Green	Point Curve Green
-	Point Curve Red	Point Curve Red
+	Point	ចំណុច
+	Point Curve	ចំណុច ខ្សែកោង
+	Point Curve Blue	ចំណុច ខ្សែកោង ខៀវ
+	Point Curve Green	ចំណុច ខ្សែកោង បៃតង
+	Point Curve Red	ចំណុច ខ្សែកោង ក្រហម
 	Pointed	Pointed
 	Pointillize	Pointillize
 	Polar Coordinates	Polar Coordinates
@@ -3253,7 +3253,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Prime105	Prime105
 	Prime35	Prime35
 	ProPhoto	ProPhoto
-	Profile	Profile
+	Profile	Profile ពណ៌
 	Public Domain	Public Domain
 	Pyramids	Pyramids
 	Quick Selection	Quick Selection
@@ -3270,19 +3270,19 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Rectangle	Rectangle
 	Rectangular Selection	Rectangular Selection
 	Rectangular To Polar	Rectangular To Polar
-	Red Cyan	Red Cyan
+	Red Cyan	ក្រហម Cyan
 	Reduce Color Noise	Reduce Color Noise
 	Reduce Noise	Reduce Noise
 	Relief	Relief
 	Relink to File	Relink to File
-	Remove Jpeg Artifact	Remove Jpeg Artifact
+	Remove Jpeg Artifact	ដក Jpeg Artifact
 	Rename Brush	Rename Brush
 	Rename Group	Rename Group
 	Rename Layer Comp	Rename Layer Comp
 	Render Video	Render Video
-	Reorder Layer	Reorder Layer
+	Reorder Layer	ស្រទាប់ Reorder
 	Repeat	Repeat
-	Replace Color	Replace Color
+	Replace Color	ពណ៌ Replace
 	Replace Contents	Replace Contents
 	Replace Footage	Replace Footage
 	Resolve Missing Fonts	Resolve Missing Fonts
@@ -3299,14 +3299,14 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Roses	Roses
 	Rough Pastels	Rough Pastels
 	Row Order	Row Order
-	Ruler	Ruler
+	Ruler	បន្ទាត់រង្វាស់
 	Sampler	Sampler
 	Sandstone	Sandstone
 	Sat	Sat
-	Save As	Save As
-	Save Selection	Save Selection
-	Save for Web (Legacy)	Save for Web (Legacy)
-	Scale Effects	Scale Effects
+	Save As	រក្សាទុក As
+	Save Selection	រក្សាទុក ការជ្រើសរើស
+	Save for Web (Legacy)	រក្សាទុក for Web (Legacy)
+	Scale Effects	ប្តូរមាត្រដ្ឋាន Effect
 	Scale Factor	Scale Factor
 	Scale Units	Scale Units
 	Scaling	Scaling
@@ -3316,14 +3316,14 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Seed	Seed
 	Select All Layers	ជ្រើសរើស គ្រប់ស្រទាប់
 	Select Layer	ជ្រើសរើស ស្រទាប់
-	Select and Mask	Select and Mask
+	Select and Mask	ជ្រើសរើស របាំង and
 	Selected Areas	តំបន់ជ្រើសរើស
 	Semi Bold	Semi Bold
 	Sepia	Sepia
 	Set Colors	Set Colors
 	Set Measurement Scale	Set Measurement Scale
-	Settings	Settings
-	Shadow	Shadow
+	Settings	ការកំណត់
+	Shadow	ស្រមោល
 	Shadow Amount	Shadow Amount
 	Shadow Intensity	Shadow Intensity
 	Shadow Radius	Shadow Radius
@@ -3343,7 +3343,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Simple	Simple
 	Sine	Sine
 	Sketch	Sketch
-	Slice Options	Slice Options
+	Slice Options	ជម្រើស Slice
 	Smart Blur	Smart Blur
 	Smart Sharpen	Smart Sharpen
 	Smoothness	Smoothness
@@ -3352,9 +3352,9 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Snowflakes	Snowflakes
 	Softness	Softness
 	Software	Software
-	Solid Color	Solid Color
+	Solid Color	ពណ៌ Solid
 	Solid Front Faces	Solid Front Faces
-	Source Layer	Source Layer
+	Source Layer	ស្រទាប់ Source
 	Sparkle	Sparkle
 	Spatter	Spatter
 	Speckle	Speckle
@@ -3389,9 +3389,9 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Stroke Direction	Stroke Direction
 	Stroke Length	Stroke Length
 	Stroke Pressure	Stroke Pressure
-	Stroke Size	Stroke Size
-	Stroke Width	Stroke Width
-	Strokes	Strokes
+	Stroke Size	បន្ទាត់គែម ទំហំ
+	Stroke Width	បន្ទាត់គែម ទទឹង
+	Strokes	បន្ទាត់គែម
 	Stylization	Stylization
 	Sumi-e	Sumi-e
 	Surface Blur	Surface Blur
@@ -3410,7 +3410,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Tilt-Shift	Tilt-Shift
 	Time	Time
 	Timing	Timing
-	Tint Color	Tint Color
+	Tint Color	ពណ៌ Tint
 	Tiny Lens	Tiny Lens
 	To Center	To Center
 	Tone Curve	Tone Curve
@@ -3431,10 +3431,10 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Units	Units
 	Unix	Unix
 	Unknown	Unknown
-	Unsharp Mask	Unsharp Mask
+	Unsharp Mask	របាំង Unsharp
 	Update Layer Comp	Update Layer Comp
 	Upper	Upper
-	Use Custom Color	Use Custom Color
+	Use Custom Color	ពណ៌ Use Custom
 	Use Selection In Source	Use Selection In Source
 	Use Selection In Target	Use Selection In Target
 	Vanishing Point	Vanishing Point
@@ -3447,7 +3447,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Vignette Midpoint	Vignette Midpoint
 	Vignette Roundness	Vignette Roundness
 	Vignette Style	Vignette Style
-	Vine Color	Vine Color
+	Vine Color	ពណ៌ Vine
 	Vine With Flowers	Vine With Flowers
 	Vine With Leaves	Vine With Leaves
 	Violent	Violent
@@ -3464,7 +3464,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Wavelength Min	Wavelength Min
 	Waves	Waves
 	Wetness	Wetness
-	White Clip	White Clip
+	White Clip	ស ឃ្លីប
 	White Intensity	White Intensity
 	White Is High	White Is High
 	Wide Blurry	Wide Blurry
@@ -3478,7 +3478,7 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Zigzag	Zigzag
 	sRGB	sRGB
 	sRGB IEC61966-2.1	sRGB IEC61966-2.1
-	shortcut	shortcut
+	shortcut	ផ្លូវកាត់
 	Drag (lasso) or click points (polygonal) · {add} add · {sub} subtract	Drag (lasso) or click points (polygonal) · {add} add · {sub} subtract
 	Selected Artboards	Selected Artboards
 	5 Columns, 3 Rows	5 Columns, 3 Rows
@@ -3489,9 +3489,9 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Decontaminate	Decontaminate
 	Refine Edge	Refine Edge
 	Refine Strokes	Refine Strokes
-	New Document With Mask	New Document With Mask
-	New Layer With Mask	New Layer With Mask
-	Convert Point Tool	Convert Point Tool
+	New Document With Mask	របាំង Document With ថ្មី
+	New Layer With Mask	របាំង Layer With ថ្មី
+	Convert Point Tool	ឧបករណ៍បំប្លែងចំណុចកោង/កែង (Convert Point)
 	Enable animations	Enable animations
 	Gloss Contour	Gloss Contour
 	Cone - Inverted	Cone - Inverted
@@ -3502,30 +3502,30 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Rolling Slope - Descending	Rolling Slope - Descending
 	Rounded Steps	Rounded Steps
 	Sawtooth 1	Sawtooth 1
-	Frame Tool	Frame Tool
+	Frame Tool	ឧបករណ៍ គំនូសតាង (Frame) (Frame Tool)
 	Simulate Pressure	Simulate Pressure
 	Background Eraser	Background Eraser
 	Healing Brush	Healing Brush
 	Spot Healing Brush	Spot Healing Brush
 	Smudge	Smudge
-curves	Smooth	បន្ទន់រលូន
-	Show rulers	Show rulers
-	Stroke Path…	Stroke Path…
-	Apply mask to layer before removing?	Apply mask to layer before removing?
-	Delete the vector mask?	Delete the vector mask?
-	Add Shortcut	Add Shortcut
+curves	Smooth	រលូន (Smooth)
+	Show rulers	បង្ហាញ បន្ទាត់រង្វាស់
+	Stroke Path…	គូសពណ៌តាមខ្សែវណ្ឌ (Stroke Path)…
+	Apply mask to layer before removing?	អនុវត្ត mask to layer before removing?
+	Delete the vector mask?	លុប the vector mask?
+	Add Shortcut	បន្ថែម ផ្លូវកាត់
 	Response curve	Response curve
 	Object Finder	Object Finder
 	No object found there — drag a rectangle around it	No object found there — drag a rectangle around it
-	Remove after each stroke	Remove after each stroke
-	Apply the removal ({key})	Apply the removal ({key})
+	Remove after each stroke	លុបបន្ទាប់ពីគូសនីមួយៗ
+	Apply the removal ({key})	អនុវត្ត the removal ({key})
 	Strokes to remove: {n} (Enter applies, Esc cancels)	Strokes to remove: {n} (Enter applies, Esc cancels)
 	Show home recent files	បង្ហាញឯកសារថ្មីៗលើទំព័រដើម
-	Clear Brush Controls	Clear Brush Controls
-	Reset All Locked Settings	Reset All Locked Settings
+	Clear Brush Controls	សម្អាត Brush Controls
+	Reset All Locked Settings	កំណត់ឡើងវិញ ការកំណត់ All Locked
 	Copy Texture to Other Tools	Copy Texture to Other Tools
 	Load Actions…	Load Actions…
-	Save Actions…	Save Actions…
+	Save Actions…	រក្សាទុក Actions…
 	{name} (Photoshop)	{name} (Photoshop)
 	{message} ({note})	{message} ({note})
 @plural	Loaded {n} action from {file}|Loaded {n} actions from {file}	បានផ្ទុក {n} សកម្មភាពពី {file}
@@ -3535,32 +3535,32 @@ curves	Smooth	បន្ទន់រលូន
 	File Naming	File Naming
 	Starting serial	Starting serial
 	Insert Stop…	Insert Stop…
-	Save Set…	Save Set…
+	Save Set…	រក្សាទុក Set…
 	Message:	Message:
 	Allow Continue	Allow Continue
-	Show dialog during playback	Show dialog during playback
-	Select an action first	Select an action first
+	Show dialog during playback	បង្ហាញ dialog during playback
+	Select an action first	ជ្រើសរើស an action first
 	Action playback stopped	Action playback stopped
 	Step {step} is waiting for its dialog	Step {step} is waiting for its dialog
 @plural	{n} action|{n} actions	{n} សកម្មភាព
 	Background (Default)	Background (Default)
 	Presentation	ការបង្ហាញ
 	Include All Subfolders	Include All Subfolders
-	Gradient Preset Options	Gradient Preset Options
-	Import .GRD	Import .GRD
+	Gradient Preset Options	ជម្រើស Preset ពណ៌ជម្រាល
+	Import .GRD	នាំចូល .GRD
 	Choose a gradient file (.grd).	Choose a gradient file (.grd)
 	Auto Add/Delete	Auto Add/Delete
 	Don't also tick Mirror Image in Print Settings…: the two flips cancel out.	Don't also tick Mirror Image in Print Settings…: the two flips cancel out
-	Print Settings…	Print Settings…
-	Remember to turn off the printer's own colour management in Print Settings…	Remember to turn off the printer's own colour management in Print Settings…
+	Print Settings…	ការកំណត់ Print…
+	Remember to turn off the printer's own colour management in Print Settings…	ការកំណត់ Remember to turn off the printer's own colour management in Print…
 	Sent to {printer}	Sent to {printer}
-	set in Print Settings…	set in Print Settings…
+	set in Print Settings…	ការកំណត់ set in Print…
 	ICO is limited to 256 × 256 pixels	ICO is limited to 256 × 256 pixels
 	Use the embedded profile ({profile})	Use the embedded profile ({profile})
-	Convert to the working space ({profile})	Convert to the working space ({profile})
+	Convert to the working space ({profile})	បំប្លែងទៅជា the working space ({profile})
 	Remember this choice for future images	Remember this choice for future images
 	Turn the prompt back on with Ask On Mismatch in Edit › Color Settings.	Turn the prompt back on with Ask On Mismatch in Edit › Color Settings
-	Button Mode	Button Mode
+	Button Mode	Mode Button
 	Button Mode On	Button Mode On
 	Darken Interface	Darken Interface
 	Lighten Interface	Lighten Interface
@@ -3568,8 +3568,8 @@ curves	Smooth	បន្ទន់រលូន
 	Chisel Hard	Chisel Hard
 	Chisel Soft	Chisel Soft
 	Open color-less EXR as ACEScg	បើក EXR គ្មានពណ៌ជា ACEScg
-	Edit Selected Guides	Edit Selected Guides
-	Clear Selected Guides	Clear Selected Guides
+	Edit Selected Guides	កែសម្រួល Selected Guides
+	Clear Selected Guides	សម្អាត Selected Guides
 	Adjust Colors	កែសម្រួលពណ៌ (Adjust Colors)
 	Adjust colors	កែសម្រួលពណ៌
 	Select subject	ជ្រើសរើសប្រធានបទ
