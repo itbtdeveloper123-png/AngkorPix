@@ -2687,62 +2687,190 @@ fn open_on_double_click(app: &mut PhotocraftApp, ui: &egui::Ui, area: Rect) {
     }
 }
 
+#[derive(Clone)]
+enum HomeThumbCache {
+    Ready(egui::TextureHandle),
+    None,
+}
+
+fn recent_thumbnail(ctx: &egui::Context, path: &str) -> Option<egui::TextureHandle> {
+    let id = egui::Id::new("recent-thumb-cache").with(path);
+    if let Some(cached) = ctx.data(|d| d.get_temp::<HomeThumbCache>(id)) {
+        return match cached {
+            HomeThumbCache::Ready(tex) => Some(tex),
+            HomeThumbCache::None => None,
+        };
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        if let Ok(meta) = std::fs::metadata(path) {
+            if meta.len() > 0 && meta.len() <= 25 * 1024 * 1024 {
+                if let Ok(bytes) = std::fs::read(path) {
+                    if let Ok(img) = photocraft_codecs::decode(&bytes) {
+                        let rgba = img.convert(photocraft_codecs::ChannelLayout::Rgba, photocraft_codecs::SampleType::U8);
+                        let w = rgba.width() as usize;
+                        let h = rgba.height() as usize;
+                        if w > 0 && h > 0 {
+                            let color_img = egui::ColorImage::from_rgba_unmultiplied([w, h], rgba.data());
+                            let tex = ctx.load_texture(format!("recent-{}", path), color_img, egui::TextureOptions::LINEAR);
+                            ctx.data_mut(|d| d.insert_temp(id, HomeThumbCache::Ready(tex.clone())));
+                            return Some(tex);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ctx.data_mut(|d| d.insert_temp(id, HomeThumbCache::None));
+    None
+}
+
+fn computer_label() -> &'static str {
+    if crate::i18n::current().code() == "km" {
+        "នៅលើកុំព្យូទ័រ"
+    } else {
+        "On your computer"
+    }
+}
+
 fn start_screen(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
     let t = crate::theme::Tokens::get(ui.ctx());
     let area = ui.available_rect_before_wrap();
-    paint_dots(ui, area, app.session.prefs().interface.show_canvas_dots);
+    let bg_color = egui::Color32::from_rgb(26, 26, 26);
+    ui.painter().rect_filled(area, 0.0, bg_color);
     open_on_double_click(app, ui, area);
-    // File › Open Recent, newest first (on the web there are no paths to reopen).
+
     let show_recent = app.session.prefs().interface.show_home_recent_files;
-    let recent: Vec<String> =
-        if cfg!(target_arch = "wasm32") || !show_recent { Vec::new() } else { app.ui.recent_files.iter().take(HOME_RECENT).cloned().collect() };
-    let recent_h = if recent.is_empty() { 0.0 } else { 34.0 + recent.len() as f32 * HOME_RECENT_ROW };
-    let card = Rect::from_center_size(area.center(), egui::vec2(460.0, 330.0 + recent_h));
+    let recent: Vec<String> = if cfg!(target_arch = "wasm32") || !show_recent {
+        Vec::new()
+    } else {
+        app.ui.recent_files.iter().take(40).cloned().collect()
+    };
+
+    let sidebar_w = 200.0;
+    let sidebar_rect = Rect::from_min_size(area.min, egui::vec2(sidebar_w, area.height()));
+    let main_rect = Rect::from_min_max(egui::pos2(sidebar_rect.right(), area.top()), area.max);
+
+    // 1. Left Sidebar
+    let sidebar_bg = egui::Color32::from_rgb(20, 20, 20);
+    ui.painter().rect_filled(sidebar_rect, 0.0, sidebar_bg);
+    ui.painter().line_segment(
+        [sidebar_rect.right_top(), sidebar_rect.right_bottom()],
+        Stroke::new(1.0, egui::Color32::from_rgb(38, 38, 38)),
+    );
+
     let new_label = crate::shortcuts::command_label(app, "New document…", "file.new");
     let open_label = crate::shortcuts::command_label(app, "Open…", "file.open");
-    ui.scope_builder(egui::UiBuilder::new().max_rect(card), |ui| {
-        ui.vertical_centered(|ui| {
-            ui.horizontal(|ui| {
-                let title = ui.painter().layout_no_wrap(tl!("AngkorPix").into(), crate::theme::semibold(38.0), t.text);
-                let by = ui.painter().layout_no_wrap(tl!("open source").into(), egui::FontId::proportional(13.0), t.text_faint);
-                let total = title.size().x + by.size().x + 10.0;
-                ui.add_space(((card.width() - total) / 2.0).max(0.0));
-                let (r, _) = ui.allocate_exact_size(title.size(), Sense::hover());
-                ui.painter().galley(r.min, title, t.text);
-                let (r2, _) = ui.allocate_exact_size(egui::vec2(by.size().x + 10.0, r.height()), Sense::hover());
-                ui.painter().galley(egui::pos2(r2.left() + 10.0, r.bottom() - by.size().y - 8.0), by, t.text_faint);
-            });
-            ui.add_space(6.0);
-            ui.label(egui::RichText::new(tl!("Create a new document or open an existing file.")).color(t.text_dim).size(14.0));
-            ui.add_space(22.0);
-            ui.horizontal(|ui| {
-                ui.add_space(((card.width() - 2.0 * 190.0 - 12.0) / 2.0).max(0.0));
-                ui.spacing_mut().item_spacing.x = 12.0;
-                if crate::widgets::primary_button(ui, &new_label, 190.0).clicked() {
-                    let fields = app.new_document_fields();
-                    app.ui.open_dialog(crate::state::DialogKind::NewDocument, fields);
-                }
-                if crate::widgets::secondary_button(ui, &open_label, 190.0).clicked() {
-                    let _ = app.open_dialog_file();
-                }
-            });
-            ui.add_space(22.0);
-            ui.horizontal(|ui| {
-                let msg = start_screen_drop_hint(app);
-                let g = ui.painter().layout_no_wrap(msg.to_string(), egui::FontId::proportional(12.5), t.text_faint);
-                ui.add_space(((card.width() - g.size().x - 24.0) / 2.0).max(0.0));
-                let (r, _) = ui.allocate_exact_size(egui::vec2(18.0, 18.0), Sense::hover());
-                crate::icons::paint(ui, r, "image", 15.0, t.text_faint);
-                ui.label(egui::RichText::new(msg).color(t.text_faint));
-            });
-            if !recent.is_empty() {
-                ui.add_space(22.0);
-                home_recent(app, ui, &recent);
+
+    let sidebar_inner = sidebar_rect.shrink2(egui::vec2(16.0, 24.0));
+    ui.scope_builder(egui::UiBuilder::new().max_rect(sidebar_inner), |ui| {
+        ui.vertical(|ui| {
+            let btn_w = ui.available_width();
+
+            // "New file" Blue Pill Button
+            let (new_r, new_resp) = ui.allocate_exact_size(egui::vec2(btn_w, 32.0), Sense::click());
+            let new_hover = new_resp.hovered();
+            let blue_fill = if new_hover { egui::Color32::from_rgb(24, 120, 242) } else { egui::Color32::from_rgb(0, 100, 224) };
+            ui.painter().rect_filled(new_r, 16.0, blue_fill);
+
+            let new_text = tl!("New document…");
+            let g = ui.painter().layout_no_wrap(new_text.into(), crate::theme::semibold(13.0), egui::Color32::WHITE);
+            ui.painter().galley(egui::pos2(new_r.center().x - g.size().x / 2.0, new_r.center().y - g.size().y / 2.0), g, egui::Color32::WHITE);
+            new_resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &new_label));
+            if new_resp.on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
+                let fields = app.new_document_fields();
+                app.ui.open_dialog(crate::state::DialogKind::NewDocument, fields);
             }
-            ui.add_space(26.0);
-            crate::links::discord_button(app, ui, 190.0);
+
             ui.add_space(10.0);
-            crate::links::link_row(app, ui);
+
+            // "Open" Ghost Button
+            let (open_r, open_resp) = ui.allocate_exact_size(egui::vec2(btn_w, 30.0), Sense::click());
+            let open_hover = open_resp.hovered();
+            if open_hover {
+                ui.painter().rect_filled(open_r, 15.0, egui::Color32::from_white_alpha(15));
+            }
+            ui.painter().rect_stroke(open_r, 15.0, Stroke::new(1.0, egui::Color32::from_white_alpha(40)), egui::StrokeKind::Inside);
+            let open_text = tl!("Open…");
+            let og = ui.painter().layout_no_wrap(open_text.into(), crate::theme::semibold(13.0), egui::Color32::from_rgb(220, 220, 220));
+            ui.painter().galley(egui::pos2(open_r.center().x - og.size().x / 2.0, open_r.center().y - og.size().y / 2.0), og, egui::Color32::from_rgb(220, 220, 220));
+            open_resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &open_label));
+            if open_resp.on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
+                let _ = app.open_dialog_file();
+            }
+
+            ui.add_space(18.0);
+            let (sep_r, _) = ui.allocate_exact_size(egui::vec2(btn_w, 1.0), Sense::hover());
+            ui.painter().rect_filled(sep_r, 0.0, egui::Color32::from_rgb(42, 42, 42));
+            ui.add_space(14.0);
+
+            // "Home" Active Navigation Tab
+            let (home_r, _) = ui.allocate_exact_size(egui::vec2(btn_w, 32.0), Sense::click());
+            ui.painter().rect_filled(home_r, 4.0, egui::Color32::from_white_alpha(12));
+            let indicator = Rect::from_min_size(egui::pos2(home_r.left(), home_r.top() + 6.0), egui::vec2(3.0, 20.0));
+            ui.painter().rect_filled(indicator, 1.5, egui::Color32::from_rgb(0, 120, 240));
+
+            let icon_r = Rect::from_center_size(egui::pos2(home_r.left() + 18.0, home_r.center().y), egui::vec2(16.0, 16.0));
+            crate::icons::paint(ui, icon_r, "house", 14.0, egui::Color32::WHITE);
+            let home_g = ui.painter().layout_no_wrap(tl!("Home").into(), crate::theme::semibold(13.0), egui::Color32::WHITE);
+            ui.painter().galley(egui::pos2(home_r.left() + 34.0, home_r.center().y - home_g.size().y / 2.0), home_g, egui::Color32::WHITE);
+
+            ui.add_space(20.0);
+
+            // Community & Project Links
+            ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
+                ui.add_space(6.0);
+                crate::links::link_row(app, ui);
+                ui.add_space(6.0);
+                crate::links::discord_button(app, ui, btn_w);
+            });
+        });
+    });
+
+    // 2. Main Content Area
+    let main_inner = main_rect.shrink2(egui::vec2(36.0, 24.0));
+    ui.scope_builder(egui::UiBuilder::new().max_rect(main_inner), |ui| {
+        ui.vertical(|ui| {
+            ui.horizontal(|ui| {
+                ui.label(egui::RichText::new(tl!("Recent")).font(crate::theme::semibold(20.0)).color(t.text));
+
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    let (view_r, _) = ui.allocate_exact_size(egui::vec2(24.0, 24.0), Sense::click());
+                    crate::icons::paint(ui, view_r, "grid-2x2", 16.0, t.text_dim);
+                });
+            });
+
+            ui.add_space(18.0);
+
+            if !recent.is_empty() {
+                home_recent_grid(app, ui, &recent);
+            } else {
+                home_empty_drop_zone(app, ui);
+            }
+        });
+    });
+}
+
+fn home_empty_drop_zone(app: &PhotocraftApp, ui: &mut egui::Ui) {
+    let t = crate::theme::Tokens::get(ui.ctx());
+    let area = ui.available_rect_before_wrap();
+    let box_w = (area.width() - 40.0).clamp(300.0, 700.0);
+    let box_h = 240.0;
+    let box_r = Rect::from_center_size(area.center(), egui::vec2(box_w, box_h));
+
+    ui.painter().rect_stroke(box_r, 8.0, Stroke::new(1.5, t.separator), egui::StrokeKind::Inside);
+
+    ui.scope_builder(egui::UiBuilder::new().max_rect(box_r), |ui| {
+        ui.vertical_centered(|ui| {
+            ui.add_space(45.0);
+            let (icon_r, _) = ui.allocate_exact_size(egui::vec2(48.0, 48.0), Sense::hover());
+            crate::icons::paint(ui, icon_r, "image", 42.0, t.text_faint);
+            ui.add_space(14.0);
+
+            let msg = start_screen_drop_hint(app);
+            ui.label(egui::RichText::new(msg).font(crate::theme::semibold(15.0)).color(t.text));
+            ui.add_space(6.0);
+            ui.label(egui::RichText::new(tl!("Create a new document or open an existing file.")).font(egui::FontId::proportional(13.0)).color(t.text_faint));
         });
     });
 }
@@ -2756,74 +2884,120 @@ fn start_screen_drop_hint(app: &PhotocraftApp) -> std::borrow::Cow<'static, str>
     }
 }
 
-/// Recent files listed on the Home screen.
-const HOME_RECENT: usize = 6;
-/// Height of one Home-screen recent-file row.
-const HOME_RECENT_ROW: f32 = 30.0;
-
-/// The Home screen's "Recent" list: file name, its folder on the right, click to open. The
-/// hovered row shows a × that takes it off the list, and right-click offers Remove from Recent
-/// and Clear Recent Files (#2691).
-fn home_recent(app: &mut PhotocraftApp, ui: &mut egui::Ui, recent: &[String]) {
+fn home_recent_grid(app: &mut PhotocraftApp, ui: &mut egui::Ui, recent: &[String]) {
     let t = crate::theme::Tokens::get(ui.ctx());
-    let width = 380.0;
-    ui.horizontal(|ui| {
-        // Line the heading up with the file icons.
-        ui.add_space(((ui.available_width() - width) / 2.0).max(0.0) + 8.0);
-        ui.label(egui::RichText::new(tl!("Recent")).font(crate::theme::semibold(12.5)).color(t.text_dim));
-    });
-    ui.add_space(4.0);
+    let card_w = 160.0;
+    let card_h = 198.0;
+    let gap_x = 18.0;
+    let gap_y = 22.0;
+
     let mut open = None;
     let mut remove = None;
     let mut clear = false;
-    for path in recent {
-        let name = crate::file_open::display_name(path);
-        let folder = std::path::Path::new(path).parent().map(|d| d.to_string_lossy().into_owned()).unwrap_or_default();
-        let (row, resp) = ui.allocate_exact_size(egui::vec2(width, HOME_RECENT_ROW), Sense::click());
-        // The × sits on top of the row, so the row counts as hovered while the pointer is on it.
-        let hovered = ui.rect_contains_pointer(row);
-        if hovered {
-            ui.painter().rect_filled(row, t.radius_sm, t.hover);
+
+    let avail_w = ui.available_width();
+    let cols = ((avail_w + gap_x) / (card_w + gap_x)).floor().max(1.0) as usize;
+
+    egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
+        let rows = (recent.len() + cols - 1) / cols;
+        for row_idx in 0..rows {
+            ui.horizontal(|ui| {
+                ui.spacing_mut().item_spacing.x = gap_x;
+                for col_idx in 0..cols {
+                    let file_idx = row_idx * cols + col_idx;
+                    if file_idx >= recent.len() {
+                        break;
+                    }
+                    let path = &recent[file_idx];
+                    let name = crate::file_open::display_name(path);
+
+                    let (card_r, resp) = ui.allocate_exact_size(egui::vec2(card_w, card_h), Sense::click());
+                    let hovered = resp.hovered();
+
+                    let card_bg = if hovered { egui::Color32::from_rgb(38, 38, 38) } else { egui::Color32::from_rgb(30, 30, 30) };
+                    let stroke_color = if hovered { egui::Color32::from_white_alpha(55) } else { egui::Color32::from_white_alpha(20) };
+                    ui.painter().rect_filled(card_r, 5.0, card_bg);
+                    ui.painter().rect_stroke(card_r, 5.0, Stroke::new(1.0, stroke_color), egui::StrokeKind::Inside);
+
+                    // 1. Thumbnail Container (160x130)
+                    let thumb_r = Rect::from_min_size(card_r.min, egui::vec2(card_w, 130.0));
+                    ui.painter().rect_filled(thumb_r, 4.0, egui::Color32::from_rgb(18, 18, 18));
+
+                    if let Some(tex) = recent_thumbnail(ui.ctx(), path) {
+                        let img_rect = thumb_r.shrink(4.0);
+                        let uv = Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0));
+                        ui.painter().image(tex.id(), img_rect, uv, egui::Color32::WHITE);
+                    } else {
+                        let is_psd = path.ends_with(".psd") || path.ends_with(".psb");
+                        let icon_name = if is_psd { "file" } else { "image" };
+                        let icon_r = Rect::from_center_size(thumb_r.center(), egui::vec2(32.0, 32.0));
+                        crate::icons::paint(ui, icon_r, icon_name, 28.0, egui::Color32::from_white_alpha(40));
+                    }
+
+                    // Iconic Blue "Ps" Badge in bottom-left corner
+                    let badge_r = Rect::from_min_size(
+                        egui::pos2(thumb_r.left() + 6.0, thumb_r.bottom() - 20.0),
+                        egui::vec2(22.0, 15.0),
+                    );
+                    ui.painter().rect_filled(badge_r, 2.0, egui::Color32::from_rgb(0, 30, 60));
+                    ui.painter().rect_stroke(badge_r, 2.0, Stroke::new(1.0, egui::Color32::from_rgb(40, 140, 240)), egui::StrokeKind::Inside);
+                    let badge_g = ui.painter().layout_no_wrap("Ps".into(), crate::theme::semibold(9.5), egui::Color32::from_rgb(49, 168, 255));
+                    ui.painter().galley(egui::pos2(badge_r.center().x - badge_g.size().x / 2.0, badge_r.center().y - badge_g.size().y / 2.0), badge_g, egui::Color32::from_rgb(49, 168, 255));
+
+                    // Hover "×" close button in top-right corner
+                    if hovered {
+                        let close_r = Rect::from_center_size(egui::pos2(thumb_r.right() - 14.0, thumb_r.top() + 14.0), egui::vec2(18.0, 18.0));
+                        let close_resp = ui.interact(close_r, resp.id.with("close"), Sense::click());
+                        let close_bg = if close_resp.hovered() { egui::Color32::from_rgb(60, 60, 60) } else { egui::Color32::from_rgb(35, 35, 35) };
+                        ui.painter().rect_filled(close_r, 9.0, close_bg);
+                        crate::icons::paint(ui, close_r, "x", 10.0, egui::Color32::WHITE);
+                        if close_resp.clicked() {
+                            remove = Some(path.clone());
+                        }
+                    }
+
+                    // 2. Info area below thumbnail (Height: ~60 px)
+                    let text_area = Rect::from_min_max(egui::pos2(card_r.left() + 8.0, thumb_r.bottom() + 8.0), egui::pos2(card_r.right() - 8.0, card_r.bottom() - 6.0));
+
+                    // File name
+                    let name_g = crate::tab_strip::elided(ui, &name, crate::theme::semibold(12.5), t.text, card_w - 16.0);
+                    ui.painter().galley(egui::pos2(text_area.left(), text_area.top()), name_g, t.text);
+
+                    // Monitor icon + "On your computer"
+                    let sub_top = text_area.top() + 20.0;
+                    let mon_r = Rect::from_min_size(egui::pos2(text_area.left(), sub_top + 1.0), egui::vec2(12.0, 12.0));
+                    crate::icons::paint(ui, mon_r, "monitor", 10.0, t.text_faint);
+
+                    let sub_label = computer_label();
+                    let sub_g = crate::tab_strip::elided(ui, sub_label, egui::FontId::proportional(11.0), t.text_faint, card_w - 32.0);
+                    ui.painter().galley(egui::pos2(text_area.left() + 15.0, sub_top), sub_g, t.text_faint);
+
+                    // Interactions
+                    resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &name));
+                    let resp = resp.on_hover_text(path).on_hover_cursor(egui::CursorIcon::PointingHand);
+                    if resp.clicked() && remove.is_none() {
+                        open = Some(path.clone());
+                    }
+                    resp.context_menu(|ui| {
+                        if ui.button(tl!("Open…")).clicked() {
+                            open = Some(path.clone());
+                            ui.close();
+                        }
+                        if ui.button(tl!("Remove from Recent")).clicked() {
+                            remove = Some(path.clone());
+                            ui.close();
+                        }
+                        if ui.button(tl!("Clear Recent Files")).clicked() {
+                            clear = true;
+                            ui.close();
+                        }
+                    });
+                }
+            });
+            ui.add_space(gap_y);
         }
-        let close = Rect::from_center_size(egui::pos2(row.right() - 16.0, row.center().y), egui::vec2(22.0, 22.0));
-        let right = if hovered { close.left() - 4.0 } else { row.right() - 10.0 };
-        let icon = Rect::from_center_size(egui::pos2(row.left() + 16.0, row.center().y), egui::vec2(16.0, 16.0));
-        crate::icons::paint(ui, icon, "file", 14.0, t.text_dim);
-        let x = row.left() + 32.0;
-        let name_g = crate::tab_strip::elided(ui, &name, egui::FontId::proportional(12.5), t.text, 170.0);
-        let name_w = name_g.size().x;
-        ui.painter().galley(egui::pos2(x, row.center().y - name_g.size().y / 2.0), name_g, t.text);
-        let folder_max = (right - (x + name_w + 14.0)).max(0.0);
-        if folder_max > 20.0 && !folder.is_empty() {
-            let fg = crate::tab_strip::elided(ui, &folder, egui::FontId::proportional(11.5), t.text_faint, folder_max);
-            ui.painter().galley(egui::pos2(right - fg.size().x, row.center().y - fg.size().y / 2.0), fg, t.text_faint);
-        }
-        resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &name));
-        let resp = resp.on_hover_text(path).on_hover_cursor(egui::CursorIcon::PointingHand);
-        if hovered {
-            let x = ui.interact(close, resp.id.with("remove"), Sense::click());
-            let label = crate::i18n::fmt(tl!("Remove {name} from Recent"), &[("name", &name)]);
-            x.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &label));
-            let color = crate::icons::button_chrome(ui, close, false, x.hovered());
-            crate::icons::paint(ui, close, "x", 12.0, color);
-            if x.on_hover_text(tl!("Remove from Recent")).clicked() {
-                remove = Some(path.clone());
-            }
-        }
-        if resp.clicked() && remove.is_none() {
-            open = Some(path.clone());
-        }
-        resp.context_menu(|ui| {
-            if ui.button(tl!("Remove from Recent")).clicked() {
-                remove = Some(path.clone());
-                ui.close();
-            }
-            if ui.button(tl!("Clear Recent Files")).clicked() {
-                clear = true;
-                ui.close();
-            }
-        });
-    }
+    });
+
     if clear {
         app.clear_recent();
     } else if let Some(path) = remove {
