@@ -1653,17 +1653,26 @@ fn drag_key(ctx: &egui::Context) -> Option<String> {
 }
 
 /// Apply only the supplied properties to the text-edit scope or selected type layers.
-fn apply(app: &mut PhotocraftApp, ctx: &egui::Context, props: serde_json::Value) {
+pub(crate) fn apply_props(app: &mut PhotocraftApp, coalesce_key: Option<String>, props: serde_json::Value) {
     let Some(mut p) = formatting_params(app) else { return };
     if let Some(props) = props.as_object() {
         for (key, value) in props {
             p[key] = value.clone();
         }
     }
-    if let Some(key) = app.ui.text_edit.as_ref().map(|ed| ed.session.clone()).or_else(|| drag_key(ctx)) {
+    if let Some(key) = app.ui.text_edit.as_ref().map(|ed| ed.session.clone()).or(coalesce_key) {
         p["coalesce"] = json!(key);
     }
     let _ = app.run("type.setStyle", p);
+}
+
+fn apply(app: &mut PhotocraftApp, ctx: &egui::Context, props: serde_json::Value) {
+    apply_props(app, drag_key(ctx), props);
+}
+
+pub(crate) fn set_align(app: &mut PhotocraftApp, align: &str) {
+    app.ui.tool_options.type_align = align.into();
+    apply_props(app, None, json!({"align": align}));
 }
 
 /// `props` aimed at the type target: its layer, the selected characters while typing, and the
@@ -2418,6 +2427,33 @@ fn undo_session(app: &mut PhotocraftApp, ed: &TextEdit) {
     let coalesced = app.session.active().is_some_and(|s| s.coalesce.as_deref() == Some(ed.session.as_str()));
     if coalesced {
         let _ = app.run("edit.undo", json!({}));
+    }
+}
+
+/// Intercept type session commands dispatched by UI, shortcuts, contextual task bar, or control channel.
+pub fn intercept(app: &mut PhotocraftApp, id: &str) -> Option<Result<serde_json::Value, String>> {
+    match id {
+        "type.commit" => {
+            commit(app);
+            Some(Ok(serde_json::Value::Null))
+        }
+        "type.cancel" => {
+            cancel(app);
+            Some(Ok(serde_json::Value::Null))
+        }
+        "type.align.left" => {
+            set_align(app, "left");
+            Some(Ok(serde_json::Value::Null))
+        }
+        "type.align.center" => {
+            set_align(app, "center");
+            Some(Ok(serde_json::Value::Null))
+        }
+        "type.align.right" => {
+            set_align(app, "right");
+            Some(Ok(serde_json::Value::Null))
+        }
+        _ => None,
     }
 }
 

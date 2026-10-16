@@ -82,9 +82,11 @@ pub fn window(app: &mut PhotocraftApp, ctx: &egui::Context) {
 
                     // 2. Context-Sensitive Action Buttons
                     let tool = app.ui.tool;
-                    if has_selection {
+                    if app.ui.text_edit.is_some() || tool.is_type() {
+                        render_type_context(app, ui, &t);
+                    } else if has_selection {
                         render_selection_context(app, ui, &t);
-                    } else if tool == Tool::Type || is_text_layer {
+                    } else if is_text_layer {
                         render_type_context(app, ui, &t);
                     } else if tool == Tool::Crop || tool == Tool::PerspectiveCrop {
                         render_crop_context(app, ui, &t);
@@ -235,7 +237,7 @@ fn task_button(ui: &mut Ui, icon: Option<&str>, label: Option<&str>, tooltip: &s
 /// Context when there is an active selection
 fn render_selection_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     if task_button(ui, Some("lasso-select"), Some(tl!("Select and Mask…")), tl!("Refine selection edge (Cmd+Alt+R)"), t).clicked() {
-        let _ = app.run("select.selectAndMask", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "select.selectAndMask", json!({}));
     }
 
     if task_button(ui, Some("arrow-left-right"), Some(tl!("Invert")), tl!("Inverse Selection (Cmd+Shift+I)"), t).clicked() {
@@ -296,22 +298,22 @@ fn render_type_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     separator(ui, t);
 
     if task_button(ui, Some("align-left"), None, tl!("Align Left"), t).clicked() {
-        let _ = app.run("type.align.left", json!({}));
+        crate::type_tool::set_align(app, "left");
     }
     if task_button(ui, Some("align-center"), None, tl!("Align Center"), t).clicked() {
-        let _ = app.run("type.align.center", json!({}));
+        crate::type_tool::set_align(app, "center");
     }
     if task_button(ui, Some("align-right"), None, tl!("Align Right"), t).clicked() {
-        let _ = app.run("type.align.right", json!({}));
+        crate::type_tool::set_align(app, "right");
     }
 
     separator(ui, t);
 
     if task_button(ui, Some("check"), None, tl!("Commit Type"), t).clicked() {
-        let _ = app.run("type.commit", json!({}));
+        crate::type_tool::commit(app);
     }
     if task_button(ui, Some("x"), None, tl!("Cancel Type"), t).clicked() {
-        let _ = app.run("type.cancel", json!({}));
+        crate::type_tool::cancel(app);
     }
 }
 
@@ -322,16 +324,16 @@ fn render_crop_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     separator(ui, t);
 
     if task_button(ui, Some("ruler"), Some(tl!("Straighten")), tl!("Straighten image"), t).clicked() {
-        let _ = app.run("image.crop.straighten", json!({}));
+        crate::crop_straighten::toggle(app);
     }
 
     separator(ui, t);
 
     if task_button(ui, Some("check"), None, tl!("Commit Crop (Enter)"), t).clicked() {
-        let _ = app.run("image.crop.commit", json!({}));
+        crate::canvas::commit_crop(app);
     }
     if task_button(ui, Some("x"), None, tl!("Cancel Crop (Esc)"), t).clicked() {
-        let _ = app.run("image.crop.cancel", json!({}));
+        crate::crop_ui::cancel(app);
     }
 }
 
@@ -342,7 +344,7 @@ fn render_shape_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     separator(ui, t);
 
     if task_button(ui, Some("square-dashed"), Some(tl!("To Selection")), tl!("Convert Shape to Selection"), t).clicked() {
-        let _ = app.run("select.fromPath", json!({}));
+        let _ = app.run("path.toSelection", json!({}));
     }
     if task_button(ui, Some("brush"), Some(tl!("Rasterize")), tl!("Rasterize Shape Layer"), t).clicked() {
         let _ = app.run("layer.rasterize.shape", json!({}));
@@ -423,7 +425,7 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
 
     // 6. Place Embedded / Add image icon button
     if task_button(ui, Some("image"), None, tl!("Place Embedded…"), t).clicked() {
-        let _ = app.run("file.placeEmbedded", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "file.placeEmbedded", json!({}));
     }
 }
 
@@ -438,5 +440,20 @@ mod tests {
     #[test]
     fn contextual_task_bar_menu_alias() {
         assert_eq!(crate::menus::panel_alias("window.panel.contextualTaskBar"), Some("window.toggle.contextualTaskBar"));
+    }
+
+    #[test]
+    fn type_commit_and_cancel_commands_succeed() {
+        let mut app = crate::PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        app.session.execute("file.new", serde_json::json!({"width": 200, "height": 100})).unwrap();
+        app.sync_views();
+        assert!(app.run("type.commit", serde_json::json!({})).is_ok());
+        assert!(app.run("type.cancel", serde_json::json!({})).is_ok());
+        assert!(app.run("type.align.left", serde_json::json!({})).is_ok());
+        assert!(app.run("type.align.center", serde_json::json!({})).is_ok());
+        assert!(app.run("type.align.right", serde_json::json!({})).is_ok());
+        assert!(app.run("image.crop.commit", serde_json::json!({})).is_ok());
+        assert!(app.run("image.crop.cancel", serde_json::json!({})).is_ok());
+        assert!(app.run("image.crop.straighten", serde_json::json!({})).is_ok());
     }
 }

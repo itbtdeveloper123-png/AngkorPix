@@ -995,6 +995,7 @@ fn preview_swatch_box(ui: &mut egui::Ui, f: &Map<String, Value>, t: &Tokens) {
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn render_spec_item(
     ui: &mut egui::Ui,
     f: &mut Map<String, Value>,
@@ -1017,13 +1018,12 @@ fn render_spec_item(
                 disp[key] = val.clone();
                 set_param(f, selected, key, val);
             }
-            if gl_ch && has_gl {
-                if let Some(b) = use_gl {
+            if gl_ch && has_gl
+                && let Some(b) = use_gl {
                     let val = json!(b);
                     disp["useGlobalLight"] = val.clone();
                     set_param(f, selected, "useGlobalLight", val);
                 }
-            }
         }
         P::Slider(min, max, unit) => {
             let mut v = disp.get(key).and_then(Value::as_f64).unwrap_or(min as f64) as f32;
@@ -1417,14 +1417,12 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                         ui.painter().rect_filled(up_rect, 2.0, t.hover);
                     }
                     ui.painter().text(up_rect.center(), egui::Align2::CENTER_CENTER, "↑", egui::FontId::proportional(13.0), t.text_dim);
-                    if up_resp.clicked() {
-                        if let Some(effects) = f.get_mut("effects").and_then(Value::as_array_mut) {
-                            if let Some(pos) = effects.iter().position(|e| e.get("id").and_then(Value::as_str) == Some(&selected)) {
-                                if pos > 0 {
-                                    effects.swap(pos, pos - 1);
-                                }
-                            }
-                        }
+                    if up_resp.clicked()
+                        && let Some(effects) = f.get_mut("effects").and_then(Value::as_array_mut)
+                        && let Some(pos) = effects.iter().position(|e| e.get("id").and_then(Value::as_str) == Some(&selected))
+                        && pos > 0
+                    {
+                        effects.swap(pos, pos - 1);
                     }
 
                     let (dn_rect, dn_resp) = ui.allocate_exact_size(vec2(22.0, 22.0), Sense::click());
@@ -1432,14 +1430,12 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                         ui.painter().rect_filled(dn_rect, 2.0, t.hover);
                     }
                     ui.painter().text(dn_rect.center(), egui::Align2::CENTER_CENTER, "↓", egui::FontId::proportional(13.0), t.text_dim);
-                    if dn_resp.clicked() {
-                        if let Some(effects) = f.get_mut("effects").and_then(Value::as_array_mut) {
-                            if let Some(pos) = effects.iter().position(|e| e.get("id").and_then(Value::as_str) == Some(&selected)) {
-                                if pos + 1 < effects.len() {
-                                    effects.swap(pos, pos + 1);
-                                }
-                            }
-                        }
+                    if dn_resp.clicked()
+                        && let Some(effects) = f.get_mut("effects").and_then(Value::as_array_mut)
+                        && let Some(pos) = effects.iter().position(|e| e.get("id").and_then(Value::as_str) == Some(&selected))
+                        && pos + 1 < effects.len()
+                    {
+                        effects.swap(pos, pos + 1);
                     }
 
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {

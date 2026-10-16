@@ -440,6 +440,21 @@ pub fn is_enabled(app: &PhotocraftApp, id: &str) -> Option<bool> {
 /// Intercept Undo/Redo/Toggle Last State while the Crop tool owns box history, for every caller
 /// (menus, shortcuts, the control channel, MCP) — as `transform_tool::intercept` does.
 pub fn intercept(app: &mut PhotocraftApp, id: &str) -> Option<Result<serde_json::Value, String>> {
+    match id {
+        "image.crop.commit" => {
+            crate::canvas::commit_crop(app);
+            return Some(Ok(serde_json::Value::Null));
+        }
+        "image.crop.cancel" => {
+            cancel(app);
+            return Some(Ok(serde_json::Value::Null));
+        }
+        "image.crop.straighten" => {
+            crate::crop_straighten::toggle(app);
+            return Some(Ok(serde_json::Value::Null));
+        }
+        _ => {}
+    }
     if app.ui.tool != Tool::Crop || (app.crop.undo.is_empty() && app.crop.redo.is_empty()) {
         return None;
     }
