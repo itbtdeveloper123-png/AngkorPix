@@ -562,14 +562,14 @@ impl Default for Performance {
             memory_usage_mb: 8192,
             history_states: 50,
             cache_levels: 4,
-            cache_tile_size: 8192,
+            cache_tile_size: 2048,
             use_gpu: true,
             rendering_mode: None,
             gpu_backend: GpuBackend::Auto,
             low_resolution_previews: true,
             low_latency_drawing: false,
             linux_display_server: LinuxDisplayServer::Auto,
-            effect_cache_mb: 768,
+            effect_cache_mb: 256,
             legacy_compositing: false,
         }
     }
