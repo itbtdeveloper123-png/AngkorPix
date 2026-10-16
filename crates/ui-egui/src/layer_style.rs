@@ -13,7 +13,7 @@
 //!   opacity, fill opacity, channels, knockout, the Advanced Blending switches, Blend If) plus
 //!   the page-only `blendIfChannel`; `channelNames`: the document's colour channels.
 
-use egui::{Align2, Color32, CornerRadius, RichText, Sense, Stroke, StrokeKind, vec2};
+use egui::{Align2, Color32, CornerRadius, RichText, Sense, Stroke, StrokeKind, pos2, vec2};
 use photocraft_doc::effects::{FxPaint, GlowSource, StrokePosition};
 use photocraft_doc::{Effect, Layer};
 use serde_json::{Map, Value, json};
@@ -682,17 +682,30 @@ pub fn preview_hash(f: &Map<String, Value>) -> u64 {
         .fold(0xcbf2_9ce4_8422_2325, |h, b| (h ^ b as u64).wrapping_mul(0x100_0000_01b3))
 }
 
-/// `doc` with the dialog's style applied, run on a scratch session (no history) for the live preview.
+thread_local! {
+    static PREVIEW_SESSION: std::cell::RefCell<photocraft_engine::Session> = std::cell::RefCell::new(photocraft_engine::Session::new());
+}
+
+/// `doc` with the dialog's style applied, run on a cached scratch session (no history) for the live preview.
 pub fn preview_document(
     doc: &photocraft_doc::Document,
     patterns: &photocraft_engine::pattern_cmds::PatternLibrary,
     f: &Map<String, Value>,
 ) -> Result<photocraft_doc::Document, String> {
-    let mut s = photocraft_engine::Session::new();
-    s.patterns = patterns.clone();
-    s.add_document(doc.clone(), None);
-    apply(f, |id, p| s.execute(id, p).map_err(|e| e.to_string()))?;
-    s.active().map(|d| (*d.doc).clone()).ok_or_else(|| "no preview document".into())
+    PREVIEW_SESSION.with(|cell| {
+        let mut s = cell.borrow_mut();
+        s.patterns = patterns.clone();
+        s.add_document(doc.clone(), None);
+        let res = apply(f, |id, p| s.execute(id, p).map_err(|e| e.to_string()));
+        let out = match res {
+            Ok(_) => s.active().map(|d| (*d.doc).clone()).ok_or_else(|| "no preview document".into()),
+            Err(e) => Err(e),
+        };
+        while !s.documents().is_empty() {
+            s.close(0);
+        }
+        out
+    })
 }
 
 /// Applies a style preset to the dialog fields in-place without touching the document.
@@ -799,6 +812,14 @@ fn group_box<R>(
     response.inner
 }
 
+fn inline_label(ui: &mut egui::Ui, label: &str, t: &Tokens) {
+    let width = 120.0;
+    let (rect, _) = ui.allocate_exact_size(vec2(width, 22.0), Sense::hover());
+    let g = crate::tab_strip::elided(ui, tl!(label), egui::FontId::proportional(12.0), t.text_dim, width);
+    let pos = pos2(rect.right() - g.size().x, rect.center().y - g.size().y / 2.0);
+    ui.painter().galley(pos, g, t.text_dim);
+}
+
 fn inline_slider_row(
     ui: &mut egui::Ui,
     label: &str,
@@ -810,13 +831,7 @@ fn inline_slider_row(
     let mut changed = false;
     ui.horizontal(|ui| {
         ui.spacing_mut().item_spacing.x = 8.0;
-        ui.allocate_ui_with_layout(
-            vec2(80.0, 22.0),
-            egui::Layout::right_to_left(egui::Align::Center),
-            |ui| {
-                ui.label(RichText::new(tl!(label)).font(egui::FontId::proportional(12.0)).color(t.text_dim));
-            },
-        );
+        inline_label(ui, label, t);
         ui.allocate_ui_with_layout(
             vec2(120.0, 22.0),
             egui::Layout::left_to_right(egui::Align::Center),
@@ -827,7 +842,7 @@ fn inline_slider_row(
                 }
             },
         );
-        let vf = widgets::value_field(ui, value, range, suffix, 58.0);
+        let vf = widgets::value_field(ui, value, range, suffix, 54.0);
         if vf.changed() {
             changed = true;
         }
@@ -847,13 +862,7 @@ fn inline_dropdown_row<T: PartialEq + Clone>(
     let mut changed = false;
     ui.horizontal(|ui| {
         ui.spacing_mut().item_spacing.x = 8.0;
-        ui.allocate_ui_with_layout(
-            vec2(80.0, 22.0),
-            egui::Layout::right_to_left(egui::Align::Center),
-            |ui| {
-                ui.label(RichText::new(tl!(label)).font(egui::FontId::proportional(12.0)).color(t.text_dim));
-            },
-        );
+        inline_label(ui, label, t);
         changed = widgets::dropdown(ui, id_salt, current, options, width);
     });
     changed
@@ -868,13 +877,7 @@ fn inline_color_row(
     let mut resp = None;
     ui.horizontal(|ui| {
         ui.spacing_mut().item_spacing.x = 8.0;
-        ui.allocate_ui_with_layout(
-            vec2(80.0, 22.0),
-            egui::Layout::right_to_left(egui::Align::Center),
-            |ui| {
-                ui.label(RichText::new(tl!(label)).font(egui::FontId::proportional(12.0)).color(t.text_dim));
-            },
-        );
+        inline_label(ui, label, t);
         let r = widgets::color_swatch(ui, parse_hex(color_hex)).on_hover_text(tl!("Color Picker (Layer Style Color)"));
         resp = Some(r);
     });
@@ -885,25 +888,19 @@ fn inline_angle_row(
     ui: &mut egui::Ui,
     label: &str,
     angle: &mut f32,
-    mut global_light: Option<&mut bool>,
+    global_light: Option<&mut bool>,
     t: &Tokens,
 ) -> (bool, bool) {
     let mut angle_changed = false;
     let mut light_changed = false;
     ui.horizontal(|ui| {
         ui.spacing_mut().item_spacing.x = 8.0;
-        ui.allocate_ui_with_layout(
-            vec2(80.0, 22.0),
-            egui::Layout::right_to_left(egui::Align::Center),
-            |ui| {
-                ui.label(RichText::new(tl!(label)).font(egui::FontId::proportional(12.0)).color(t.text_dim));
-            },
-        );
+        inline_label(ui, label, t);
         let dial = widgets::angle_dial_row(ui, "", angle, -180.0..=180.0);
         if dial.changed() {
             angle_changed = true;
         }
-        if let Some(gl) = global_light.as_deref_mut() {
+        if let Some(gl) = global_light {
             ui.add_space(8.0);
             if widgets::checkbox(ui, gl, tl!("Use Global Light")).changed() {
                 light_changed = true;
@@ -1290,7 +1287,7 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
         ui.spacing_mut().item_spacing.x = 12.0;
 
         // ==========================================
-        // COLUMN 1: Styles & Effects List (Left, 175px)
+        // COLUMN 1: Styles & Effects List (Left, 200px)
         // ==========================================
         let panel_frame = egui::Frame::NONE
             .fill(t.card)
@@ -1300,25 +1297,21 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
 
         panel_frame.show(ui, |ui| {
             ui.vertical(|ui| {
-                ui.set_width(175.0);
+                ui.set_width(200.0);
                 ui.set_min_height(420.0);
 
                 // Styles & Blending Options rows
                 for (id, label) in [(STYLES_PAGE, "Styles"), (BLENDING, "Blending Options")] {
                     let is_sel = selected == id;
-                    let (rect, resp) = ui.allocate_exact_size(vec2(175.0, 24.0), Sense::click());
+                    let (rect, resp) = ui.allocate_exact_size(vec2(200.0, 24.0), Sense::click());
                     if is_sel {
                         ui.painter().rect_filled(rect, t.radius_sm, t.row_selected.gamma_multiply(if t.pro { 1.0 } else { 0.0 }).max_alpha(t.hover));
                     } else if resp.hovered() {
                         ui.painter().rect_filled(rect, t.radius_sm, t.hover.gamma_multiply(0.5));
                     }
-                    ui.painter().text(
-                        rect.left_center() + vec2(10.0, 0.0),
-                        egui::Align2::LEFT_CENTER,
-                        tl!(label),
-                        egui::FontId::proportional(12.5),
-                        if is_sel { t.text } else { t.text_dim },
-                    );
+                    let text_max_w = rect.width() - 20.0;
+                    let g = crate::tab_strip::elided(ui, tl!(label), egui::FontId::proportional(12.5), if is_sel { t.text } else { t.text_dim }, text_max_w);
+                    ui.painter().galley(pos2(rect.left() + 10.0, rect.center().y - g.size().y / 2.0), g, if is_sel { t.text } else { t.text_dim });
                     if resp.clicked() {
                         f.insert("selected".into(), json!(id));
                     }
@@ -1334,18 +1327,14 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                         .filter_map(|e| e.get("id").and_then(Value::as_str).map(str::to_string))
                         .collect();
                     if ids.is_empty() {
-                        let (rect, resp) = ui.allocate_exact_size(vec2(175.0, 24.0), Sense::click());
+                        let (rect, resp) = ui.allocate_exact_size(vec2(200.0, 24.0), Sense::click());
                         if resp.hovered() {
                             ui.painter().rect_filled(rect, t.radius_sm, t.hover.gamma_multiply(0.5));
                         }
                         fx_checkbox(ui.painter(), fx_checkbox_rect(rect), false, &t);
-                        ui.painter().text(
-                            rect.left_center() + vec2(28.0, 0.0),
-                            egui::Align2::LEFT_CENTER,
-                            tl!(label),
-                            egui::FontId::proportional(12.5),
-                            t.text_faint,
-                        );
+                        let text_max_w = rect.width() - 36.0;
+                        let g = crate::tab_strip::elided(ui, tl!(label), egui::FontId::proportional(12.5), t.text_faint, text_max_w);
+                        ui.painter().galley(pos2(rect.left() + 28.0, rect.center().y - g.size().y / 2.0), g, t.text_faint);
                         if resp.clicked() {
                             add_instance(f, kind);
                         }
@@ -1357,7 +1346,7 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                         let kind_label = KINDS.iter().find(|k| k.0 == kind).map(|k| k.1).unwrap_or(label);
                         let mut on = e.get("on").and_then(Value::as_bool).unwrap_or(false);
                         let is_sel = id == &selected;
-                        let (rect, resp) = ui.allocate_exact_size(vec2(175.0, 24.0), Sense::click());
+                        let (rect, resp) = ui.allocate_exact_size(vec2(200.0, 24.0), Sense::click());
                         if is_sel {
                             ui.painter().rect_filled(rect, t.radius_sm, t.row_selected.gamma_multiply(if t.pro { 1.0 } else { 0.0 }).max_alpha(t.hover));
                         } else if resp.hovered() {
@@ -1366,13 +1355,10 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                         let cb = fx_checkbox_rect(rect);
                         let cresp = ui.interact(cb, ui.id().with(("fxcb", kind, id)), Sense::click());
                         fx_checkbox(ui.painter(), cb, on, &t);
-                        ui.painter().text(
-                            rect.left_center() + vec2(28.0, 0.0),
-                            egui::Align2::LEFT_CENTER,
-                            tl!(kind_label),
-                            egui::FontId::proportional(12.5),
-                            fx_label_color(on, &t),
-                        );
+                        let btn_room = if multi(kind) { if count > 1 { 48.0 } else { 26.0 } } else { 0.0 };
+                        let text_max_w = (rect.width() - 32.0 - btn_room).max(30.0);
+                        let g = crate::tab_strip::elided(ui, tl!(kind_label), egui::FontId::proportional(12.5), fx_label_color(on, &t), text_max_w);
+                        ui.painter().galley(pos2(rect.left() + 28.0, rect.center().y - g.size().y / 2.0), g, fx_label_color(on, &t));
                         if multi(kind) {
                             let btn = |ui: &egui::Ui, r: egui::Rect, glyph: &str, tag: &str| {
                                 let hresp = ui.interact(r, ui.id().with(("fxbtn", tag, id)), Sense::click());
@@ -1473,10 +1459,10 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
         });
 
         // ==========================================
-        // COLUMN 2: Parameters (Center, 360px)
+        // COLUMN 2: Parameters (Center, 430px)
         // ==========================================
         ui.vertical(|ui| {
-            ui.set_width(360.0);
+            ui.set_width(430.0);
             if selected == STYLES_PAGE {
                 ui.label(RichText::new(tl!("Styles")).font(crate::theme::semibold(14.0)).color(t.text));
                 ui.add_space(8.0);
@@ -1558,15 +1544,15 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
             render_effect_groups(ui, f, &selected, &sel_kind, &mut disp, &t);
 
             let page_kind = sel_kind != BLENDING && entry(f, &selected).is_some();
-            ui.add_space(8.0);
+            ui.add_space(10.0);
             ui.horizontal(|ui| {
-                ui.add_space(40.0);
+                ui.add_space(20.0);
                 ui.add_enabled_ui(page_kind, |ui| {
-                    if crate::widgets::secondary_button(ui, tl!("Make Default"), 110.0).clicked() {
+                    if crate::widgets::secondary_button(ui, tl!("Make Default"), 120.0).clicked() {
                         let _ = app.run("layer.layerStyle.makeDefault", json!({"kind": sel_kind, "params": disp}));
                     }
                     ui.add_space(8.0);
-                    if crate::widgets::secondary_button(ui, tl!("Reset to Default"), 130.0).clicked()
+                    if crate::widgets::secondary_button(ui, tl!("Reset to Default"), 135.0).clicked()
                         && let Ok(v) = app.run("layer.layerStyle.defaultFor", json!({"kind": sel_kind}))
                         && let Some(e) = entry_mut(f, &selected)
                     {
@@ -1577,19 +1563,19 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
         });
 
         // ==========================================
-        // COLUMN 3: Right - OK, Cancel, New Style, Preview (105px)
+        // COLUMN 3: Right - OK, Cancel, New Style, Preview (110px)
         // ==========================================
         ui.vertical(|ui| {
-            ui.set_width(105.0);
-            if crate::widgets::primary_button(ui, tl!("OK"), 105.0).clicked() {
+            ui.set_width(110.0);
+            if crate::widgets::primary_button(ui, tl!("OK"), 110.0).clicked() {
                 outcome = Some(true);
             }
             ui.add_space(6.0);
-            if crate::widgets::secondary_button(ui, tl!("Cancel"), 105.0).clicked() {
+            if crate::widgets::secondary_button(ui, tl!("Cancel"), 110.0).clicked() {
                 outcome = Some(false);
             }
             ui.add_space(6.0);
-            if crate::widgets::secondary_button(ui, tl!("New Style…"), 105.0).clicked() {
+            if crate::widgets::secondary_button(ui, tl!("New Style…"), 110.0).clicked() {
                 new_style = true;
             }
             ui.add_space(8.0);

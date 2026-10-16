@@ -496,6 +496,24 @@ pub fn body(ui: &mut egui::Ui, f: &mut Map<String, Value>) -> Option<bool> {
     outcome
 }
 
+fn vertical_strip_mesh(rect: Rect, n: usize, color: impl Fn(f32) -> [f32; 3]) -> Mesh {
+    let mut m = Mesh::default();
+    let n = n.max(1);
+    for j in 0..=n {
+        let y = j as f32 / n as f32;
+        let c = c32(color(y));
+        let py = rect.top() + y * rect.height();
+        m.colored_vertex(pos2(rect.left(), py), c);
+        m.colored_vertex(pos2(rect.right(), py), c);
+    }
+    for j in 0..n as u32 {
+        let a = j * 2;
+        m.add_triangle(a, a + 1, a + 3);
+        m.add_triangle(a, a + 3, a + 2);
+    }
+    m
+}
+
 fn color_field(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     let t = Tokens::get(ui.ctx());
     let mode = f.get("__mode").and_then(Value::as_str).unwrap_or("h").to_string();
@@ -509,11 +527,29 @@ fn color_field(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     let mesh = |rect: Rect, color: &dyn Fn(f32, f32) -> [f32; 3]| {
         if web_only { flat_grid_mesh(rect, WEB_CELLS, |x, y| web_safe(color(x, y))) } else { grid_mesh(rect, 32, color) }
     };
-    ui.painter().add(mesh(field, &|x, y| field_color(&mode, fz, x, y)));
+    let mode_hash = mode.bytes().fold(0u64, |h, b| (h << 5).wrapping_add(b as u64));
+    let cache_key = (fz.to_bits() as u64) | (mode_hash << 32) | if web_only { 1 << 63 } else { 0 };
+    let cached = ui.ctx().data(|d| {
+        let k = d.get_temp::<u64>(ui.id().with("cp_field_key"));
+        let m = d.get_temp::<Mesh>(ui.id().with("cp_field_mesh"));
+        if k == Some(cache_key) { m } else { None }
+    });
+    let field_m = if let Some(m) = cached {
+        m
+    } else {
+        let m = mesh(field, &|x, y| field_color(&mode, fz, x, y));
+        ui.ctx().data_mut(|d| {
+            d.insert_temp(ui.id().with("cp_field_key"), cache_key);
+            d.insert_temp(ui.id().with("cp_field_mesh"), m.clone());
+        });
+        m
+    };
+    ui.painter().add(field_m);
     ui.painter().rect_stroke(field, 0.0, Stroke::new(1.0, t.field_border), StrokeKind::Outside);
     let marker = pos2(field.left() + fx * field.width(), field.top() + fy * field.height());
     ui.painter().circle_stroke(marker, 5.0, Stroke::new(1.5, if hsv[2] > 0.6 && hsv[1] < 0.4 { Color32::BLACK } else { Color32::WHITE }));
     if let Some(p) = resp.interact_pointer_pos().filter(|_| resp.dragged() || resp.clicked()) {
+        ui.ctx().request_repaint();
         let (x, y) = (((p.x - field.left()) / field.width()).clamp(0.0, 1.0), ((p.y - field.top()) / field.height()).clamp(0.0, 1.0));
         let c = field_color(&mode, fz, x, y);
         let keep = match mode.as_str() {
@@ -526,13 +562,14 @@ fn color_field(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     }
     // Component slider (hue runs 360° at the top to 0° at the bottom, like Photoshop).
     let (strip, sresp) = ui.allocate_exact_size(vec2(18.0, FIELD), Sense::click_and_drag());
-    ui.painter().add(mesh(strip, &|_, y| slider_color(&mode, 1.0 - y, hsv, rgb, lab)));
+    ui.painter().add(vertical_strip_mesh(strip, 32, |y| slider_color(&mode, 1.0 - y, hsv, rgb, lab)));
     let sy = strip.top() + (1.0 - fz) * strip.height();
     for (x, dir) in [(strip.left() - 1.0, 1.0f32), (strip.right() + 1.0, -1.0)] {
         let tri = vec![pos2(x, sy), pos2(x - 6.0 * dir, sy - 4.0), pos2(x - 6.0 * dir, sy + 4.0)];
         ui.painter().add(egui::Shape::convex_polygon(tri, t.text, Stroke::NONE));
     }
     if let Some(p) = sresp.interact_pointer_pos().filter(|_| sresp.dragged() || sresp.clicked()) {
+        ui.ctx().request_repaint();
         let z = 1.0 - ((p.y - strip.top()) / strip.height()).clamp(0.0, 1.0);
         let h = match mode.as_str() {
             "h" => Some([z * 360.0, hsv[1], hsv[2]]),

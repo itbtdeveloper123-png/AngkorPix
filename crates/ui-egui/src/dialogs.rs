@@ -226,7 +226,7 @@ pub fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
                 ui.set_min_width(800.0);
             }
             if d.kind == DialogKind::LayerStyle {
-                ui.set_min_width(670.0);
+                ui.set_min_width(780.0);
             }
             // The About window: room for the contributor table, the same width on every tab.
             let about_tabs = d.kind == DialogKind::About && d.fields.get("systemInfo").and_then(Value::as_bool) != Some(true);
@@ -238,7 +238,7 @@ pub fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
             } else if about_tabs {
                 700.0
             } else if d.kind == DialogKind::LayerStyle {
-                680.0
+                800.0
             } else if d.fields.contains_key("__export") || crate::color_picker_ui::owns(&d.fields) {
                 600.0
             } else if compact {
