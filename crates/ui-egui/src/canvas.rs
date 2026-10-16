@@ -1191,16 +1191,28 @@ pub(crate) fn display_doc(app: &mut PhotocraftApp, idx: usize) -> (std::sync::Ar
         && app.session.active_index() == Some(idx)
     {
         let fields = crate::layer_style::color_picker::preview_fields(app, d.id, &d.fields);
-        let key = (crate::layer_style::preview_hash(&fields) ^ st.revision.wrapping_mul(0x9e37_79b9_7f4a_7c15)) | 1 << 63;
-        if app.style_preview.as_ref().map(|p| p.0) != Some(key) {
-            let shown = crate::layer_style::preview_document(&st.doc, &app.session.patterns, &fields).map(std::sync::Arc::new);
-            if let Err(error) = &shown {
-                log::warn!("Layer Style preview: {error}");
+        let phash = crate::layer_style::preview_hash(&fields);
+        let committed_hash = d.fields.get("__committedHash").and_then(serde_json::Value::as_u64);
+        if committed_hash == Some(phash) {
+            app.style_preview = None;
+        } else {
+            let key = (phash ^ st.revision.wrapping_mul(0x9e37_79b9_7f4a_7c15)) | 1 << 63;
+            if app.style_preview.as_ref().map(|p| p.0) != Some(key) {
+                let now = crate::gpu_canvas::now_ms();
+                let can_throttle = app.style_preview.as_ref().is_some_and(|p| p.1.is_ok())
+                    && (now - app.style_preview_ms) < 40.0;
+                if !can_throttle {
+                    let shown = crate::layer_style::preview_document(&st.doc, &app.session.patterns, &fields).map(std::sync::Arc::new);
+                    if let Err(error) = &shown {
+                        log::warn!("Layer Style preview: {error}");
+                    }
+                    app.style_preview = Some((key, shown));
+                    app.style_preview_ms = now;
+                }
             }
-            app.style_preview = Some((key, shown));
-        }
-        if let Some((_, Ok(doc))) = &app.style_preview {
-            return (doc.clone(), key);
+            if let Some((prev_key, Ok(doc))) = &app.style_preview {
+                return (doc.clone(), *prev_key);
+            }
         }
     }
     let snapshot = st.doc.clone();
@@ -2711,21 +2723,19 @@ fn recent_thumbnail(ctx: &egui::Context, path: &str) -> Option<egui::TextureHand
     }
     #[cfg(not(target_arch = "wasm32"))]
     {
-        if let Ok(meta) = std::fs::metadata(path) {
-            if meta.len() > 0 && meta.len() <= 25 * 1024 * 1024 {
-                if let Ok(bytes) = std::fs::read(path) {
-                    if let Ok(img) = photocraft_codecs::decode(&bytes) {
-                        let rgba = img.convert(photocraft_codecs::ChannelLayout::Rgba, photocraft_codecs::SampleType::U8);
-                        let w = rgba.width() as usize;
-                        let h = rgba.height() as usize;
-                        if w > 0 && h > 0 {
-                            let color_img = egui::ColorImage::from_rgba_unmultiplied([w, h], rgba.data());
-                            let tex = ctx.load_texture(format!("recent-{}", path), color_img, egui::TextureOptions::LINEAR);
-                            ctx.data_mut(|d| d.insert_temp(id, HomeThumbCache::Ready(tex.clone())));
-                            return Some(tex);
-                        }
-                    }
-                }
+        if let Ok(meta) = std::fs::metadata(path)
+            && meta.len() > 0 && meta.len() <= 25 * 1024 * 1024
+            && let Ok(bytes) = std::fs::read(path)
+            && let Ok(img) = photocraft_codecs::decode(&bytes)
+        {
+            let rgba = img.convert(photocraft_codecs::ChannelLayout::Rgba, photocraft_codecs::SampleType::U8);
+            let w = rgba.width() as usize;
+            let h = rgba.height() as usize;
+            if w > 0 && h > 0 {
+                let color_img = egui::ColorImage::from_rgba_unmultiplied([w, h], rgba.data());
+                let tex = ctx.load_texture(format!("recent-{}", path), color_img, egui::TextureOptions::LINEAR);
+                ctx.data_mut(|d| d.insert_temp(id, HomeThumbCache::Ready(tex.clone())));
+                return Some(tex);
             }
         }
     }
@@ -2907,7 +2917,7 @@ fn home_recent_grid(app: &mut PhotocraftApp, ui: &mut egui::Ui, recent: &[String
     let cols = ((avail_w + gap_x) / (card_w + gap_x)).floor().max(1.0) as usize;
 
     egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-        let rows = (recent.len() + cols - 1) / cols;
+        let rows = recent.len().div_ceil(cols);
         for row_idx in 0..rows {
             ui.horizontal(|ui| {
                 ui.spacing_mut().item_spacing.x = gap_x;
@@ -4477,7 +4487,7 @@ pub(crate) fn marching_ants_lines(painter: &egui::Painter, lines: impl Iterator<
     };
     for (pa, pb) in lines {
         // A transformed outline can land anywhere, or nowhere (a point on a Distort's horizon).
-        if !(pa.is_finite() && pb.is_finite()) || !clip.intersects(Rect::from_two_pos(pa, pb).expand(1.0)) {
+        if !(pa.is_finite() && pb.is_finite() && clip.intersects(Rect::from_two_pos(pa, pb).expand(1.0))) {
             continue;
         }
         let (pa, pb) = if pa.distance(pb) > LONG {

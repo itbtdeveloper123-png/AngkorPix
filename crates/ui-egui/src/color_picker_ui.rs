@@ -546,31 +546,61 @@ fn color_field(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     };
     ui.painter().add(field_m);
     ui.painter().rect_stroke(field, 0.0, Stroke::new(1.0, t.field_border), StrokeKind::Outside);
-    let marker = pos2(field.left() + fx * field.width(), field.top() + fy * field.height());
-    ui.painter().circle_stroke(marker, 5.0, Stroke::new(1.5, if hsv[2] > 0.6 && hsv[1] < 0.4 { Color32::BLACK } else { Color32::WHITE }));
+    let mut cur_fx = fx;
+    let mut cur_fy = fy;
+    let mut cur_hsv = hsv;
     if let Some(p) = resp.interact_pointer_pos().filter(|_| resp.dragged() || resp.clicked()) {
         ui.ctx().request_repaint();
+        ui.ctx().request_repaint_after(std::time::Duration::from_millis(45));
         let (x, y) = (((p.x - field.left()) / field.width()).clamp(0.0, 1.0), ((p.y - field.top()) / field.height()).clamp(0.0, 1.0));
+        cur_fx = x;
+        cur_fy = y;
         let c = field_color(&mode, fz, x, y);
         let keep = match mode.as_str() {
-            "h" => Keep::Hsv([fz * 360.0, x, 1.0 - y]),
-            "s" => Keep::Hsv([x * 360.0, fz, 1.0 - y]),
-            "v" => Keep::Hsv([x * 360.0, 1.0 - y, fz]),
+            "h" => {
+                cur_hsv = [fz * 360.0, x, 1.0 - y];
+                Keep::Hsv(cur_hsv)
+            }
+            "s" => {
+                cur_hsv = [x * 360.0, fz, 1.0 - y];
+                Keep::Hsv(cur_hsv)
+            }
+            "v" => {
+                cur_hsv = [x * 360.0, 1.0 - y, fz];
+                Keep::Hsv(cur_hsv)
+            }
             m => field_lab(m, fz, x, y).map_or(Keep::Nothing, Keep::Lab),
         };
         set_rgb(f, c, keep);
     }
+    let marker = pos2(field.left() + cur_fx * field.width(), field.top() + cur_fy * field.height());
+    let inner_col = if cur_hsv[2] > 0.6 && cur_hsv[1] < 0.4 { Color32::BLACK } else { Color32::WHITE };
+    let outer_col = if inner_col == Color32::WHITE { Color32::from_black_alpha(180) } else { Color32::from_white_alpha(180) };
+    ui.painter().circle_stroke(marker, 5.5, Stroke::new(1.0, outer_col));
+    ui.painter().circle_stroke(marker, 4.5, Stroke::new(1.5, inner_col));
+
     // Component slider (hue runs 360° at the top to 0° at the bottom, like Photoshop).
     let (strip, sresp) = ui.allocate_exact_size(vec2(18.0, FIELD), Sense::click_and_drag());
-    ui.painter().add(vertical_strip_mesh(strip, 32, |y| slider_color(&mode, 1.0 - y, hsv, rgb, lab)));
-    let sy = strip.top() + (1.0 - fz) * strip.height();
-    for (x, dir) in [(strip.left() - 1.0, 1.0f32), (strip.right() + 1.0, -1.0)] {
-        let tri = vec![pos2(x, sy), pos2(x - 6.0 * dir, sy - 4.0), pos2(x - 6.0 * dir, sy + 4.0)];
-        ui.painter().add(egui::Shape::convex_polygon(tri, t.text, Stroke::NONE));
-    }
+    let strip_mesh = if mode == "h" {
+        let cached_strip = ui.ctx().data(|d| d.get_temp::<Mesh>(ui.id().with("cp_strip_mesh_h")));
+        if let Some(m) = cached_strip {
+            m
+        } else {
+            let m = vertical_strip_mesh(strip, 32, |y| slider_color(&mode, 1.0 - y, hsv, rgb, lab));
+            ui.ctx().data_mut(|d| d.insert_temp(ui.id().with("cp_strip_mesh_h"), m.clone()));
+            m
+        }
+    } else {
+        vertical_strip_mesh(strip, 32, |y| slider_color(&mode, 1.0 - y, hsv, rgb, lab))
+    };
+    ui.painter().add(strip_mesh);
+
+    let mut cur_fz = fz;
     if let Some(p) = sresp.interact_pointer_pos().filter(|_| sresp.dragged() || sresp.clicked()) {
         ui.ctx().request_repaint();
+        ui.ctx().request_repaint_after(std::time::Duration::from_millis(45));
         let z = 1.0 - ((p.y - strip.top()) / strip.height()).clamp(0.0, 1.0);
+        cur_fz = z;
         let h = match mode.as_str() {
             "h" => Some([z * 360.0, hsv[1], hsv[2]]),
             "s" => Some([hsv[0], z, hsv[2]]),
@@ -582,6 +612,11 @@ fn color_field(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
             (None, Some(l)) => set_rgb(f, lab_rgb(l), Keep::Lab(l)),
             (None, None) => set_rgb(f, slider_color(&mode, z, hsv, rgb, lab), Keep::Nothing),
         }
+    }
+    let sy = strip.top() + (1.0 - cur_fz) * strip.height();
+    for (x, dir) in [(strip.left() - 1.0, 1.0f32), (strip.right() + 1.0, -1.0)] {
+        let tri = vec![pos2(x, sy), pos2(x - 6.0 * dir, sy - 4.0), pos2(x - 6.0 * dir, sy + 4.0)];
+        ui.painter().add(egui::Shape::convex_polygon(tri, t.text, Stroke::NONE));
     }
 }
 

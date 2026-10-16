@@ -552,9 +552,17 @@ pub fn open(app: &mut PhotocraftApp, select: Option<&str>) -> Option<u64> {
     let layer = st.doc.layer(st.active_layer?)?.clone();
     let light = st.doc.global_light.angle;
     let mode = st.doc.mode;
-    let mut f = initial_fields(&layer, select, light);
-    // Channels and Blend If list the document's own colour channels.
-    set_blending_fields(&mut f, &layer, mode);
+    let mut committed = initial_fields(&layer, None, light);
+    set_blending_fields(&mut committed, &layer, mode);
+    let committed_hash = preview_hash(&committed);
+    let mut f = if select.is_none() {
+        committed
+    } else {
+        let mut f = initial_fields(&layer, select, light);
+        set_blending_fields(&mut f, &layer, mode);
+        f
+    };
+    f.insert("__committedHash".into(), json!(committed_hash));
     f.insert("__document".into(), json!(st.doc.id));
     f.insert("patternList".into(), pattern_list(app));
     Some(app.ui.open_dialog(crate::state::DialogKind::LayerStyle, f))
