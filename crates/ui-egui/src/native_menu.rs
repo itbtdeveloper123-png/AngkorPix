@@ -800,7 +800,7 @@ mod tests {
     fn photocraft_gets_a_mac_app_menu() {
         let l = layout(true);
         let app = &l.bar.menus[0];
-        assert_eq!((app.title.as_str(), app.role), ("PhotoCraft", MenuRole::App));
+        assert_eq!((app.title.as_str(), app.role), ("AngkorPix", MenuRole::App));
         assert_eq!(
             ids(&app.children),
             [

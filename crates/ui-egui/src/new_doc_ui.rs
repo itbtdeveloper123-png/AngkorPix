@@ -988,6 +988,7 @@ mod tests {
             background_color: None,
             unit: "px".into(),
             resolution_unit: "in".into(),
+            artboards: false,
         };
         let mut f = Map::new();
         set_clipboard(&mut f, 20, 30);
