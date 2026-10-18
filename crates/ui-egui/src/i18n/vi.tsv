@@ -3686,3 +3686,49 @@ curves	Smooth	Làm mượt
 # Free Transform: a new layer while the box is open (#5859)
 	Free Transform is still being applied; try again when it has finished.	Biến đổi tự do vẫn đang được áp dụng; hãy thử lại khi hoàn tất.
 	The transform couldn't be applied.	Không thể áp dụng phép biến đổi.
+	About AngkorPix	Giới thiệu AngkorPix
+	Add Adjustment Layer	Add Adjustment Layer
+	Adjust Colors	Adjust Colors
+	Adjustment Presets	Adjustment Presets
+	Align Center	Align Center
+	Align Left	Align Left
+	Align Right	Align Right
+	AngkorPix Website	Trang web AngkorPix
+	AngkorPix on GitHub	AngkorPix trên GitHub
+	AngkorPix — an open-source, native image editor written in Rust.	AngkorPix — trình chỉnh sửa ảnh gốc mã nguồn mở viết bằng Rust.
+	Artboards	Artboards
+	Automatically detect and select subject	Automatically detect and select subject
+	Automatically isolate subject and mask out background	Automatically isolate subject and mask out background
+	Cancel Crop (Esc)	Cancel Crop (Esc)
+	Cancel Type	Cancel Type
+	Commit Crop (Enter)	Commit Crop (Enter)
+	Commit Type	Commit Type
+	Constrain Proportions	Constrain Proportions
+	Contextual Task Bar	Contextual Task Bar
+	Convert Shape to Selection	Convert Shape to Selection
+	Create Layer Mask from Selection	Create Layer Mask from Selection
+	Deselect (Cmd+D)	Bỏ chọn (Cmd+D)
+	Drag to reposition Contextual Task Bar	Drag to reposition Contextual Task Bar
+	Eyedropper Tool (I)	Công cụ Ống hút màu (I)
+	Fill Selection (Shift+F5)	Fill Selection (Shift+F5)
+	Free Transform (Cmd+T)	Biến đổi tự do (Cmd+T)
+	Hand Tool (H)	Công cụ Bàn tay (H)
+	Hide Contextual Task Bar	Hide Contextual Task Bar
+	Inverse Selection (Cmd+Shift+I)	Đảo vùng chọn (Cmd+Shift+I)
+	New Adjustment Layer…	Lớp điều chỉnh mới…
+	Pin bar position	Pin bar position
+	Preview…	Xem trước…
+	Rasterize Shape Layer	Rasterize Shape Layer
+	Refine selection edge (Cmd+Alt+R)	Refine selection edge (Cmd+Alt+R)
+	Report Issue	Report Issue
+	Reset bar position	Reset bar position
+	Single Adjustments	Single Adjustments
+	Slice Select Tool (K)	Công cụ Chọn lát cắt (K)
+	Straighten image	Straighten image
+	Task Bar Options	Task Bar Options
+	Text Layer	Text Layer
+	To Selection	To Selection
+	Toggle Slices Visibility	Toggle Slices Visibility
+	Very High	Very High
+	Zoom Tool (Z)	Công cụ Thu phóng (Z)
+	…	…

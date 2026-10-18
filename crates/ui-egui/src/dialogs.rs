@@ -428,6 +428,13 @@ pub fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
                         let clicked = if d.kind == DialogKind::Command && crate::prefs_ui::is_preferences(&fields) {
                             let changed = crate::prefs_ui::preferences_changed(app, &fields);
                             dialog_buttons(ui, &[ok, cancel, DialogButton::new(ButtonRole::Apply, tl!("Apply"), 84.0).enabled(changed)])
+                        } else if web {
+                            let done = DialogButton::new(ButtonRole::Alternate, tl!("Done"), 84.0);
+                            let hit = dialog_buttons(ui, &[done, cancel, ok]);
+                            if hit == Some(ButtonRole::Alternate) {
+                                crate::file_ui::done_web(app, &fields);
+                            }
+                            hit
                         } else if crate::mask_trash_prompt::owns(&fields) && !crate::mask_trash_prompt::is_vector(&fields) {
                             // Photoshop: Apply / Cancel / Delete. Delete answers with the choice set.
                             let apply = DialogButton::new(ButtonRole::Default, tl!("Apply"), 84.0).enabled(crate::mask_trash_prompt::can_apply(&fields));
@@ -460,6 +467,7 @@ pub fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
                         match clicked {
                             Some(ButtonRole::Cancel) if reset => crate::dialog_alt_reset::apply(app, ui.ctx(), &mut fields),
                             Some(ButtonRole::Cancel) => outcome = Some(false),
+                            Some(ButtonRole::Alternate) if web => outcome = Some(false),
                             Some(ButtonRole::Apply) => apply_requested = true,
                             Some(_) => outcome = Some(true),
                             None if interactive
@@ -630,7 +638,10 @@ pub fn confirm(app: &mut PhotocraftApp, id: u64) -> Result<Value, String> {
         DialogKind::Command if crate::variables_ui::owns(&d.fields) => crate::variables_ui::confirm(app, &d.fields),
         DialogKind::Command if crate::file_ui::owns(&d.fields) => crate::file_ui::confirm(app, &d.fields),
         DialogKind::Command if crate::new_guide_ui::owns(&d.fields) => crate::new_guide_ui::confirm(app, &d.fields),
-        DialogKind::Command if crate::color_picker_ui::owns(&d.fields) => crate::color_picker_ui::confirm(app, &d.fields),
+        DialogKind::Command if crate::color_picker_ui::owns(&d.fields) => {
+            app.style_preview = None;
+            crate::color_picker_ui::confirm(app, &d.fields)
+        }
         DialogKind::Command if crate::color_range_ui::owns(&d.fields) => crate::color_range_ui::confirm(app, &d.fields),
         DialogKind::Command if crate::prefs_ui::owns(&d.fields) => crate::prefs_ui::confirm(app, &d.fields),
         DialogKind::Command if d.fields.contains_key("__export") => crate::export_dialog::confirm(app, &d.fields),
@@ -661,7 +672,10 @@ pub fn confirm(app: &mut PhotocraftApp, id: u64) -> Result<Value, String> {
             }
             result
         }
-        DialogKind::LayerStyle => crate::layer_style::confirm(app, &d.fields),
+        DialogKind::LayerStyle => {
+            app.style_preview = None;
+            crate::layer_style::confirm(app, &d.fields)
+        }
         DialogKind::About | DialogKind::Error => Ok(Value::Null),
     }
 }
@@ -680,6 +694,7 @@ pub fn cancel(app: &mut PhotocraftApp, id: u64) -> Result<Value, String> {
     app.ui.dialogs.retain(|d| !crate::layer_style::color_picker::child_of(&d.fields, id));
     app.filter_preview = None;
     app.color_range = None;
+    app.style_preview = None;
     crate::type_panels_ui::color_picker::prune(app);
     Ok(Value::Null)
 }

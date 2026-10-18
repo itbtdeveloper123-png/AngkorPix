@@ -1540,10 +1540,9 @@ mod tests {
             let mut h = harness();
             type_into(&mut h, 0, "512");
             type_into(&mut h, 1, "256");
-            // The Portrait icon button follows the "Orientation" label (icons have tooltips only).
-            let label = h.get_by_label("Orientation").rect();
-            let gap = h.ctx.global_style().spacing.item_spacing.x;
-            click_at(&mut h, egui::pos2(label.right() + gap + 12.0, label.center().y));
+            // The Portrait and Landscape buttons follow the Height field on the same row.
+            let height_rect = field(&h, 1);
+            click_at(&mut h, egui::pos2(height_rect.right() + 8.0 + 12.0, height_rect.center().y));
             enter(&mut h);
             assert_eq!(created(&h), (256, 512, 72.0));
         }
@@ -1555,9 +1554,9 @@ mod tests {
             h.get_by_label("Print").click();
             h.run_steps(2);
             // The default 1920 x 1080 is already landscape: Landscape swaps nothing, but is picked.
-            let label = h.get_by_label("Orientation").rect();
+            let height_rect = field(&h, 1);
             let gap = h.ctx.global_style().spacing.item_spacing.x;
-            click_at(&mut h, egui::pos2(label.right() + gap + 24.0 + gap + 12.0, label.center().y));
+            click_at(&mut h, egui::pos2(height_rect.right() + 8.0 + 24.0 + gap + 12.0, height_rect.center().y));
             assert_eq!((fields(&h)["width"].as_u64(), fields(&h)["height"].as_u64()), (Some(1920), Some(1080)));
             let _ = preset_title_at(&h, "11.7 x 8.3 in @ 300 ppi");
             let at = preset_title_at(&h, "A4");

@@ -759,7 +759,7 @@ mod tests {
             })
             .unwrap();
             let fonts = ctx.fonts(|f| f.definitions().clone());
-            assert_eq!(fonts.families[&FontFamily::Proportional].first().map(String::as_str), Some("Inter"));
+            assert_eq!(fonts.families[&FontFamily::Proportional].first().map(String::as_str), Some("Roboto"));
             for stack in fonts.families.values() {
                 assert_eq!(stack.iter().filter(|n| n.starts_with(FONT_PREFIX)).count(), 3);
                 assert_eq!(stack.last().map(String::as_str), Some("system-cjk-2"), "appended last so Latin keeps Inter");

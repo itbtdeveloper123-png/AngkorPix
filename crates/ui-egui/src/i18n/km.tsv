@@ -1254,9 +1254,9 @@
 # Mixer Brush (required for every registered non-English language)
 	Mixer Brush	ជក់លាយពណ៌ (Mixer Brush)
 	Mixer Brush Tool	ឧបករណ៍ Mixer Brush (Mixer Brush Tool)
-	Wet	Wet
-	Load	Load
-	Mix	Mix
+	Wet	សើម
+	Load	ផ្ទុក
+	Mix	លាយ
 	Flow	លំហូរ
 	Sample All Layers	ស្រង់គំរូគ្រប់ស្រទាប់
 # Camera Raw labels (required for every registered non-English language)
@@ -1711,10 +1711,10 @@ document	Orientation	ទិសដៅក្រដាស
 	Width:	ទទឹង:
 	Height:	កម្ពស់:
 	8 bit	8 ប៊ីត (8 bit)
-	16 bit	16 bit
-	32 bit (float)	32 bit (float)
-	Integer	Integer
-	Floating point	Floating point
+	16 bit	16 ប៊ីត (16 bit)
+	32 bit (float)	32 ប៊ីត (float)
+	Integer	ចំនួនគត់
+	Floating point	ចំនួនទសភាគ (Floating point)
 # Phase 4.14 — Export / Save for Web / TIFF options
 	File Settings	ការកំណត់ ឯកសារ
 	Transparency	Transparency
@@ -1852,7 +1852,6 @@ document	Orientation	ទិសដៅក្រដាស
 	Choke	បង្រួម (Choke)
 	Structure	រចនាសម្ព័ន្ធ (Structure)
 	Elements	ធាតុផ្សំ (Elements)
-	Quality	គុណភាព (Quality)
 	Shading	ការដាក់ស្រមោល (Shading)
 	Fill Type	ប្រភេទចាក់ពណ៌ (Fill Type)
 	Fill Type:	ប្រភេទចាក់ពណ៌:
@@ -1922,9 +1921,9 @@ layers	Fill	កម្រិតចាក់ពណ៌
 layers	Fill:	កម្រិតចាក់ពណ៌:
 	Pattern Stamp Tool	ឧបករណ៍ត្រាលំនាំក្បាច់ (Pattern Stamp)
 	Pattern Stamp	ត្រាក្រឧាគំរូ (Pattern Stamp)
-	Impressionist	Impressionist
+	Impressionist	បែបចំណាប់អារម្មណ៍
 	Scope	វិសាលភាព (Scope)
-	Selected	Selected
+	Selected	បានជ្រើសរើស
 	Open	បើក
 	Camera Raw ({name})	Camera Raw ({name})
 	Developing {name}	Developing {name}
@@ -1942,12 +1941,10 @@ layers	Fill:	កម្រិតចាក់ពណ៌:
 	Adjustment Preview	ការកែតម្រូវ មើលជាមុន
 	All Layers No Adjustments	All Layers No Adjustments
 	Alt-click to define a source point to clone from	Alt-click to define a source point to clone from
-	Artboard	Artboard
 	Artboard Background Color	ពណ៌ Artboard Background
 	Auto Adjust Opacity	Auto Adjust Opacity
 	Bitmap…	ប៊ីតម៉េប (Bitmap)…
 	Blend If	Blend If
-	Blend If:	Blend If:
 	Bottom Left	Bottom Left
 	Bottom Right	Bottom Right
 	Brush Name	Brush Name
@@ -2315,7 +2312,7 @@ shape	Appearance	រូបរាង
 	Block	Block
 	(No neutral color exists for {mode} mode.)	(No neutral color exists for {mode} mode.)
 	24 bits/pixel	24 bits/pixel
-	32 bits/pixel	32 bits/pixel
+	32 bits/pixel	32 ប៊ីត/ភីកសែល
 	Activate Panel	ផ្ទាំង Activate
 	Add New Artboard	Add New Artboard
 	Add to favorites	Add to favorites
@@ -2803,7 +2800,6 @@ cameraData	Lens	កញ្ចក់ឡេន
 	Adjust Interval For Loops	Adjust Interval For Loops
 	Adjustment Properties	Adjustment Properties
 	Adobe RGB (1998)	Adobe RGB (1998)
-	Advanced Blending	Advanced Blending
 	Alpha	Alpha
 	Alternative	Alternative
 	Ambience	Ambience
@@ -3656,7 +3652,6 @@ curves	Smooth	រលូន (Smooth)
 	Are you sure you want to quit?	តើអ្នកពិតជាចង់ចាកចេញមែនទេ?
 	Are you sure?	តើអ្នកប្រាកដដែរឬទេ?
 	Art History Brush	ជក់ប្រវត្តិដើមបែបសិល្បៈ (Art History Brush)
-	Artboards	ក្ដារសិល្បៈ (Artboards)
 	Artboards to Files	រក្សាទុក Artboards ជាឯកសារដាច់ដោយឡែក
 	Artboards to PDF	នាំចេញ Artboards ជា PDF
 	Ask Before Saving Saved Embedded	សួរមុនពេលរក្សាទុក Profile ដែលបង្កប់
@@ -3867,7 +3862,6 @@ curves	Smooth	រលូន (Smooth)
 	GPU error; using the CPU renderer.	កំហុស GPU; ប្តូរមកប្រើ CPU Renderer វិញ។
 	GPU retry scheduled	បានកំណត់ពេលសាកល្បង GPU ឡើងវិញ
 	General Blend	ការលាយពណ៌ទូទៅ (General Blending)
-	General Blending	ការលាយពណ៌ទូទៅ (General Blending)
 	General Brushes	ជក់ទូទៅ (General Brushes)
 	Glyph Scaling	មាត្រដ្ឋានតួអក្សរ (Glyph Scaling)
 	Go to Layer	ទៅកាន់ស្រទាប់
@@ -4269,9 +4263,9 @@ curves	Smooth	រលូន (Smooth)
 @id	file.close	បិទឯកសារ (Close)
 @id	filter.sharpen.sharpen	បង្កើនភាពច្បាស់ (Sharpen)
 @id	layer.layerMask.apply	អនុវត្តរបាំងស្រទាប់ (Apply Layer Mask)
-@plural	Imported {n} brush from {file}|Imported {n} brushes from {file}	បាននាំចូលជក់ {n} ពី {file}|បាននាំចូលជក់ {n} ពី {file}
-@plural	Imported {n} gradient from {file}|Imported {n} gradients from {file}	បាននាំចូលពណ៌ជម្រាល {n} ពី {file}|បាននាំចូលពណ៌ជម្រាល {n} ពី {file}
-@plural	Imported {n} pattern from {file}|Imported {n} patterns from {file}	បាននាំចូលលំនាំក្បាច់ {n} ពី {file}|បាននាំចូលលំនាំក្បាច់ {n} ពី {file}
+@plural	Imported {n} brush from {file}|Imported {n} brushes from {file}	បាននាំចូលជក់ {n} ពី {file}
+@plural	Imported {n} gradient from {file}|Imported {n} gradients from {file}	បាននាំចូលពណ៌ជម្រាល {n} ពី {file}
+@plural	Imported {n} pattern from {file}|Imported {n} patterns from {file}	បាននាំចូលលំនាំក្បាច់ {n} ពី {file}
 layerLabel	Magenta	ពណ៌ក្រហមស្វាយ (Magenta)
 layerLabel	No Color	គ្មានពណ៌ (No Color)
 layerLabel	Red	ពណ៌ក្រហម (Red)
@@ -4286,3 +4280,40 @@ navigator	Zoom	ការពង្រីក/បង្រួម (Zoom)
 	Fill Selection (Shift+F5)	បំពេញពណ៌ការជ្រើសរើស (Shift+F5)
 	Report Issue	រាយការណ៍បញ្ហា
 	font '{font}' is not installed; text may render using a fallback face	ពុម្ពអក្សរ '{font}' មិនទាន់បានដំឡើងទេ; អត្ថបទអាចនឹងបង្ហាញដោយប្រើពុម្ពអក្សរជំនួស
+
+# Shortcuts & settings dialogs
+	Accept and Go to Conflict	យល់ព្រម និងទៅកាន់ចំណុចជាន់គ្នា
+	Changes undone.	បានមិនធ្វើវិញនូវការផ្លាស់ប្តូរ។
+	Choose a new shortcut for this command, or leave it without one.	ជ្រើសរើសផ្លូវកាត់ថ្មីសម្រាប់ពាក្យបញ្ជានេះ ឬទុកវាដោយគ្មានផ្លូវកាត់។
+	Delete this set	លុបសំណុំនេះ
+	Free Transform is still being applied; try again when it has finished.	ការបំប្លែងទម្រង់សេរីកំពុងដំណើរការនៅឡើយ សូមព្យាយាមម្តងទៀតនៅពេលបញ្ចប់។
+	Low-Latency Drawing (vsync off, applies at next launch)	ការគូរជាមួយកម្រិតពន្យារទាប (បិទ vsync នឹងអនុវត្តនៅពេលបើកលើកក្រោយ)
+	New Set…	សំណុំថ្មី…
+	PhotoCraft Defaults	លំនាំដើម PhotoCraft
+	Put this command's shortcuts back as they were	ដាក់ផ្លូវកាត់នៃពាក្យបញ្ជានេះត្រឡប់ដូចដើមវិញ
+	Save a list of these shortcuts as a web page	រក្សាទុកបញ្ជីផ្លូវកាត់ទាំងនេះជាទំព័រវិប
+	Save the changes to this set	រក្សាទុកការផ្លាស់ប្តូរទៅក្នុងសំណុំនេះ
+	Save these shortcuts as a .kys file	រក្សាទុកផ្លូវកាត់ទាំងនេះជាឯកសារ .kys
+	Save these shortcuts as a new set	រក្សាទុកផ្លូវកាត់ទាំងនេះជាសំណុំថ្មី
+	Set deleted.	បានលុបសំណុំ។
+	Set saved.	បានរក្សាទុកសំណុំ។
+	Set:	សំណុំ:
+	Summarize…	សង្ខេប…
+	Take the shortcut from the other command and select it	យកផ្លូវកាត់ពីពាក្យបញ្ជាផ្សេងទៀត ហើយជ្រើសរើសវា
+	The transform couldn't be applied.	មិនអាចអនុវត្តការបំប្លែងទម្រង់បានទេ។
+	There are too many sets: delete one first.	មានសំណុំច្រើនពេកហើយ សូមលុបមួយសិន។
+	Undo Changes	មិនធ្វើវិញនូវការផ្លាស់ប្តូរ
+	set name	ឈ្មោះសំណុំ
+	{set} (modified)	{set} (បានកែប្រែ)
+	{shortcut} is reserved by the system and can't be assigned.	{shortcut} ត្រូវបានបម្រុងទុកដោយប្រព័ន្ធ និងមិនអាចកំណត់បានទេ។
+	Adjustment Presets	ការកំណត់ជាមុននៃការកែតម្រូវ
+	Constrain Proportions	រក្សាសមាមាត្រ
+	Eyedropper Tool (I)	ឧបករណ៍បន្តក់យកពណ៌ (I)
+	Hand Tool (H)	ឧបករណ៍ដៃ (H)
+	Preview…	មើលសាកល្បង…
+	Single Adjustments	ការកែតម្រូវទោល
+	Slice Select Tool (K)	ឧបករណ៍ជ្រើសបន្ទះកាត់ (K)
+	Toggle Slices Visibility	បិទ/បើកការបង្ហាញបន្ទះកាត់
+	Very High	ខ្ពស់ខ្លាំង
+	Zoom Tool (Z)	ឧបករណ៍ពង្រីក/បង្រួម (Z)
+	…	…

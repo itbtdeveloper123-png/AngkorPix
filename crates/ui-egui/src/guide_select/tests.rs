@@ -62,7 +62,7 @@ fn a_moved_guide_stays_selected_and_dragging_one_off_the_canvas_deletes_it() {
     assert_eq!(guides(&app).0, vec![80.0]);
     assert_eq!(selected(&app), Some((true, 0)));
     tool_event(&mut app, ToolEvent::Down { x: 80.0, y: 70.0, pressure: 1.0 }, Modifiers::NONE);
-    tool_event(&mut app, ToolEvent::Up { x: -20.0, y: 70.0 }, Modifiers::NONE);
+    tool_event(&mut app, ToolEvent::Up { x: -400.0, y: 70.0 }, Modifiers::NONE);
     assert!(guides(&app).0.is_empty());
     assert_eq!(selected(&app), None);
 }

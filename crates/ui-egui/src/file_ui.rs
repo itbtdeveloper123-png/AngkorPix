@@ -180,6 +180,22 @@ pub fn confirm(app: &mut PhotocraftApp, f: &Map<String, Value>) -> Result<Value,
     if f.contains_key("__web") { web_confirm(app, f) } else { print_confirm(app, f) }
 }
 
+pub fn done_web(app: &mut PhotocraftApp, f: &Map<String, Value>) {
+    let mut fields = f.clone();
+    let _ = web_preview::prepare_table(app, &mut fields);
+    let mut last_web = params(&fields);
+    if let Some(m) = last_web.as_object_mut() {
+        m.remove("path");
+        m.remove("dir");
+        m.remove("colorTable");
+        m.remove("colorTableEdits");
+    }
+    app.session.file_menu.last_web = Some(last_web.clone());
+    app.session.prefs.edit(|p| {
+        p.dialogs.insert(WEB_COMMAND.into(), last_web);
+    });
+}
+
 fn params(f: &Map<String, Value>) -> Value {
     Value::Object(f.iter().filter(|(k, _)| !k.starts_with("__")).map(|(k, v)| (k.clone(), v.clone())).collect())
 }
@@ -342,8 +358,40 @@ fn web_pane(app: &PhotocraftApp, ui: &mut egui::Ui, size: egui::Vec2, p: Option<
     };
     ui.vertical(|ui| {
         ui.set_width(size.x);
-        let (r, response) = ui.allocate_exact_size((size - egui::vec2(0.0, 42.0)).max(egui::vec2(1.0, 1.0)), egui::Sense::drag());
-        let response = response.on_hover_cursor(egui::CursorIcon::Grab);
+        let (r, response) = ui.allocate_exact_size((size - egui::vec2(0.0, 42.0)).max(egui::vec2(1.0, 1.0)), egui::Sense::click_and_drag());
+        let tool = s(f, "__web_tool", "hand");
+        let cursor = match tool.as_str() {
+            "zoom" => if ui.input(|i| i.modifiers.alt) { egui::CursorIcon::ZoomOut } else { egui::CursorIcon::ZoomIn },
+            "eyedropper" => egui::CursorIcon::Crosshair,
+            _ => egui::CursorIcon::Grab,
+        };
+        let response = response.on_hover_cursor(cursor);
+        if let Some(pos) = response.hover_pos() {
+            let nav = web_preview::Navigation::read(f);
+            let ppp = ui.ctx().pixels_per_point();
+            let scale = nav.scale(r.size(), source_size, ppp);
+            let image_rect = egui::Rect::from_min_size(r.center() - nav.center * source_size * scale, source_size * scale);
+            if image_rect.contains(pos) && w > 0 && h > 0 {
+                let uv = (pos - image_rect.min) / image_rect.size();
+                let ix = ((uv.x * w as f32) as usize).min((w - 1) as usize);
+                let iy = ((uv.y * h as f32) as usize).min((h - 1) as usize);
+                if let Some(pixel) = px.get(iy * w as usize + ix) {
+                    let pr = (pixel[0].clamp(0.0, 1.0) * 255.0).round() as u8;
+                    let pg = (pixel[1].clamp(0.0, 1.0) * 255.0).round() as u8;
+                    let pb = (pixel[2].clamp(0.0, 1.0) * 255.0).round() as u8;
+                    let pa = (pixel[3].clamp(0.0, 1.0) * 255.0).round() as u8;
+                    let phex = format!("#{:02x}{:02x}{:02x}", pr, pg, pb);
+                    f.insert("__sample_r".into(), json!(pr));
+                    f.insert("__sample_g".into(), json!(pg));
+                    f.insert("__sample_b".into(), json!(pb));
+                    f.insert("__sample_a".into(), json!(pa));
+                    f.insert("__sample_hex".into(), json!(phex));
+                    if tool == "eyedropper" && response.clicked() {
+                        f.insert("__eyedropper_hex".into(), json!(phex));
+                    }
+                }
+            }
+        }
         if let Some(rects) = f.get_mut("__previewRects").and_then(Value::as_array_mut) {
             rects.push(json!([r.left(), r.top(), r.right(), r.bottom()]));
         }
@@ -477,6 +525,35 @@ fn web_frame_document(doc: &photocraft_doc::Document, frame: Option<usize>) -> R
     preview.execute("timeline.setFrame", json!({"frame": frame}))?;
     Ok((*preview.active().ok_or(photocraft_engine::EngineError::NoDocument)?.doc).clone())
 }
+
+fn open_browser_preview(app: &mut PhotocraftApp, ctx: &egui::Context, f: &Map<String, Value>) {
+    use base64::Engine as _;
+    let Some(st) = app.session.active() else { return };
+    let doc = st.doc.clone();
+    let base = params(f);
+    let Ok(settings) = WebSettings::from_params(&base, "preview") else { return };
+    let (fw, fh) = match web_preview::dimensions(&doc, &base) {
+        Ok(s) => s,
+        Err(_) => return,
+    };
+    let k = (1920.0 / fw.max(fh)).min(1.0);
+    let Ok((wd, _, _)) = web_cmds::web_document(&doc, &json!({"width": (fw * k).round().max(1.0), "height": (fh * k).round().max(1.0)}), &settings) else { return };
+    let buf = photocraft_compose::flatten(&wd);
+    let w = wd.size.width as usize;
+    let h = wd.size.height as usize;
+    let rgba: Vec<u8> = buf.px.iter().flat_map(|q| q.map(|v| (v.clamp(0.0, 1.0) * 255.0).round() as u8)).collect();
+    let temp_file = std::env::temp_dir().join("photocraft_save_for_web_preview.html");
+    let img_data = base64::engine::general_purpose::STANDARD.encode(&rgba);
+    let html_content = format!(
+        "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Save for Web Preview - {}</title><style>body {{ margin: 0; background: #262626; color: #ddd; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }} .info {{ margin-top: 16px; font-size: 14px; color: #aaa; }} canvas {{ box-shadow: 0 4px 20px rgba(0,0,0,0.5); }}</style></head><body><canvas id='c' width='{w}' height='{h}'></canvas><div class='info'>{w} &times; {h} px &middot; Preview</div><script>const c = document.getElementById('c'); const ctx = c.getContext('2d'); const raw = Uint8Array.from(atob('{img_data}'), c => c.charCodeAt(0)); const imgData = new ImageData(new Uint8ClampedArray(raw.buffer), {w}, {h}); ctx.putImageData(imgData, 0, 0);</script></body></html>",
+        doc.name
+    );
+    if std::fs::write(&temp_file, html_content).is_ok() {
+        let url = format!("file:///{}", temp_file.to_string_lossy().replace('\\', "/"));
+        crate::links::open(app, ctx, &url);
+    }
+}
+
 fn web_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     let t = Tokens::get(ui.ctx());
     let Some(doc) = app.session.active().map(|d| d.doc.clone()) else { return };
@@ -497,8 +574,38 @@ fn web_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
     }
     let p = params(f);
     f.insert("__previewRects".into(), json!([]));
-    let area = egui::vec2((ui.available_width() - 270.0 - ui.spacing().item_spacing.x).max(260.0), (ui.available_height() - 48.0).max(180.0));
+    let area = egui::vec2((ui.available_width() - 270.0 - 40.0 - ui.spacing().item_spacing.x).max(260.0), (ui.available_height() - 72.0).max(180.0));
     ui.horizontal_top(|ui| {
+        // Left Toolbar (Hand, Slice Select, Zoom, Eyedropper, Swatch, Toggle Slices)
+        ui.vertical(|ui| {
+            ui.set_width(30.0);
+            let mut tool = s(f, "__web_tool", "hand");
+            for (id, icon, tip) in [
+                ("hand", "hand", tl!("Hand Tool (H)")),
+                ("slice", "square-dashed-mouse-pointer", tl!("Slice Select Tool (K)")),
+                ("zoom", "zoom-in", tl!("Zoom Tool (Z)")),
+                ("eyedropper", "pipette", tl!("Eyedropper Tool (I)")),
+            ] {
+                if crate::icons::button(ui, icon, 24.0, tool == id, tip).clicked() {
+                    tool = id.into();
+                }
+            }
+            f.insert("__web_tool".into(), json!(tool));
+            ui.add_space(6.0);
+            let hex = s(f, "__eyedropper_hex", "#ffffff");
+            let c = photocraft_engine::prefs::parse_hex(&hex).unwrap_or([255, 255, 255]);
+            let (r, resp) = ui.allocate_exact_size(egui::vec2(22.0, 22.0), egui::Sense::hover());
+            ui.painter().rect_filled(r, 2.0, egui::Color32::from_rgb(c[0], c[1], c[2]));
+            ui.painter().rect_stroke(r, 2.0, egui::Stroke::new(1.0, t.separator), egui::StrokeKind::Outside);
+            resp.on_hover_text(format!("Color: {hex}"));
+            ui.add_space(6.0);
+            let mut show_slices = b(f, "__web_show_slices", true);
+            if crate::icons::button(ui, "slice-knife", 24.0, show_slices, tl!("Toggle Slices Visibility")).clicked() {
+                show_slices = !show_slices;
+                f.insert("__web_show_slices".into(), json!(show_slices));
+            }
+        });
+        ui.add_space(4.0);
         // Previews grow with the dialog; settings retain their compact width.
         ui.vertical(|ui| {
             ui.set_width(area.x);
@@ -524,12 +631,33 @@ fn web_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                     });
                 }
             }
+            ui.add_space(4.0);
+            ui.horizontal(|ui| {
+                let zoom_val = (n(f, "__effectiveZoom", 1.0) * 100.0).round();
+                ui.label(egui::RichText::new(format!("{zoom_val}%")).color(t.text_dim).size(11.0));
+                ui.separator();
+                let r = f.get("__sample_r").and_then(Value::as_u64);
+                let g = f.get("__sample_g").and_then(Value::as_u64);
+                let b = f.get("__sample_b").and_then(Value::as_u64);
+                let a = f.get("__sample_a").and_then(Value::as_u64);
+                let hex = f.get("__sample_hex").and_then(Value::as_str).unwrap_or("--");
+                if let (Some(r), Some(g), Some(b), Some(a)) = (r, g, b, a) {
+                    ui.label(egui::RichText::new(format!("R: {r}  G: {g}  B: {b}  Alpha: {a}  Hex: {hex}")).color(t.text_dim).size(11.0));
+                } else {
+                    ui.label(egui::RichText::new("R: --  G: --  B: --  Alpha: --  Hex: --").color(t.text_dim).size(11.0));
+                }
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    if ui.small_button(tl!("Preview…")).clicked() {
+                        open_browser_preview(app, ui.ctx(), f);
+                    }
+                });
+            });
         });
         ui.add_space(10.0);
         // Settings scroll independently on smaller windows.
         ui.vertical(|ui| {
             ui.set_width(250.0);
-            egui::ScrollArea::vertical().id_salt("web-settings").max_height(area.y).show(ui, |ui| {
+            egui::ScrollArea::vertical().id_salt("web-settings").max_height(area.y + 24.0).show(ui, |ui| {
                 ui.label(egui::RichText::new(tl!("Preset")).color(t.text_dim));
                 let mut preset = s(f, "__preset", "");
                 let mut opts: Vec<(String, &str)> = vec![("".into(), "[Unnamed]")];
@@ -572,12 +700,69 @@ fn web_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                         number(ui, f, "ditherAmount", tl!("Dither"), 0.0..=100.0, "%", 88.0);
                         check(ui, f, "transparency", tl!("Transparency"), true);
                         check(ui, f, "interlaced", tl!("Interlaced"), false);
+                        ui.horizontal(|ui| {
+                            ui.label(egui::RichText::new(tl!("Matte")).color(t.text_dim));
+                            let matte_hex = s(f, "matte", "#ffffff");
+                            let mut matte_rgb = photocraft_engine::prefs::parse_hex(&matte_hex).unwrap_or([255, 255, 255]);
+                            if crate::widgets::color_edit_button_srgb(ui, &mut matte_rgb).changed() {
+                                f.insert("matte".into(), json!(web_cmds::rgb_hex(matte_rgb)));
+                            }
+                        });
                         number(ui, f, "webSnap", tl!("Web Snap"), 0.0..=100.0, "%", 0.0);
                     }
                     "jpeg" => {
-                        number(ui, f, "quality", tl!("Quality"), 0.0..=100.0, "", 60.0);
-                        check(ui, f, "progressive", tl!("Progressive"), false);
-                        check(ui, f, "optimized", tl!("Optimized"), true);
+                        let q = n(f, "quality", 60.0) as u8;
+                        let q_preset = match q {
+                            0..=20 => "low",
+                            21..=45 => "medium",
+                            46..=70 => "high",
+                            71..=90 => "veryHigh",
+                            _ => "maximum",
+                        };
+                        let mut cur_q_preset = s(f, "__jpeg_quality_preset", q_preset);
+                        ui.horizontal(|ui| {
+                            let opts: Vec<(String, &str)> = [
+                                ("low", tl!("Low")),
+                                ("medium", tl!("Medium")),
+                                ("high", tl!("High")),
+                                ("veryHigh", tl!("Very High")),
+                                ("maximum", tl!("Maximum")),
+                            ]
+                            .iter()
+                            .map(|(k, l)| (k.to_string(), *l))
+                            .collect();
+                            if crate::widgets::dropdown(ui, "jpeg-quality-preset", &mut cur_q_preset, &opts, 100.0) {
+                                let new_q = match cur_q_preset.as_str() {
+                                    "low" => 10,
+                                    "medium" => 30,
+                                    "high" => 60,
+                                    "veryHigh" => 80,
+                                    _ => 100,
+                                };
+                                f.insert("quality".into(), json!(new_q));
+                                f.insert("__jpeg_quality_preset".into(), json!(cur_q_preset));
+                            }
+                            ui.label(egui::RichText::new(tl!("Quality")).color(t.text_dim));
+                            let mut q_val = q as f32;
+                            if crate::widgets::value_field(ui, &mut q_val, 0.0..=100.0, "", 45.0).changed() {
+                                f.insert("quality".into(), json!(q_val.round() as u8));
+                            }
+                        });
+                        ui.horizontal(|ui| {
+                            check(ui, f, "progressive", tl!("Progressive"), false);
+                            ui.add_space(8.0);
+                            number(ui, f, "blur", tl!("Blur"), 0.0..=2.0, "", 0.0);
+                        });
+                        ui.horizontal(|ui| {
+                            check(ui, f, "optimized", tl!("Optimized"), true);
+                            ui.add_space(8.0);
+                            ui.label(egui::RichText::new(tl!("Matte")).color(t.text_dim));
+                            let matte_hex = s(f, "matte", "#ffffff");
+                            let mut matte_rgb = photocraft_engine::prefs::parse_hex(&matte_hex).unwrap_or([255, 255, 255]);
+                            if crate::widgets::color_edit_button_srgb(ui, &mut matte_rgb).changed() {
+                                f.insert("matte".into(), json!(web_cmds::rgb_hex(matte_rgb)));
+                            }
+                        });
                         check(ui, f, "embedIcc", tl!("Embed Color Profile"), false);
                     }
                     "wbmp" => {
@@ -593,16 +778,17 @@ fn web_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                     _ => {
                         check(ui, f, "transparency", tl!("Transparency"), true);
                         check(ui, f, "interlaced", tl!("Interlaced"), false);
-                    }
-                }
-                if fmt != "png24" || !b(f, "transparency", true) {
-                    ui.horizontal(|ui| {
-                        ui.label(egui::RichText::new(tl!("Matte")).color(t.text_dim));
-                        let mut m = s(f, "matte", "#ffffff");
-                        if ui.add(egui::TextEdit::singleline(&mut m).desired_width(80.0)).changed() {
-                            f.insert("matte".into(), json!(m));
+                        if !b(f, "transparency", true) {
+                            ui.horizontal(|ui| {
+                                ui.label(egui::RichText::new(tl!("Matte")).color(t.text_dim));
+                                let matte_hex = s(f, "matte", "#ffffff");
+                                let mut matte_rgb = photocraft_engine::prefs::parse_hex(&matte_hex).unwrap_or([255, 255, 255]);
+                                if crate::widgets::color_edit_button_srgb(ui, &mut matte_rgb).changed() {
+                                    f.insert("matte".into(), json!(web_cmds::rgb_hex(matte_rgb)));
+                                }
+                            });
                         }
-                    });
+                    }
                 }
                 ui.add_space(6.0);
                 check(ui, f, "convertToSrgb", tl!("Convert to sRGB"), true);
@@ -627,13 +813,55 @@ fn web_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                 }
                 ui.add_space(8.0);
                 ui.label(egui::RichText::new(tl!("Image Size")).font(crate::theme::semibold(12.0)).color(t.text));
+                let orig_w = f64::from(doc.size.width).max(1.0);
+                let orig_h = f64::from(doc.size.height).max(1.0);
+                let pct = n(f, "percent", 100.0);
+                let mut cur_w = (orig_w * pct / 100.0).round() as f32;
+                let mut cur_h = (orig_h * pct / 100.0).round() as f32;
+                let mut constrain = b(f, "__constrain_proportions", true);
+
+                ui.horizontal(|ui| {
+                    ui.label(egui::RichText::new("W:").color(t.text_dim));
+                    if crate::widgets::value_field(ui, &mut cur_w, 1.0..=300_000.0, "px", 60.0).changed() {
+                        let new_pct = (cur_w as f64 / orig_w * 100.0).clamp(1.0, 1000.0);
+                        f.insert("percent".into(), json!((new_pct * 10.0).round() / 10.0));
+                        f.insert("width".into(), json!(cur_w.round()));
+                        if constrain {
+                            f.insert("height".into(), json!((orig_h * new_pct / 100.0).round()));
+                        }
+                    }
+                    if crate::icons::button(ui, if constrain { "link" } else { "unlink" }, 18.0, constrain, tl!("Constrain Proportions")).clicked() {
+                        constrain = !constrain;
+                        f.insert("__constrain_proportions".into(), json!(constrain));
+                    }
+                });
+                ui.horizontal(|ui| {
+                    ui.label(egui::RichText::new("H:").color(t.text_dim));
+                    if crate::widgets::value_field(ui, &mut cur_h, 1.0..=300_000.0, "px", 60.0).changed() {
+                        let new_pct = (cur_h as f64 / orig_h * 100.0).clamp(1.0, 1000.0);
+                        f.insert("percent".into(), json!((new_pct * 10.0).round() / 10.0));
+                        f.insert("height".into(), json!(cur_h.round()));
+                        if constrain {
+                            f.insert("width".into(), json!((orig_w * new_pct / 100.0).round()));
+                        }
+                    }
+                });
                 number(ui, f, "percent", tl!("Percent"), 1.0..=1000.0, "%", 100.0);
-                let pct = n(f, "percent", 100.0) / 100.0;
-                ui.label(
-                    egui::RichText::new(format!("W: {} px   H: {} px", (f64::from(doc.size.width) * pct).round(), (f64::from(doc.size.height) * pct).round()))
-                        .color(t.text_dim)
-                        .size(11.5),
-                );
+                ui.horizontal(|ui| {
+                    ui.label(egui::RichText::new(tl!("Quality")).color(t.text_dim));
+                    dropdown_str(
+                        ui,
+                        "web-resample",
+                        f,
+                        "resample",
+                        &[
+                            ("bicubic", tl!("Bicubic")),
+                            ("bilinear", tl!("Bilinear")),
+                            ("nearest", tl!("Nearest Neighbor")),
+                        ],
+                        140.0,
+                    );
+                });
                 let nslices = photocraft_doc::slices::resolve(&doc).len();
                 if !doc.slices.is_empty() {
                     ui.add_space(6.0);
@@ -1378,7 +1606,7 @@ mod tests {
         h.state_mut().ui.dialogs[0].fields.insert("format".into(), json!("gif"));
         h.run_steps(4);
         use egui_kittest::kittest::Queryable;
-        h.get_by_role(egui::accesskit::Role::ColorWell).click();
+        h.query_all_by_role(egui::accesskit::Role::ColorWell).next().unwrap().click();
         h.run_steps(3);
         assert!(egui::Popup::is_any_open(&h.ctx));
         h.key_press(egui::Key::Enter);

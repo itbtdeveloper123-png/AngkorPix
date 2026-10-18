@@ -517,11 +517,79 @@ fn vertical_strip_mesh(rect: Rect, n: usize, color: impl Fn(f32) -> [f32; 3]) ->
 fn color_field(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     let t = Tokens::get(ui.ctx());
     let mode = f.get("__mode").and_then(Value::as_str).unwrap_or("h").to_string();
-    let now = current(f);
-    let (rgb, hsv, lab) = (now.rgb, now.hsv, now.lab);
-    let (fx, fy, fz) = locate(&mode, hsv, rgb, lab);
-    // Colour field.
+    let mut now = current(f);
+    let (mut rgb, mut hsv, mut lab) = (now.rgb, now.hsv, now.lab);
+    let (mut fx, mut fy, mut fz) = locate(&mode, hsv, rgb, lab);
+
+    // Allocate both widgets in the horizontal layout first so pointer interaction updates state before mesh generation.
     let (field, resp) = ui.allocate_exact_size(vec2(FIELD, FIELD), Sense::click_and_drag());
+    let (strip, sresp) = ui.allocate_exact_size(vec2(18.0, FIELD), Sense::click_and_drag());
+
+    // Component slider interaction (instant response on mouse-down, drag, or click).
+    let strip_active = sresp.dragged() || sresp.clicked() || sresp.is_pointer_button_down_on();
+    let strip_pos = if strip_active {
+        sresp.interact_pointer_pos().or_else(|| ui.input(|i| i.pointer.latest_pos()))
+    } else {
+        None
+    };
+    if let Some(p) = strip_pos {
+        ui.ctx().request_repaint();
+        ui.ctx().request_repaint_after(std::time::Duration::from_millis(100));
+        let z = 1.0 - ((p.y - strip.top()) / strip.height()).clamp(0.0, 1.0);
+        fz = z;
+        let h = match mode.as_str() {
+            "h" => Some([z * 360.0, hsv[1], hsv[2]]),
+            "s" => Some([hsv[0], z, hsv[2]]),
+            "v" => Some([hsv[0], hsv[1], z]),
+            _ => None,
+        };
+        match (h, slider_lab(&mode, z, lab)) {
+            (Some(h), _) => set_rgb(f, hsv_to_rgb(h[0], h[1], h[2]), Keep::Hsv(h)),
+            (None, Some(l)) => set_rgb(f, lab_rgb(l), Keep::Lab(l)),
+            (None, None) => set_rgb(f, slider_color(&mode, z, hsv, rgb, lab), Keep::Nothing),
+        }
+        now = current(f);
+        rgb = now.rgb;
+        hsv = now.hsv;
+        lab = now.lab;
+    }
+
+    // Colour field interaction (instant response on mouse-down, drag, or click, clamping even when dragged outside).
+    let field_active = resp.dragged() || resp.clicked() || resp.is_pointer_button_down_on();
+    let field_pos = if field_active {
+        resp.interact_pointer_pos().or_else(|| ui.input(|i| i.pointer.latest_pos()))
+    } else {
+        None
+    };
+    if let Some(p) = field_pos {
+        ui.ctx().request_repaint();
+        ui.ctx().request_repaint_after(std::time::Duration::from_millis(100));
+        let (x, y) = (((p.x - field.left()) / field.width()).clamp(0.0, 1.0), ((p.y - field.top()) / field.height()).clamp(0.0, 1.0));
+        fx = x;
+        fy = y;
+        let c = field_color(&mode, fz, x, y);
+        let keep = match mode.as_str() {
+            "h" => {
+                hsv = [fz * 360.0, x, 1.0 - y];
+                Keep::Hsv(hsv)
+            }
+            "s" => {
+                hsv = [x * 360.0, fz, 1.0 - y];
+                Keep::Hsv(hsv)
+            }
+            "v" => {
+                hsv = [x * 360.0, 1.0 - y, fz];
+                Keep::Hsv(hsv)
+            }
+            m => field_lab(m, fz, x, y).map_or(Keep::Nothing, Keep::Lab),
+        };
+        set_rgb(f, c, keep);
+        now = current(f);
+        rgb = now.rgb;
+        hsv = now.hsv;
+        lab = now.lab;
+    }
+
     let web_only = f.get("__webOnly").and_then(Value::as_bool).unwrap_or(false);
     // Only Web Colors bands the field to the 216 web-safe colours, as in Photoshop (#4107).
     let mesh = |rect: Rect, color: &dyn Fn(f32, f32) -> [f32; 3]| {
@@ -546,41 +614,15 @@ fn color_field(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     };
     ui.painter().add(field_m);
     ui.painter().rect_stroke(field, 0.0, Stroke::new(1.0, t.field_border), StrokeKind::Outside);
-    let mut cur_fx = fx;
-    let mut cur_fy = fy;
-    let mut cur_hsv = hsv;
-    if let Some(p) = resp.interact_pointer_pos().filter(|_| resp.dragged() || resp.clicked()) {
-        ui.ctx().request_repaint();
-        ui.ctx().request_repaint_after(std::time::Duration::from_millis(45));
-        let (x, y) = (((p.x - field.left()) / field.width()).clamp(0.0, 1.0), ((p.y - field.top()) / field.height()).clamp(0.0, 1.0));
-        cur_fx = x;
-        cur_fy = y;
-        let c = field_color(&mode, fz, x, y);
-        let keep = match mode.as_str() {
-            "h" => {
-                cur_hsv = [fz * 360.0, x, 1.0 - y];
-                Keep::Hsv(cur_hsv)
-            }
-            "s" => {
-                cur_hsv = [x * 360.0, fz, 1.0 - y];
-                Keep::Hsv(cur_hsv)
-            }
-            "v" => {
-                cur_hsv = [x * 360.0, 1.0 - y, fz];
-                Keep::Hsv(cur_hsv)
-            }
-            m => field_lab(m, fz, x, y).map_or(Keep::Nothing, Keep::Lab),
-        };
-        set_rgb(f, c, keep);
-    }
-    let marker = pos2(field.left() + cur_fx * field.width(), field.top() + cur_fy * field.height());
-    let inner_col = if cur_hsv[2] > 0.6 && cur_hsv[1] < 0.4 { Color32::BLACK } else { Color32::WHITE };
+
+    // Marker (double circle for maximum contrast over all colours).
+    let marker = pos2(field.left() + fx * field.width(), field.top() + fy * field.height());
+    let inner_col = if hsv[2] > 0.6 && hsv[1] < 0.4 { Color32::BLACK } else { Color32::WHITE };
     let outer_col = if inner_col == Color32::WHITE { Color32::from_black_alpha(180) } else { Color32::from_white_alpha(180) };
     ui.painter().circle_stroke(marker, 5.5, Stroke::new(1.0, outer_col));
     ui.painter().circle_stroke(marker, 4.5, Stroke::new(1.5, inner_col));
 
-    // Component slider (hue runs 360° at the top to 0° at the bottom, like Photoshop).
-    let (strip, sresp) = ui.allocate_exact_size(vec2(18.0, FIELD), Sense::click_and_drag());
+    // Component slider mesh (hue runs 360° at the top to 0° at the bottom, like Photoshop).
     let strip_mesh = if mode == "h" {
         let cached_strip = ui.ctx().data(|d| d.get_temp::<Mesh>(ui.id().with("cp_strip_mesh_h")));
         if let Some(m) = cached_strip {
@@ -595,25 +637,7 @@ fn color_field(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     };
     ui.painter().add(strip_mesh);
 
-    let mut cur_fz = fz;
-    if let Some(p) = sresp.interact_pointer_pos().filter(|_| sresp.dragged() || sresp.clicked()) {
-        ui.ctx().request_repaint();
-        ui.ctx().request_repaint_after(std::time::Duration::from_millis(45));
-        let z = 1.0 - ((p.y - strip.top()) / strip.height()).clamp(0.0, 1.0);
-        cur_fz = z;
-        let h = match mode.as_str() {
-            "h" => Some([z * 360.0, hsv[1], hsv[2]]),
-            "s" => Some([hsv[0], z, hsv[2]]),
-            "v" => Some([hsv[0], hsv[1], z]),
-            _ => None,
-        };
-        match (h, slider_lab(&mode, z, lab)) {
-            (Some(h), _) => set_rgb(f, hsv_to_rgb(h[0], h[1], h[2]), Keep::Hsv(h)),
-            (None, Some(l)) => set_rgb(f, lab_rgb(l), Keep::Lab(l)),
-            (None, None) => set_rgb(f, slider_color(&mode, z, hsv, rgb, lab), Keep::Nothing),
-        }
-    }
-    let sy = strip.top() + (1.0 - cur_fz) * strip.height();
+    let sy = strip.top() + (1.0 - fz) * strip.height();
     for (x, dir) in [(strip.left() - 1.0, 1.0f32), (strip.right() + 1.0, -1.0)] {
         let tri = vec![pos2(x, sy), pos2(x - 6.0 * dir, sy - 4.0), pos2(x - 6.0 * dir, sy + 4.0)];
         ui.painter().add(egui::Shape::convex_polygon(tri, t.text, Stroke::NONE));

@@ -4321,3 +4321,47 @@ shape	Appearance	Aspetto
 # Free Transform: a new layer while the box is open (#5859)
 	Free Transform is still being applied; try again when it has finished.	Trasformazione libera è ancora in corso di applicazione; riprova quando è terminata.
 	The transform couldn't be applied.	Impossibile applicare la trasformazione.
+	About AngkorPix	Informazioni su AngkorPix
+	Add Adjustment Layer	Add Adjustment Layer
+	Adjust Colors	Adjust Colors
+	Adjustment Presets	Adjustment Presets
+	Align Center	Align Center
+	Align Left	Align Left
+	Align Right	Align Right
+	AngkorPix Website	Sito web AngkorPix
+	AngkorPix on GitHub	AngkorPix su GitHub
+	AngkorPix — an open-source, native image editor written in Rust.	AngkorPix — editor immagini nativo open-source scritto in Rust.
+	Automatically detect and select subject	Automatically detect and select subject
+	Automatically isolate subject and mask out background	Automatically isolate subject and mask out background
+	Cancel Crop (Esc)	Cancel Crop (Esc)
+	Cancel Type	Cancel Type
+	Commit Crop (Enter)	Commit Crop (Enter)
+	Commit Type	Commit Type
+	Constrain Proportions	Constrain Proportions
+	Contextual Task Bar	Contextual Task Bar
+	Convert Shape to Selection	Convert Shape to Selection
+	Create Layer Mask from Selection	Create Layer Mask from Selection
+	Deselect (Cmd+D)	Deseleziona (Cmd+D)
+	Drag to reposition Contextual Task Bar	Drag to reposition Contextual Task Bar
+	Eyedropper Tool (I)	Strumento Contagocce (I)
+	Fill Selection (Shift+F5)	Fill Selection (Shift+F5)
+	Free Transform (Cmd+T)	Trasformazione libera (Cmd+T)
+	Hand Tool (H)	Strumento Mano (H)
+	Hide Contextual Task Bar	Hide Contextual Task Bar
+	Inverse Selection (Cmd+Shift+I)	Inverti selezione (Cmd+Shift+I)
+	New Adjustment Layer…	Nuovo livello di regolazione…
+	Pin bar position	Pin bar position
+	Preview…	Anteprima…
+	Rasterize Shape Layer	Rasterize Shape Layer
+	Refine selection edge (Cmd+Alt+R)	Refine selection edge (Cmd+Alt+R)
+	Report Issue	Report Issue
+	Reset bar position	Reset bar position
+	Single Adjustments	Single Adjustments
+	Slice Select Tool (K)	Strumento Selezione sezioni (K)
+	Straighten image	Straighten image
+	Task Bar Options	Task Bar Options
+	To Selection	To Selection
+	Toggle Slices Visibility	Toggle Slices Visibility
+	Very High	Very High
+	Zoom Tool (Z)	Strumento Zoom (Z)
+	…	…

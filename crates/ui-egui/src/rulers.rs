@@ -235,30 +235,57 @@ pub fn guide_at(app: &PhotocraftApp, x: f64, y: f64) -> Option<(bool, usize)> {
     None
 }
 
-/// Finish a guide drag: create, move, or delete (dropped outside the canvas). An existing guide
-/// released where it was pressed is a click: it's selected and stays put, as in Photoshop; a
-/// moved one stays selected.
+/// Whether a guide at document coordinate `pos` was dropped back on or past its ruler.
+fn dropped_on_ruler(app: &PhotocraftApp, vertical: bool, pos: f64) -> bool {
+    let Some(xf) = ViewXform::active(app) else {
+        return false;
+    };
+    if app.last_canvas_rect.width() <= 0.0 || app.last_canvas_rect.height() <= 0.0 {
+        return false;
+    }
+    if vertical {
+        let ruler_edge = if app.ui.extras.rulers {
+            app.last_canvas_rect.left() + RULER
+        } else {
+            app.last_canvas_rect.left()
+        };
+        let screen_x = xf.to_screen(pos as f32, xf.center[1]).x;
+        screen_x <= ruler_edge
+    } else {
+        let ruler_edge = if app.ui.extras.rulers {
+            app.last_canvas_rect.top() + RULER
+        } else {
+            app.last_canvas_rect.top()
+        };
+        let screen_y = xf.to_screen(xf.center[0], pos as f32).y;
+        screen_y <= ruler_edge
+    }
+}
+
+/// Finish a guide drag: create, move, or delete (dropped back on or past the ruler). An existing
+/// guide released where it was pressed is a click: it's selected and stays put, as in Photoshop; a
+/// moved one stays selected. Guides can sit on the pasteboard outside canvas bounds; only
+/// dragging back onto or past the ruler deletes (or cancels) them.
 pub fn finish_drag(app: &mut PhotocraftApp, d: GuideDrag) {
-    let Some(size) = app.session.active().map(|s| s.doc.size) else { return };
+    let Some(_size) = app.session.active().map(|s| s.doc.size) else { return };
     if let Some(i) = d.index
         && (d.pos - d.press).abs() * f64::from(app.point_zoom().max(0.01)) < 0.5
     {
         crate::guide_select::select(app, d.vertical, i);
         return;
     }
-    let extent = if d.vertical { size.width } else { size.height } as f64;
     let orientation = if d.vertical { "vertical" } else { "horizontal" };
-    let inside = d.pos >= 0.0 && d.pos <= extent;
+    let on_ruler = dropped_on_ruler(app, d.vertical, d.pos);
     let pos = (d.pos * 1000.0).round() / 1000.0;
-    let _ = match (d.index, inside) {
-        (None, true) => app.run("view.newGuide", json!({"orientation": orientation, "position": pos})),
-        (Some(i), true) => app
+    let _ = match (d.index, on_ruler) {
+        (None, false) => app.run("view.newGuide", json!({"orientation": orientation, "position": pos})),
+        (Some(i), false) => app
             .run("view.moveGuide", json!({"orientation": orientation, "index": i, "position": pos}))
             .inspect(|_| crate::guide_select::select(app, d.vertical, i)),
-        (Some(i), false) => app.run("view.deleteGuide", json!({"orientation": orientation, "index": i})),
-        (None, false) => Ok(serde_json::Value::Null),
+        (Some(i), true) => app.run("view.deleteGuide", json!({"orientation": orientation, "index": i})),
+        (None, true) => Ok(serde_json::Value::Null),
     };
-    if d.index.is_none() && inside {
+    if d.index.is_none() && !on_ruler {
         app.ui.extras.guides = true;
     }
 }
@@ -811,13 +838,15 @@ mod tests {
         app.session.execute("file.new", json!({"width": 200, "height": 100})).unwrap();
         app.sync_views();
         finish_drag(&mut app, GuideDrag { vertical: true, index: None, pos: 50.0, press: 50.0 });
-        finish_drag(&mut app, GuideDrag { vertical: false, index: None, pos: 500.0, press: 500.0 }); // off canvas: ignored
         assert_eq!(app.session.active().unwrap().doc.guides.vertical, vec![50.0]);
-        assert!(app.session.active().unwrap().doc.guides.horizontal.is_empty());
         assert_eq!(guide_at(&app, 51.0, 10.0), Some((true, 0)));
         finish_drag(&mut app, GuideDrag { vertical: true, index: Some(0), pos: 120.0, press: 50.0 });
         assert_eq!(app.session.active().unwrap().doc.guides.vertical, vec![120.0]);
+        // Guides can sit on the pasteboard outside canvas bounds (x = -30)
         finish_drag(&mut app, GuideDrag { vertical: true, index: Some(0), pos: -30.0, press: 120.0 });
+        assert_eq!(app.session.active().unwrap().doc.guides.vertical, vec![-30.0]);
+        // Dragging back onto or past the ruler deletes the guide
+        finish_drag(&mut app, GuideDrag { vertical: true, index: Some(0), pos: -500.0, press: -30.0 });
         assert!(app.session.active().unwrap().doc.guides.vertical.is_empty());
         app.ui.extras.lock_guides = true;
         assert_eq!(guide_at(&app, 0.0, 0.0), None);

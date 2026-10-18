@@ -12,6 +12,7 @@ fn dragging_a_brush_shows_its_tip_preview() {
     for theme in crate::theme::ThemeKind::ALL {
         for mode in 0..3 {
             let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Default::default());
+            app.run("file.new", json!({"width": 100, "height": 100})).unwrap();
             app.run("prefs.set", json!({"path": "interface.theme", "value": theme.id()})).unwrap();
             app.ui.panels.brush_settings = mode != 2;
             app.ui.brush_tab = 1;
@@ -40,9 +41,10 @@ fn dragging_a_brush_shows_its_tip_preview() {
             let renders = brush_preview::render_count(&h.ctx);
             h.run_steps(2);
             assert_eq!(brush_preview::render_count(&h.ctx), renders, "unchanged drag preview stays cached");
-            h.event(egui::Event::PointerMoved(start));
+            let target = h.get_by_role_and_label(Role::Button, &name).rect().center();
+            h.event(egui::Event::PointerMoved(target));
             h.run_steps(1);
-            h.event(egui::Event::PointerButton { pos: start, button: egui::PointerButton::Primary, pressed: false, modifiers: egui::Modifiers::NONE });
+            h.event(egui::Event::PointerButton { pos: target, button: egui::PointerButton::Primary, pressed: false, modifiers: egui::Modifiers::NONE });
             h.run_steps(4);
             assert!(h.query_by_role_and_label(Role::Image, &name).is_none(), "preview disappears on release");
             assert_eq!(h.state().session.tools.brush, brush, "preview does not change brush settings");
@@ -57,6 +59,7 @@ fn dragging_a_brush_shows_its_tip_preview() {
 #[test]
 fn dragging_a_brush_to_the_list_edge_scrolls_the_list() {
     let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Default::default());
+    app.run("file.new", json!({"width": 100, "height": 100})).unwrap();
     app.ui.panels.brush_settings = true;
     app.ui.brush_tab = 1;
     app.ui.brushes_panel.view = BrushesView::List;

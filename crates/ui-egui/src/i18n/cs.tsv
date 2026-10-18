@@ -3808,3 +3808,47 @@ navigator	Zoom	Zvětšení
 # Free Transform: a new layer while the box is open (#5859)
 	Free Transform is still being applied; try again when it has finished.	Volná transformace se stále použije; zkuste to znovu, až skončí.
 	The transform couldn't be applied.	Transformaci nelze použít.
+	About AngkorPix	O aplikaci AngkorPix
+	Add Adjustment Layer	Add Adjustment Layer
+	Adjust Colors	Adjust Colors
+	Adjustment Presets	Adjustment Presets
+	Align Center	Align Center
+	Align Left	Align Left
+	Align Right	Align Right
+	AngkorPix Website	Web AngkorPix
+	AngkorPix on GitHub	AngkorPix na GitHubu
+	AngkorPix — an open-source, native image editor written in Rust.	AngkorPix — nativní editor obrázků s otevřeným zdrojovým kódem napsaný v jazyce Rust.
+	Automatically detect and select subject	Automatically detect and select subject
+	Automatically isolate subject and mask out background	Automatically isolate subject and mask out background
+	Cancel Crop (Esc)	Cancel Crop (Esc)
+	Cancel Type	Cancel Type
+	Commit Crop (Enter)	Commit Crop (Enter)
+	Commit Type	Commit Type
+	Constrain Proportions	Constrain Proportions
+	Contextual Task Bar	Contextual Task Bar
+	Convert Shape to Selection	Convert Shape to Selection
+	Create Layer Mask from Selection	Create Layer Mask from Selection
+	Deselect (Cmd+D)	Zrušit výběr (Cmd+D)
+	Drag to reposition Contextual Task Bar	Drag to reposition Contextual Task Bar
+	Eyedropper Tool (I)	Nástroj kapátko (I)
+	Fill Selection (Shift+F5)	Fill Selection (Shift+F5)
+	Free Transform (Cmd+T)	Volná transformace (Cmd+T)
+	Hand Tool (H)	Nástroj ruka (H)
+	Hide Contextual Task Bar	Hide Contextual Task Bar
+	Inverse Selection (Cmd+Shift+I)	Invertovat výběr (Cmd+Shift+I)
+	New Adjustment Layer…	Nová korekční vrstva…
+	Pin bar position	Pin bar position
+	Preview…	Náhled…
+	Rasterize Shape Layer	Rasterize Shape Layer
+	Refine selection edge (Cmd+Alt+R)	Refine selection edge (Cmd+Alt+R)
+	Report Issue	Report Issue
+	Reset bar position	Reset bar position
+	Single Adjustments	Single Adjustments
+	Slice Select Tool (K)	Nástroj výběr řezu (K)
+	Straighten image	Straighten image
+	Task Bar Options	Task Bar Options
+	To Selection	To Selection
+	Toggle Slices Visibility	Toggle Slices Visibility
+	Very High	Very High
+	Zoom Tool (Z)	Nástroj lupa (Z)
+	…	…

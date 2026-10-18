@@ -25,6 +25,7 @@ fn harness(tool: Tool, selection: bool, scale: f32) -> Harness<'static, Photocra
             app.run("select.rect", json!({"x": 40, "y": 40, "width": 200, "height": 100})).unwrap();
         }
         app.ui.tool = tool;
+        app.ui.panels.contextual_task_bar = false;
         app
     });
     h.run_steps(5);

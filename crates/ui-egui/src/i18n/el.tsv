@@ -3900,3 +3900,47 @@ curves	Smooth	Εξομάλυνση
 # Free Transform: a new layer while the box is open (#5859)
 	Free Transform is still being applied; try again when it has finished.	Ο Ελεύθερος μετασχηματισμός εφαρμόζεται ακόμη· δοκιμάστε ξανά όταν ολοκληρωθεί.
 	The transform couldn't be applied.	Δεν ήταν δυνατή η εφαρμογή του μετασχηματισμού.
+	About AngkorPix	Πληροφορίες για το AngkorPix
+	Add Adjustment Layer	Add Adjustment Layer
+	Adjust Colors	Adjust Colors
+	Adjustment Presets	Adjustment Presets
+	Align Center	Align Center
+	Align Left	Align Left
+	Align Right	Align Right
+	AngkorPix Website	Ιστότοπος AngkorPix
+	AngkorPix on GitHub	AngkorPix στο GitHub
+	AngkorPix — an open-source, native image editor written in Rust.	AngkorPix — εγγενής εφαρμογή επεξεργασίας εικόνας ανοικτού κώδικα, γραμμένη σε Rust.
+	Automatically detect and select subject	Automatically detect and select subject
+	Automatically isolate subject and mask out background	Automatically isolate subject and mask out background
+	Cancel Crop (Esc)	Cancel Crop (Esc)
+	Cancel Type	Cancel Type
+	Commit Crop (Enter)	Commit Crop (Enter)
+	Commit Type	Commit Type
+	Constrain Proportions	Constrain Proportions
+	Contextual Task Bar	Contextual Task Bar
+	Convert Shape to Selection	Convert Shape to Selection
+	Create Layer Mask from Selection	Create Layer Mask from Selection
+	Deselect (Cmd+D)	Κατάργηση επιλογής (Cmd+D)
+	Drag to reposition Contextual Task Bar	Drag to reposition Contextual Task Bar
+	Eyedropper Tool (I)	Σταγονόμετρο (Eyedropper Tool) (I)
+	Fill Selection (Shift+F5)	Fill Selection (Shift+F5)
+	Free Transform (Cmd+T)	Ελεύθερος μετασχηματισμός (Cmd+T)
+	Hand Tool (H)	Χέρι (Hand Tool) (H)
+	Hide Contextual Task Bar	Hide Contextual Task Bar
+	Inverse Selection (Cmd+Shift+I)	Αντιστροφή επιλογής (Cmd+Shift+I)
+	New Adjustment Layer…	Νέο επίπεδο προσαρμογής…
+	Pin bar position	Pin bar position
+	Preview…	Προεπισκόπηση…
+	Rasterize Shape Layer	Rasterize Shape Layer
+	Refine selection edge (Cmd+Alt+R)	Refine selection edge (Cmd+Alt+R)
+	Report Issue	Report Issue
+	Reset bar position	Reset bar position
+	Single Adjustments	Single Adjustments
+	Slice Select Tool (K)	Επιλογή τομής (Slice Select Tool) (K)
+	Straighten image	Straighten image
+	Task Bar Options	Task Bar Options
+	To Selection	To Selection
+	Toggle Slices Visibility	Toggle Slices Visibility
+	Very High	Very High
+	Zoom Tool (Z)	Μεγέθυνση (Zoom Tool) (Z)
+	…	…

@@ -115,7 +115,7 @@ mod tests {
         for (id, url) in [
             ("help.discord", "https://discord.gg/artcraft"),
             ("help.website", "https://getartcraft.com/apps/photocraft"),
-            ("help.github", "https://github.com/storytold/photocraft"),
+            ("help.github", GITHUB),
         ] {
             let r = crate::menus::invoke(&mut app, &ctx, id, serde_json::json!({})).unwrap();
             assert_eq!(r["url"], url);

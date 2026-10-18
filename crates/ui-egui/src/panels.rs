@@ -3782,6 +3782,45 @@ fn color_field(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
         // SV field.
         let field_w = w - 38.0 - strip_w - 16.0;
         let (field, fresp) = ui.allocate_exact_size(vec2(field_w, h), Sense::click_and_drag());
+        // Hue strip.
+        let (strip, sresp) = ui.allocate_exact_size(vec2(strip_w, h), Sense::click_and_drag());
+
+        let s_active = sresp.dragged() || sresp.clicked() || sresp.is_pointer_button_down_on();
+        let s_pos = if s_active {
+            sresp.interact_pointer_pos().or_else(|| ui.input(|i| i.pointer.latest_pos()))
+        } else {
+            None
+        };
+        if let Some(p) = s_pos {
+            ui.ctx().request_repaint();
+            ui.ctx().request_repaint_after(std::time::Duration::from_millis(100));
+            hsva.h = 1.0 - ((p.y - strip.top()) / strip.height()).clamp(0.0, 0.9999);
+        }
+
+        let f_active = fresp.dragged() || fresp.clicked() || fresp.is_pointer_button_down_on();
+        let f_pos = if f_active {
+            fresp.interact_pointer_pos().or_else(|| ui.input(|i| i.pointer.latest_pos()))
+        } else {
+            None
+        };
+        if let Some(p) = f_pos {
+            ui.ctx().request_repaint();
+            ui.ctx().request_repaint_after(std::time::Duration::from_millis(100));
+            hsva.s = ((p.x - field.left()) / field.width()).clamp(0.0, 1.0);
+            hsva.v = 1.0 - ((p.y - field.top()) / field.height()).clamp(0.0, 1.0);
+        }
+
+        if f_active || s_active {
+            ui.ctx().request_repaint();
+            if bg_active {
+                app.session.tools.background = hsva_srgb(hsva);
+            } else {
+                app.session.tools.foreground = hsva_srgb(hsva);
+                crate::type_tool::foreground_changed(app);
+            }
+            ui.data_mut(|d| d.insert_temp(key, (hsva.h, hsva.s)));
+        }
+
         let mut mesh = egui::Mesh::default();
         let n = 16;
         for j in 0..=n {
@@ -3803,17 +3842,11 @@ fn color_field(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
         }
         ui.painter().add(mesh);
         ui.painter().rect_stroke(field, 0.0, Stroke::new(1.0, t.separator), StrokeKind::Outside);
-        if (fresp.dragged() || fresp.clicked())
-            && let Some(p) = fresp.interact_pointer_pos()
-        {
-            hsva.s = ((p.x - field.left()) / field.width()).clamp(0.0, 1.0);
-            hsva.v = 1.0 - ((p.y - field.top()) / field.height()).clamp(0.0, 1.0);
-        }
+
         let knob = pos2(field.left() + hsva.s * field.width(), field.top() + (1.0 - hsva.v) * field.height());
         ui.painter().circle_stroke(knob, 5.0, Stroke::new(1.5, Color32::WHITE));
         ui.painter().circle_stroke(knob, 6.5, Stroke::new(1.0, Color32::from_black_alpha(160)));
-        // Hue strip.
-        let (strip, sresp) = ui.allocate_exact_size(vec2(strip_w, h), Sense::click_and_drag());
+
         let mut m2 = egui::Mesh::default();
         let steps = 24;
         for k in 0..=steps {
@@ -3828,23 +3861,10 @@ fn color_field(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             m2.add_triangle(a, a + 3, a + 2);
         }
         ui.painter().add(m2);
-        if (sresp.dragged() || sresp.clicked())
-            && let Some(p) = sresp.interact_pointer_pos()
-        {
-            hsva.h = 1.0 - ((p.y - strip.top()) / strip.height()).clamp(0.0, 0.9999);
-        }
+
         let y = strip.top() + (1.0 - hsva.h) * strip.height();
         let tri = vec![pos2(strip.right() + 1.0, y), pos2(strip.right() + 6.0, y - 4.0), pos2(strip.right() + 6.0, y + 4.0)];
         ui.painter().add(egui::Shape::convex_polygon(tri, t.text, Stroke::NONE));
-        if fresp.dragged() || fresp.clicked() || sresp.dragged() || sresp.clicked() {
-            if bg_active {
-                app.session.tools.background = hsva_srgb(hsva);
-            } else {
-                app.session.tools.foreground = hsva_srgb(hsva);
-                crate::type_tool::foreground_changed(app);
-            }
-            ui.data_mut(|d| d.insert_temp(key, (hsva.h, hsva.s)));
-        }
     });
     ui.add_space(6.0);
     ui.horizontal(|ui| {
@@ -5804,6 +5824,7 @@ mod embedding_tests {
         let mut h = egui_kittest::Harness::builder().with_size(vec2(1280.0, 800.0)).with_max_steps(64).build_eframe(move |cc| {
             PhotocraftApp::setup_context(&cc.egui_ctx, Default::default());
             let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+            app.run("file.new", json!({"width": 80, "height": 60})).unwrap();
             app.ui.panels.rail = rail;
             app.ui.panels.menu_bar = menu_bar;
             app

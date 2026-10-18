@@ -1199,7 +1199,8 @@ pub(crate) fn display_doc(app: &mut PhotocraftApp, idx: usize) -> (std::sync::Ar
             let key = (phash ^ st.revision.wrapping_mul(0x9e37_79b9_7f4a_7c15)) | 1 << 63;
             if app.style_preview.as_ref().map(|p| p.0) != Some(key) {
                 let now = crate::gpu_canvas::now_ms();
-                let can_throttle = app.style_preview.as_ref().is_some_and(|p| p.1.is_ok())
+                let can_throttle = !cfg!(test)
+                    && app.style_preview.as_ref().is_some_and(|p| p.1.is_ok())
                     && (now - app.style_preview_ms) < 40.0;
                 if !can_throttle {
                     let shown = crate::layer_style::preview_document(&st.doc, &app.session.patterns, &fields).map(std::sync::Arc::new);
@@ -2930,7 +2931,7 @@ fn home_recent_grid(app: &mut PhotocraftApp, ui: &mut egui::Ui, recent: &[String
                     let name = crate::file_open::display_name(path);
 
                     let (card_r, resp) = ui.allocate_exact_size(egui::vec2(card_w, card_h), Sense::click());
-                    let hovered = resp.hovered();
+                    let hovered = resp.hovered() || ui.rect_contains_pointer(card_r);
 
                     let card_bg = if hovered { egui::Color32::from_rgb(38, 38, 38) } else { egui::Color32::from_rgb(30, 30, 30) };
                     let stroke_color = if hovered { egui::Color32::from_white_alpha(55) } else { egui::Color32::from_white_alpha(20) };
@@ -2966,10 +2967,12 @@ fn home_recent_grid(app: &mut PhotocraftApp, ui: &mut egui::Ui, recent: &[String
                     if hovered {
                         let close_r = Rect::from_center_size(egui::pos2(thumb_r.right() - 14.0, thumb_r.top() + 14.0), egui::vec2(18.0, 18.0));
                         let close_resp = ui.interact(close_r, resp.id.with("close"), Sense::click());
+                        let label = crate::i18n::fmt(tl!("Remove {name} from Recent"), &[("name", &name)]);
+                        close_resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, &label));
                         let close_bg = if close_resp.hovered() { egui::Color32::from_rgb(60, 60, 60) } else { egui::Color32::from_rgb(35, 35, 35) };
                         ui.painter().rect_filled(close_r, 9.0, close_bg);
                         crate::icons::paint(ui, close_r, "x", 10.0, egui::Color32::WHITE);
-                        if close_resp.clicked() {
+                        if close_resp.on_hover_text(tl!("Remove from Recent")).clicked() {
                             remove = Some(path.clone());
                         }
                     }

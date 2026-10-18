@@ -241,15 +241,15 @@ fn render_selection_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     }
 
     if task_button(ui, Some("arrow-left-right"), Some(tl!("Invert")), tl!("Inverse Selection (Cmd+Shift+I)"), t).clicked() {
-        let _ = app.run("select.inverse", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "select.inverse", json!({}));
     }
 
     if task_button(ui, Some("paint-bucket"), Some(tl!("Fill…")), tl!("Fill Selection (Shift+F5)"), t).clicked() {
-        let _ = app.run("edit.fill", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "edit.fill", json!({}));
     }
 
     if task_button(ui, Some("layer-mask"), Some(tl!("Mask")), tl!("Create Layer Mask from Selection"), t).clicked() {
-        let _ = app.run("layer.layerMask.revealSelection", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "layer.layerMask.revealSelection", json!({}));
     }
 
     // Quick adjustment popup
@@ -259,23 +259,23 @@ fn render_selection_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
         ui.set_min_width(170.0);
 
         if ui.button(tl!("Curves…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.curves", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.curves", json!({}));
             ui.close();
         }
         if ui.button(tl!("Levels…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.levels", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.levels", json!({}));
             ui.close();
         }
         if ui.button(tl!("Brightness/Contrast…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.brightnessContrast", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.brightnessContrast", json!({}));
             ui.close();
         }
         if ui.button(tl!("Hue/Saturation…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.hueSaturation", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.hueSaturation", json!({}));
             ui.close();
         }
         if ui.button(tl!("Black & White…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.blackAndWhite", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.blackWhite", json!({}));
             ui.close();
         }
     });
@@ -283,11 +283,11 @@ fn render_selection_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     separator(ui, t);
 
     if task_button(ui, Some("scaling"), None, tl!("Transform Selection"), t).clicked() {
-        let _ = app.run("select.transformSelection", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "select.transformSelection", json!({}));
     }
 
     if task_button(ui, Some("x"), None, tl!("Deselect (Cmd+D)"), t).clicked() {
-        let _ = app.run("select.deselect", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "select.deselect", json!({}));
     }
 }
 
@@ -344,10 +344,10 @@ fn render_shape_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     separator(ui, t);
 
     if task_button(ui, Some("square-dashed"), Some(tl!("To Selection")), tl!("Convert Shape to Selection"), t).clicked() {
-        let _ = app.run("path.toSelection", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "path.toSelection", json!({}));
     }
     if task_button(ui, Some("brush"), Some(tl!("Rasterize")), tl!("Rasterize Shape Layer"), t).clicked() {
-        let _ = app.run("layer.rasterize.shape", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "layer.rasterize.shape", json!({}));
     }
 }
 
@@ -355,13 +355,12 @@ fn render_shape_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
 fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     // 1. Select Subject (wand-sparkles icon + label)
     if task_button(ui, Some("wand-sparkles"), Some(tl!("Select Subject")), tl!("Automatically detect and select subject"), t).clicked() {
-        let _ = app.run("select.subject", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "select.subject", json!({}));
     }
 
     // 2. Remove Background (eraser-background icon + label)
     if task_button(ui, Some("eraser-background"), Some(tl!("Remove Background")), tl!("Automatically isolate subject and mask out background"), t).clicked() {
-        let _ = app.run("select.subject", json!({}));
-        let _ = app.run("layer.layerMask.revealSelection", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({}));
     }
 
     // 3. Adjust Colors (sliders-horizontal icon + label)
@@ -371,23 +370,23 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
         ui.set_min_width(170.0);
 
         if ui.button(tl!("Curves…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.curves", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.curves", json!({}));
             ui.close();
         }
         if ui.button(tl!("Levels…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.levels", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.levels", json!({}));
             ui.close();
         }
         if ui.button(tl!("Brightness/Contrast…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.brightnessContrast", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.brightnessContrast", json!({}));
             ui.close();
         }
         if ui.button(tl!("Hue/Saturation…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.hueSaturation", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.hueSaturation", json!({}));
             ui.close();
         }
         if ui.button(tl!("Black & White…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.blackAndWhite", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.blackWhite", json!({}));
             ui.close();
         }
     });
@@ -396,7 +395,7 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
 
     // 4. Free Transform icon button
     if task_button(ui, Some("scaling"), None, tl!("Free Transform (Cmd+T)"), t).clicked() {
-        let _ = app.run("edit.freeTransform", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "edit.freeTransform", json!({}));
     }
 
     // 5. Adjustment Layer icon button
@@ -406,19 +405,23 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
         ui.set_min_width(170.0);
 
         if ui.button(tl!("Curves…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.curves", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.curves", json!({}));
             ui.close();
         }
         if ui.button(tl!("Levels…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.levels", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.levels", json!({}));
             ui.close();
         }
         if ui.button(tl!("Brightness/Contrast…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.brightnessContrast", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.brightnessContrast", json!({}));
             ui.close();
         }
         if ui.button(tl!("Hue/Saturation…")).clicked() {
-            let _ = app.run("layer.newAdjustmentLayer.hueSaturation", json!({}));
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.hueSaturation", json!({}));
+            ui.close();
+        }
+        if ui.button(tl!("Black & White…")).clicked() {
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.newAdjustmentLayer.blackWhite", json!({}));
             ui.close();
         }
     });
@@ -455,5 +458,29 @@ mod tests {
         assert!(app.run("image.crop.commit", serde_json::json!({})).is_ok());
         assert!(app.run("image.crop.cancel", serde_json::json!({})).is_ok());
         assert!(app.run("image.crop.straighten", serde_json::json!({})).is_ok());
+    }
+
+    #[test]
+    fn contextual_task_bar_commands_exist() {
+        let mut app = crate::PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        app.session.execute("file.new", serde_json::json!({"width": 200, "height": 100})).unwrap();
+        app.sync_views();
+        // Default context commands
+        assert!(app.session.is_enabled("select.subject"));
+        assert!(app.session.is_enabled("layer.removeBackground"));
+        assert!(app.session.is_enabled("layer.newAdjustmentLayer.curves"));
+        assert!(app.session.is_enabled("layer.newAdjustmentLayer.levels"));
+        assert!(app.session.is_enabled("layer.newAdjustmentLayer.brightnessContrast"));
+        assert!(app.session.is_enabled("layer.newAdjustmentLayer.hueSaturation"));
+        assert!(app.session.is_enabled("layer.newAdjustmentLayer.blackWhite"));
+        // Selection context commands
+        assert!(photocraft_engine::commands::find("select.inverse").is_some());
+        assert!(photocraft_engine::commands::find("edit.fill").is_some());
+        assert!(photocraft_engine::commands::find("layer.layerMask.revealSelection").is_some());
+        assert!(photocraft_engine::commands::find("select.deselect").is_some());
+        assert!(photocraft_engine::commands::find("select.transformSelection").is_some());
+        // Shape context commands
+        assert!(photocraft_engine::commands::find("path.toSelection").is_some());
+        assert!(photocraft_engine::commands::find("layer.rasterize.shape").is_some());
     }
 }

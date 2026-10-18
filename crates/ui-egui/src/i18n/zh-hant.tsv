@@ -2801,3 +2801,52 @@ curves	Smooth	平滑
 # Free Transform: a new layer while the box is open (#5859)
 	Free Transform is still being applied; try again when it has finished.	任意變形仍在套用中；請在完成後再試一次。
 	The transform couldn't be applied.	無法套用變形。
+	About AngkorPix	關於 AngkorPix
+	Add Adjustment Layer	Add Adjustment Layer
+	Adjust Colors	Adjust Colors
+	Adjustment Presets	Adjustment Presets
+	Align Center	Align Center
+	Align Left	Align Left
+	Align Right	Align Right
+	AngkorPix Website	AngkorPix 網站
+	AngkorPix on GitHub	GitHub 上的 AngkorPix
+	AngkorPix — an open-source, native image editor written in Rust.	AngkorPix — 以 Rust 撰寫的開放原始碼原生影像編輯器。
+	Artboards	Artboards
+	Automatically detect and select subject	Automatically detect and select subject
+	Automatically isolate subject and mask out background	Automatically isolate subject and mask out background
+	Cancel Crop (Esc)	Cancel Crop (Esc)
+	Cancel Type	Cancel Type
+	Commit Crop (Enter)	Commit Crop (Enter)
+	Commit Type	Commit Type
+	Constrain Proportions	Constrain Proportions
+	Contextual Task Bar	Contextual Task Bar
+	Convert Shape to Selection	Convert Shape to Selection
+	Create Layer Mask from Selection	Create Layer Mask from Selection
+	Deselect (Cmd+D)	取消選取 (Cmd+D)
+	Drag to reposition Contextual Task Bar	Drag to reposition Contextual Task Bar
+	Eyedropper Tool (I)	滴管工具 (I)
+	Fill Selection (Shift+F5)	Fill Selection (Shift+F5)
+	Free Transform (Cmd+T)	任意變形 (Cmd+T)
+	Hand Tool (H)	手形工具 (H)
+	Hide Contextual Task Bar	Hide Contextual Task Bar
+	High	High
+	Inverse Selection (Cmd+Shift+I)	反轉選取範圍 (Cmd+Shift+I)
+	Low	Low
+	Mask	Mask
+	New Adjustment Layer…	新增調整圖層…
+	Pin bar position	Pin bar position
+	Preview…	預覽…
+	Rasterize Shape Layer	Rasterize Shape Layer
+	Refine selection edge (Cmd+Alt+R)	Refine selection edge (Cmd+Alt+R)
+	Report Issue	Report Issue
+	Reset bar position	Reset bar position
+	Single Adjustments	Single Adjustments
+	Slice Select Tool (K)	切片選取工具 (K)
+	Straighten image	Straighten image
+	Task Bar Options	Task Bar Options
+	Text Layer	Text Layer
+	To Selection	To Selection
+	Toggle Slices Visibility	Toggle Slices Visibility
+	Very High	Very High
+	Zoom Tool (Z)	縮放工具 (Z)
+	…	…

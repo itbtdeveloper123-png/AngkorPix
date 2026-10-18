@@ -160,12 +160,12 @@ pub fn optimized(ui: &mut egui::Ui, key: egui::Id, signature: &str, p: &Value, p
 }
 
 #[derive(Clone, Copy, Debug)]
-struct Navigation {
-    zoom: Option<f32>,
-    center: egui::Vec2,
+pub(crate) struct Navigation {
+    pub(crate) zoom: Option<f32>,
+    pub(crate) center: egui::Vec2,
 }
 impl Navigation {
-    fn read(f: &Map<String, Value>) -> Self {
+    pub(crate) fn read(f: &Map<String, Value>) -> Self {
         let zoom = f.get("__zoom").and_then(Value::as_f64).filter(|z| z.is_finite() && *z > 0.0).map(|z| (z as f32).clamp(0.0001, 32.0));
         let center = f
             .get("__center")
@@ -179,7 +179,7 @@ impl Navigation {
         f.insert("__zoom".into(), json!(self.zoom));
         f.insert("__center".into(), json!([self.center.x, self.center.y]));
     }
-    fn scale(self, viewport: egui::Vec2, source: egui::Vec2, ppp: f32) -> f32 {
+    pub(crate) fn scale(self, viewport: egui::Vec2, source: egui::Vec2, ppp: f32) -> f32 {
         self.zoom.map_or((viewport.x / source.x).min(viewport.y / source.y), |z| z / ppp)
     }
     fn clamp(&mut self, viewport: egui::Vec2, image: egui::Vec2) {
@@ -232,9 +232,17 @@ pub fn paint(ui: &mut egui::Ui, rect: egui::Rect, response: &egui::Response, tex
         nav.center = egui::Vec2::splat(0.5);
     }
     let mut scale = nav.scale(rect.size(), source, ppp);
-    if response.dragged() {
+    let tool = s(f, "__web_tool", "hand");
+    if response.dragged() && tool == "hand" {
         nav.zoom = Some(scale * ppp);
         nav.center -= response.drag_delta() / (source * scale);
+    }
+    if response.hovered() && tool == "zoom" && response.clicked() {
+        let factor = if ui.input(|i| i.modifiers.alt) { 0.8 } else { 1.25 };
+        let at = response.hover_pos().unwrap_or(rect.center()) - rect.center();
+        nav.zoom_at(factor, at, rect.size(), source, ppp);
+        scale = nav.scale(rect.size(), source, ppp);
+        ui.ctx().request_repaint();
     }
     if response.hovered() {
         let (scroll, pinch) = ui.input(|i| (i.smooth_scroll_delta.y, i.zoom_delta()));
