@@ -1,0 +1,80 @@
+name: Release AngkorPix
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version tag (e.g. v0.10.0)'
+        required: false
+        default: 'v0.10.0'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-windows:
+    name: Build & Release Windows (x64)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Determine Version
+        id: get_version
+        shell: pwsh
+        run: |
+          $ver = "${{ github.ref_name }}"
+          if ($ver -notmatch '^v\d') {
+            $ver = "${{ inputs.version }}"
+          }
+          if (-not $ver) {
+            $ver = "v0.10.0"
+          }
+          echo "VERSION=$ver" >> $env:GITHUB_ENV
+          echo "tag=$ver" >> $env:GITHUB_OUTPUT
+
+      - name: Build AngkorPix (Release)
+        run: cargo build --release -p angkorpix
+
+      - name: Package Windows Binary
+        shell: pwsh
+        run: |
+          $ver = "$env:VERSION"
+          $packageDir = "AngkorPix-$ver-windows-x64"
+          New-Item -ItemType Directory -Force -Path $packageDir | Out-Null
+          
+          # Copy release binary
+          Copy-Item "target\release\angkorpix.exe" -Destination "$packageDir\"
+          
+          # Copy portable marker
+          if (Test-Path "packaging\windows\portable.txt") {
+            Copy-Item "packaging\windows\portable.txt" -Destination "$packageDir\"
+          }
+          
+          # Create ZIP archive
+          $zipName = "AngkorPix-$ver-windows-x64.zip"
+          Compress-Archive -Path "$packageDir\*" -DestinationPath "$zipName" -Force
+          Write-Host "Created archive: $zipName"
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.tag }}
+          name: AngkorPix ${{ steps.get_version.outputs.tag }}
+          files: AngkorPix-*-windows-x64.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true

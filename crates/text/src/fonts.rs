@@ -37,7 +37,7 @@ pub static JETBRAINS_MONO_REGULAR: LazyLock<Vec<u8>> = LazyLock::new(|| inflate_
 pub static ROBOTO_EXTRA_BOLD: LazyLock<Vec<u8>> = LazyLock::new(|| inflate_font(bundled_font!("Roboto-ExtraBold.ttf")));
 pub static KANTUMRUY_PRO_SEMIBOLD: LazyLock<Vec<u8>> = LazyLock::new(|| inflate_font(bundled_font!("KantumruyPro-SemiBold.ttf")));
 
-/// Fonts shipped with Photocraft (OFL; licences in `assets/fonts`).
+/// Fonts shipped with PhotoCraft (OFL; licences in `assets/fonts`).
 pub static BUNDLED: [(&str, &LazyLock<Vec<u8>>); 4] = [
     ("Inter-Regular.ttf", &INTER_REGULAR),
     ("Inter-Medium.ttf", &INTER_MEDIUM),

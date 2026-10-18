@@ -81,8 +81,6 @@ fn visible_sections(hidden: &[String]) -> Vec<Vec<(usize, Vec<Tool>)>> {
 pub fn toolbar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
     let (w1, bx, m) = if t.pro { (40.0, 30.0, 5i8) } else { (50.0, 36.0, 7i8) };
-    let sections = visible_sections(&app.session.prefs().toolbar.hidden);
-    // Two columns when the header chevron asks for them; a column that doesn't fit scrolls.
     let double = app.ui.panels.toolbar_double;
     let w = if double { w1 + bx + 2.0 } else { w1 };
     crate::direction::start_panel("toolbar")
@@ -90,17 +88,176 @@ pub fn toolbar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
         .exact_size(w)
         .frame(egui::Frame::NONE.fill(t.chrome).inner_margin(egui::Margin::symmetric(m, 8)))
         .show(ui, |ui| {
-            // Toolbar width is a user preference, not a Pro-only feature.
-            // Keep the same hit target in every theme (including RTL layouts).
-            let (cr, resp) = ui.allocate_exact_size(vec2(bx, 14.0), Sense::click());
+            // Top header row with drag grip and column-toggle chevron:
+            let header_w = if double { bx * 2.0 + 2.0 } else { bx };
+            let (cr, resp) = ui.allocate_exact_size(vec2(header_w, 14.0), Sense::click_and_drag());
+            let resp = resp.on_hover_cursor(egui::CursorIcon::Grab);
             let (shrink, grow) = if crate::direction::is_rtl() { ("chevrons-right", "chevrons-left") } else { ("chevrons-left", "chevrons-right") };
-            icons::paint(ui, cr, if double { shrink } else { grow }, 11.0, if resp.hovered() { t.text } else { t.text_faint });
+            icons::paint(ui, Rect::from_min_size(cr.min, vec2(14.0, 14.0)), if double { shrink } else { grow }, 11.0, if resp.hovered() { t.text } else { t.text_faint });
             resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, tl!("Toolbar")));
+
+            if double {
+                let grip_min_x = cr.min.x + 18.0;
+                let grip_max_x = cr.max.x - 4.0;
+                if grip_max_x > grip_min_x {
+                    let cy = cr.center().y;
+                    let col = if resp.hovered() || resp.dragged() { t.text_dim } else { t.separator };
+                    ui.painter().line_segment([pos2(grip_min_x, cy - 2.0), pos2(grip_max_x, cy - 2.0)], Stroke::new(1.0, col));
+                    ui.painter().line_segment([pos2(grip_min_x, cy + 2.0), pos2(grip_max_x, cy + 2.0)], Stroke::new(1.0, col));
+                }
+            }
+
             if resp.clicked() {
                 app.ui.panels.toolbar_double = !double;
             }
+
+            // Drag away from the edge undocks the toolbar to float over the canvas (Photoshop)
+            if resp.dragged() {
+                if let Some(pos) = ui.ctx().pointer_interact_pos() {
+                    let rtl = crate::direction::is_rtl();
+                    let undock = if rtl { resp.rect.left() - pos.x > 15.0 } else { pos.x - resp.rect.right() > 15.0 } || resp.drag_delta().length() > 20.0;
+                    if undock {
+                        app.ui.panels.toolbar_floating = true;
+                        app.ui.panels.toolbar_pos = Some([pos.x - w / 2.0, (pos.y - 10.0).max(30.0)]);
+                    }
+                }
+            }
+
             ui.add_space(4.0);
-            // Subtle violet wash at the bottom of the toolbar.
+            toolbar_body(app, ui, bx, double);
+        });
+}
+
+/// Floating Tools panel matching Photoshop's undocked toolbar.
+pub fn floating_toolbar(app: &mut PhotocraftApp, ctx: &egui::Context) {
+    let t = Tokens::get(ctx);
+    let (w1, bx, m) = if t.pro { (40.0, 30.0, 5i8) } else { (50.0, 36.0, 7i8) };
+    let double = app.ui.panels.toolbar_double;
+    let w = if double { w1 + bx + 2.0 } else { w1 };
+
+    let screen_rect = ctx.input(|i| {
+        i.viewport()
+            .inner_rect
+            .or(i.raw.screen_rect)
+            .unwrap_or_else(|| Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(1920.0, 1080.0)))
+    });
+    let default_pos = pos2(
+        if crate::direction::is_rtl() { (screen_rect.right() - w - 24.0).max(10.0) } else { 24.0 },
+        (screen_rect.top() + 72.0).clamp(20.0, (screen_rect.bottom() - 200.0).max(20.0)),
+    );
+    let initial_pos = if let Some([x, y]) = app.ui.panels.toolbar_pos {
+        pos2(
+            x.clamp(0.0, (screen_rect.right() - w).max(0.0)),
+            y.clamp(20.0, (screen_rect.bottom() - 100.0).max(20.0)),
+        )
+    } else {
+        default_pos
+    };
+
+    let frame = egui::Frame::NONE
+        .fill(t.chrome)
+        .stroke(Stroke::new(1.0, t.card_border))
+        .corner_radius(CornerRadius::same(4))
+        .shadow(egui::Shadow { offset: [0, 8], blur: 24, spread: 0, color: t.shadow })
+        .inner_margin(egui::Margin::symmetric(m, 6));
+
+    let card_id = egui::Id::new("photocraft-floating-toolbar");
+    let mut new_pos = None;
+    let mut re_dock = false;
+    let mut close = false;
+    let mut toggle_double = false;
+
+    egui::Area::new(card_id)
+        .fixed_pos(initial_pos)
+        .order(egui::Order::Middle)
+        .show(ctx, |ui| {
+            frame.show(ui, |ui| {
+                ui.set_width(if double { bx * 2.0 + 2.0 } else { bx });
+
+                // --- Title / Grip Header ---
+                let header_w = if double { bx * 2.0 + 2.0 } else { bx };
+                let (header_rect, header_resp) = ui.allocate_exact_size(vec2(header_w, 16.0), Sense::click_and_drag());
+                let header_resp = header_resp.on_hover_cursor(egui::CursorIcon::Grab);
+
+                // Double clicking header docks it back (Photoshop behavior)
+                if header_resp.double_clicked() {
+                    re_dock = true;
+                }
+
+                if header_resp.dragged() {
+                    let delta = header_resp.drag_delta();
+                    let cur = initial_pos;
+                    let target = pos2(cur.x + delta.x, cur.y + delta.y);
+                    new_pos = Some([target.x, target.y]);
+                }
+
+                let (shrink, grow) = if crate::direction::is_rtl() { ("chevrons-right", "chevrons-left") } else { ("chevrons-left", "chevrons-right") };
+                let chevron_rect = Rect::from_min_size(header_rect.left_top(), vec2(14.0, 14.0));
+                let chevron_resp = ui.interact(chevron_rect, card_id.with("chevron"), Sense::click());
+                icons::paint(ui, chevron_rect, if double { shrink } else { grow }, 11.0, if chevron_resp.hovered() { t.text } else { t.text_faint });
+                if chevron_resp.clicked() {
+                    toggle_double = true;
+                }
+
+                let close_rect = Rect::from_min_size(pos2(header_rect.right() - 14.0, header_rect.top()), vec2(14.0, 14.0));
+                let close_resp = ui.interact(close_rect, card_id.with("close"), Sense::click());
+                icons::paint(ui, close_rect, "x", 9.0, if close_resp.hovered() { t.text } else { t.text_faint });
+                if close_resp.clicked() {
+                    close = true;
+                }
+
+                let grip_start = chevron_rect.right() + 2.0;
+                let grip_end = close_rect.left() - 2.0;
+                if grip_end > grip_start + 4.0 {
+                    let cy = header_rect.center().y;
+                    let col = if header_resp.hovered() || header_resp.dragged() { t.text_dim } else { t.separator };
+                    ui.painter().line_segment([pos2(grip_start, cy - 2.0), pos2(grip_end, cy - 2.0)], Stroke::new(1.0, col));
+                    ui.painter().line_segment([pos2(grip_start, cy + 2.0), pos2(grip_end, cy + 2.0)], Stroke::new(1.0, col));
+                }
+
+                ui.add_space(4.0);
+                toolbar_body(app, ui, bx, double);
+            });
+        });
+
+    if ctx.input(|i| i.pointer.primary_down()) && new_pos.is_some() {
+        if let Some(ptr) = ctx.pointer_interact_pos() {
+            let rtl = crate::direction::is_rtl();
+            let dock_zone = if rtl { ptr.x > screen_rect.right() - 60.0 } else { ptr.x < screen_rect.left() + 60.0 };
+            if dock_zone {
+                let line_x = if rtl { screen_rect.right() - 2.0 } else { screen_rect.left() + 2.0 };
+                ctx.debug_painter().line_segment(
+                    [pos2(line_x, screen_rect.top() + 40.0), pos2(line_x, (screen_rect.bottom() - 30.0).max(screen_rect.top() + 50.0))],
+                    Stroke::new(3.0, t.accent),
+                );
+                if ctx.input(|i| i.pointer.any_released()) {
+                    re_dock = true;
+                }
+            }
+        }
+    }
+
+    if re_dock {
+        app.ui.panels.toolbar_floating = false;
+        app.ui.panels.toolbar_pos = None;
+        ctx.request_repaint();
+    } else if let Some(p) = new_pos {
+        app.ui.panels.toolbar_pos = Some(p);
+    }
+    if toggle_double {
+        app.ui.panels.toolbar_double = !double;
+        ctx.request_repaint();
+    }
+    if close {
+        app.ui.panels.toolbar = false;
+        ctx.request_repaint();
+    }
+}
+
+fn toolbar_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, bx: f32, double: bool) {
+    let t = Tokens::get(ui.ctx());
+    let sections = visible_sections(&app.session.prefs().toolbar.hidden);
+    // Subtle violet wash at the bottom of the toolbar.
             let full = ui.max_rect();
             if !t.bevel && !t.pro && t.dark() {
                 let mut mesh = egui::Mesh::default();
@@ -362,7 +519,6 @@ pub fn toolbar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                     });
                 });
             }
-        });
 }
 
 /// Glyph size of a toolbar tool button. Pro fills two thirds of the button, close to Photoshop's
@@ -694,6 +850,9 @@ pub fn title_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             if system {
                 return;
             }
+            // A right-to-left document name in display order (the OS title keeps the logical text),
+            // in a left-to-right line: "— PhotoCraft" stays after the name, at the right.
+            let title = crate::bidi_text::visual_ltr(&title).into_owned();
             let font = theme::medium(13.0);
             let galley = ui.painter().layout_no_wrap(title.clone(), font.clone(), t.text_dim);
             if let Some(x) = title_x(full.center().x, free.0, free.1, galley.size().x) {
@@ -1279,9 +1438,10 @@ pub fn options_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                             // Keep partial edits in ToolOptions so the first side survives a frame;
                             // Original Ratio shows the document's numbers, as Photoshop does.
                             let (mut rw, mut rh) = crate::crop_size::custom_ratio_fields(o, doc_size);
-                            let cw = widgets::value_field(ui, &mut rw, 0.0..=99_999.0, "", 54.0).changed();
+                            let decimals = crate::crop_size::RATIO_DECIMALS;
+                            let cw = widgets::value_field_prec(ui, &mut rw, 0.0..=99_999.0, "", 54.0, decimals).changed();
                             let swap = icons::button(ui, "arrow-left-right", 22.0, false, tl!("Swaps height and width")).clicked();
-                            let ch = widgets::value_field(ui, &mut rh, 0.0..=99_999.0, "", 54.0).changed();
+                            let ch = widgets::value_field_prec(ui, &mut rh, 0.0..=99_999.0, "", 54.0, decimals).changed();
                             if swap {
                                 std::mem::swap(&mut rw, &mut rh);
                             }
@@ -1613,6 +1773,7 @@ pub fn status_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                     ui.with_layout(crate::direction::trailing(), |ui| {
                         crate::jobs_ui::status_progress(app, ui);
                         crate::background_redraw::status(app, ui);
+                        crate::chrome_ui::gpu_memory_status(app, ui);
                     });
                     return;
                 }
@@ -1653,6 +1814,7 @@ pub fn status_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                         crate::jobs_ui::status_progress(app, ui);
                     }
                     crate::background_redraw::status(app, ui);
+                    crate::chrome_ui::gpu_memory_status(app, ui);
                 });
             });
         });
@@ -1933,12 +2095,41 @@ fn navigator(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
         ui.painter().image(tex, rect, Rect::from_min_max(egui::Pos2::ZERO, pos2(1.0, 1.0)), Color32::WHITE);
     }
     let s = rect.width() / size.width.max(1) as f32;
-    if (resp.clicked() || resp.dragged())
+    // ⌘/Ctrl-drag over the preview draws a rectangle the view then zooms to, as in Photoshop
+    // (#6872); a plain click or drag moves the view.
+    let command = crate::workspace_ui::sticky_mods(app, ctx.input(|i| i.modifiers)).command;
+    if resp.drag_started() && command {
+        let start = ctx.input(|i| i.pointer.press_origin()).or(resp.interact_pointer_pos());
+        ui.data_mut(|d| match start {
+            Some(p) => {
+                d.insert_temp(navigator_zoom_drag_id(), p);
+            }
+            None => d.remove::<Pos2>(navigator_zoom_drag_id()),
+        });
+    }
+    let zoom_from = ui.data(|d| d.get_temp::<Pos2>(navigator_zoom_drag_id()));
+    if let Some(from) = zoom_from {
+        if let Some(to) = resp.interact_pointer_pos() {
+            let r = Rect::from_two_pos(from, to).intersect(rect);
+            crate::tool_feedback::draw_ants(ui.painter(), &[r.left_top(), r.right_top(), r.right_bottom(), r.left_bottom()], true);
+            if resp.drag_stopped() {
+                let doc_rect = Rect::from_min_max(((r.min - rect.min) / s).to_pos2(), ((r.max - rect.min) / s).to_pos2());
+                let (canvas, ppp, aspect) = (app.last_canvas_rect, app.canvas_ppp(), app.ui.view.display_aspect());
+                navigator_zoom_to(&mut app.ui.views[idx], doc_rect, [size.width, size.height], canvas.size(), ppp, aspect);
+            }
+        }
+        if resp.drag_stopped() || !resp.dragged() {
+            ui.data_mut(|d| d.remove::<Pos2>(navigator_zoom_drag_id()));
+        }
+    } else if (resp.clicked() || resp.dragged())
         && let Some(pp) = resp.interact_pointer_pos()
     {
         let d = (pp - rect.min) / s;
         app.ui.views[idx].center = [d.x.clamp(0.0, size.width as f32), d.y.clamp(0.0, size.height as f32)];
         app.ui.views[idx].fit_pending = false;
+    }
+    if command && resp.hovered() {
+        ctx.set_cursor_icon(egui::CursorIcon::ZoomIn);
     }
     // The Navigator has its own zoom target: an unmodified wheel over the preview
     // should zoom even when the document canvas is configured to scroll on wheel.
@@ -2018,6 +2209,42 @@ fn navigator_fit(frame: Rect, w: u32, h: u32) -> Rect {
     Rect::from_center_size(frame.center(), vec2(w * s, h * s))
 }
 
+/// Where a ⌘/Ctrl-drag over the Navigator's preview started, while it lasts.
+fn navigator_zoom_drag_id() -> egui::Id {
+    egui::Id::new("navigator-zoom-drag")
+}
+
+/// Zoom `view` so the document rectangle `doc_rect` (pixels) fills a canvas of `canvas` points,
+/// centred on it, as a Navigator ⌘/Ctrl-drag does (#6872). `doc` is the document's size in
+/// pixels (the view's own copy is only set once the canvas has been drawn), `ppp` the canvas's
+/// device pixels per point and `aspect` the pixel aspect ratio shown; the zoom stays within the
+/// zoom range. A rectangle under 2 document pixels across zooms one step in on its centre.
+fn navigator_zoom_to(view: &mut crate::state::View, doc_rect: Rect, doc: [u32; 2], canvas: egui::Vec2, ppp: f32, aspect: f32) {
+    // Checked before clipping: `min`/`max` would turn a NaN edge into a document edge.
+    if ![doc_rect.min.x, doc_rect.min.y, doc_rect.max.x, doc_rect.max.y].iter().all(|v| v.is_finite()) {
+        return;
+    }
+    let (w, h) = (doc[0] as f32, doc[1] as f32);
+    let r = doc_rect.intersect(Rect::from_min_size(Pos2::ZERO, vec2(w, h)));
+    if r.width() < 0.0 || r.height() < 0.0 {
+        return;
+    }
+    let aspect = if aspect.is_finite() && aspect > 0.0 { aspect } else { 1.0 };
+    let zoom = if r.width() < 2.0 || r.height() < 2.0 || canvas.x <= 0.0 || canvas.y <= 0.0 {
+        crate::zoom_levels::step(view.zoom, 1, view.doc_size)
+    } else {
+        // Document columns shown across the canvas are `canvas.x / (point_zoom * aspect)`.
+        let point_zoom = (canvas.x / (r.width() * aspect)).min(canvas.y / r.height());
+        point_zoom * ppp
+    };
+    if !zoom.is_finite() {
+        return;
+    }
+    view.zoom = crate::zoom_levels::clamp(zoom, view.doc_size);
+    view.center = [r.center().x, r.center().y];
+    view.fit_pending = false;
+}
+
 fn navigator_preview_id() -> egui::Id {
     egui::Id::new("navigator-preview-rect")
 }
@@ -2078,6 +2305,101 @@ mod navigator_wheel_tests {
         let below = last_navigator_controls(&ctx).map_or(pos2(50.0, 455.0), |r| pos2(r.left() + 4.0, r.bottom() - 2.0));
         frame(&mut app, &ctx, below, 1.0);
         assert!((app.ui.views[0].zoom - 1.0).abs() < 1e-4, "wheel outside preview leaves zoom unchanged");
+    }
+
+    /// #6872: the zoom a Navigator ⌘/Ctrl-drag sets: the rectangle fills the canvas, centred.
+    #[test]
+    fn navigator_zoom_to_fits_the_rectangle_in_the_canvas() {
+        let fresh = || crate::state::View { doc_size: [200, 100], zoom: 1.0, center: [100.0, 50.0], ..Default::default() };
+        let canvas = vec2(800.0, 600.0);
+        let r = Rect::from_min_max(pos2(50.0, 25.0), pos2(100.0, 50.0));
+        // 50 × 25 px on 800 × 600 pt: the width limits it, 16 points per pixel.
+        let mut v = fresh();
+        navigator_zoom_to(&mut v, r, [200, 100], canvas, 1.0, 1.0);
+        assert_eq!((v.zoom, v.center, v.fit_pending), (crate::zoom_levels::clamp(16.0, [200, 100]), [75.0, 37.5], false));
+        // Device pixels per point and a 2:1 pixel aspect scale it as the canvas shows pixels.
+        let mut v = fresh();
+        navigator_zoom_to(&mut v, r, [200, 100], canvas, 2.0, 2.0);
+        assert_eq!(v.zoom, crate::zoom_levels::clamp(16.0, [200, 100]), "8 points per pixel across, at 2 device pixels per point");
+        // Off the document: only the part on it counts.
+        let mut v = fresh();
+        navigator_zoom_to(&mut v, Rect::from_min_max(pos2(150.0, 50.0), pos2(400.0, 300.0)), [200, 100], canvas, 1.0, 1.0);
+        assert_eq!(v.center, [175.0, 75.0]);
+        // Under 2 px across: one step in on its centre.
+        let mut v = fresh();
+        navigator_zoom_to(&mut v, Rect::from_min_max(pos2(10.0, 10.0), pos2(11.0, 40.0)), [200, 100], canvas, 1.0, 1.0);
+        assert_eq!((v.zoom, v.center), (crate::zoom_levels::step(1.0, 1, [200, 100]), [10.5, 25.0]));
+        // Not a number, or wholly off the document: nothing changes.
+        for bad in [Rect::from_min_max(pos2(f32::NAN, 0.0), pos2(10.0, 10.0)), Rect::from_min_max(pos2(300.0, 300.0), pos2(400.0, 400.0))] {
+            let mut v = fresh();
+            navigator_zoom_to(&mut v, bad, [200, 100], canvas, 1.0, 1.0);
+            assert_eq!((v.zoom, v.center), (1.0, [100.0, 50.0]), "{bad:?}");
+        }
+    }
+
+    /// One frame of the Navigator with pointer `events` and `modifiers` held.
+    fn frame_with(app: &mut PhotocraftApp, ctx: &egui::Context, modifiers: Modifiers, mut events: Vec<Event>) {
+        events.insert(0, Event::ModifiersChanged(modifiers));
+        let input = RawInput { screen_rect: Some(Rect::from_min_size(Pos2::ZERO, vec2(430.0, 460.0))), events, ..Default::default() };
+        ctx.run_ui(input, |ui| navigator(app, ui)).textures_delta.clear();
+    }
+
+    /// A drag over the Navigator's preview between document points `from` and `to`.
+    fn drag(app: &mut PhotocraftApp, ctx: &egui::Context, modifiers: Modifiers, from: [f32; 2], to: [f32; 2]) {
+        let preview = last_navigator_preview(ctx).expect("the preview");
+        let s = preview.width() / 200.0;
+        let at = |p: [f32; 2]| preview.min + vec2(p[0], p[1]) * s;
+        let (a, b) = (at(from), at(to));
+        let button = |pos, pressed| Event::PointerButton { pos, button: egui::PointerButton::Primary, pressed, modifiers };
+        frame_with(app, ctx, modifiers, vec![Event::PointerMoved(a), button(a, true)]);
+        frame_with(app, ctx, modifiers, vec![Event::PointerMoved(a.lerp(b, 0.5))]);
+        frame_with(app, ctx, modifiers, vec![Event::PointerMoved(b)]);
+        frame_with(app, ctx, modifiers, vec![button(b, false)]);
+        frame_with(app, ctx, Modifiers::NONE, vec![]);
+    }
+
+    /// #6872: ⌘/Ctrl-dragging a rectangle over the preview zooms the view to it, as in
+    /// Photoshop; a plain drag still only moves the view.
+    #[test]
+    fn navigator_command_drag_zooms_to_the_rectangle() {
+        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        app.run("file.new", json!({"width": 200, "height": 100})).unwrap();
+        app.sync_views();
+        app.ui.views[0].zoom = 1.0;
+        app.ui.views[0].fit_pending = false;
+        let ctx = egui::Context::default();
+        PhotocraftApp::setup_context(&ctx, crate::theme::ThemeKind::ALL[0]);
+        // The preview settles once the zoom row under it has been measured.
+        for _ in 0..3 {
+            frame(&mut app, &ctx, pos2(5.0, 5.0), 0.0);
+        }
+        // A plain drag pans and keeps the zoom.
+        drag(&mut app, &ctx, Modifiers::NONE, [50.0, 25.0], [100.0, 50.0]);
+        assert_eq!(app.ui.views[0].zoom, 1.0);
+        let c = app.ui.views[0].center;
+        assert!((c[0] - 100.0).abs() < 1.0 && (c[1] - 50.0).abs() < 1.0, "the view follows the pointer: {c:?}");
+        // ⌘/Ctrl-drag: the rectangle fills the canvas (`last_canvas_rect`, 800 × 600 pt).
+        drag(&mut app, &ctx, Modifiers::COMMAND, [50.0, 25.0], [100.0, 50.0]);
+        let mut expected = app.ui.views[0].clone();
+        navigator_zoom_to(
+            &mut expected,
+            Rect::from_min_max(pos2(50.0, 25.0), pos2(100.0, 50.0)),
+            [200, 100],
+            vec2(800.0, 600.0),
+            app.canvas_ppp(),
+            app.ui.view.display_aspect(),
+        );
+        let v = &app.ui.views[0];
+        assert!((v.zoom - expected.zoom).abs() / expected.zoom < 0.05, "{} vs {}", v.zoom, expected.zoom);
+        assert!(
+            (v.center[0] - 75.0).abs() < 1.0 && (v.center[1] - 37.5).abs() < 1.0,
+            "centred on the rectangle: {:?} (zoom {}, expected {:?})",
+            v.center,
+            v.zoom,
+            (expected.zoom, expected.center)
+        );
+        assert!(v.zoom > 1.0 && !v.fit_pending);
+        assert!(ctx.data(|d| d.get_temp::<Pos2>(navigator_zoom_drag_id())).is_none(), "the drag is over");
     }
 
     /// #4840: under the preview, one row as in Photoshop: the zoom in percent, Zoom Out, the
@@ -2604,10 +2926,12 @@ fn layers(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             app.ui.dock.collapsed.retain(|g| *g != crate::dock::Group::Properties);
             continue;
         }
-        if p.is_null() {
-            // Context-menu items behave like their menu-bar twins (dialogs included).
+        if p.is_null() || id == "layer.newFillLayer.solidColor" {
+            // Context-menu items and the Layers footer's Solid Color… action behave like
+            // their menu-bar twins. In particular, a new Solid Color fill opens its picker.
             let ctx = ui.ctx().clone();
-            if let Err(e) = crate::menus::invoke(app, &ctx, &id, json!({})) {
+            let params = if p.is_null() { json!({}) } else { p };
+            if let Err(e) = crate::menus::invoke(app, &ctx, &id, params) {
                 app.ui.status = e;
                 app.ui.status_error = true;
             }
@@ -6339,6 +6663,40 @@ mod compact_visual_regressions {
                 }
             }
         }
+    }
+
+    #[test]
+    fn the_crop_ratio_fields_show_three_decimals() {
+        // #6487: a 1.414 : 1 ratio reads 1.414 in the bar, not 1.4.
+        let ctx = egui::Context::default();
+        crate::theme::install_fonts(&ctx);
+        let Some(kind) = crate::theme::ThemeKind::ALL.into_iter().find(|k| {
+            crate::theme::apply(&ctx, *k);
+            Tokens::get(&ctx).pro
+        }) else {
+            return;
+        };
+        crate::theme::apply(&ctx, kind);
+        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Default::default());
+        app.ui.tool = Tool::Crop;
+        app.ui.tool_options.crop_ratio = "1.414:1".into();
+        let screen = Rect::from_min_size(egui::Pos2::ZERO, vec2(1600.0, 120.0));
+        let mut out = ctx.run_ui(input_at_scale(screen, 1.0), |ui| options_bar(&mut app, ui));
+        for _ in 0..3 {
+            out.textures_delta.clear();
+            out = ctx.run_ui(input_at_scale(screen, 1.0), |ui| options_bar(&mut app, ui));
+        }
+        out.textures_delta.clear();
+        let texts: Vec<&str> = out
+            .shapes
+            .iter()
+            .filter_map(|s| match &s.shape {
+                egui::Shape::Text(t) => Some(t.galley.job.text.as_str()),
+                _ => None,
+            })
+            .collect();
+        assert!(texts.contains(&"1.414"), "{texts:?}");
+        assert_eq!(app.ui.tool_options.crop_ratio, "1.414:1", "showing the ratio leaves it alone");
     }
 
     #[test]
