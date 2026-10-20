@@ -304,7 +304,13 @@ fn select_subject(s: &mut Session, p: &Value) -> Result<Value> {
         c.region.clone()
     } else {
         let doc = std::sync::Arc::clone(&d.doc);
-        let region = with_doc_sampler(&doc, d.active_layer, all_layers, |smp, doc| subject::select_subject(smp, doc.bounds())).map(std::sync::Arc::new);
+        let bounds = if !all_layers && let Some(surf) = d.active_layer.and_then(|id| doc.layer(id)).and_then(Layer::surface) {
+            let cb = surf.content_bounds().intersect(&doc.bounds());
+            if cb.width() >= 4 && cb.height() >= 4 { cb } else { doc.bounds() }
+        } else {
+            doc.bounds()
+        };
+        let region = with_doc_sampler(&doc, d.active_layer, all_layers, |smp, _| subject::select_subject(smp, bounds)).map(std::sync::Arc::new);
         s.subject_cache = SubjectCache { doc: std::sync::Arc::downgrade(&doc), doc_id: Some(doc.id), target, region: region.clone() };
         region
     };

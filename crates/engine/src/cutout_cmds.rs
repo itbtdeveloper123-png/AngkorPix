@@ -45,10 +45,16 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
         s,
         "Remove Background",
         move |doc, _, ctx| {
+            let bounds = if !sample_all && let Some(surf) = doc.layer(id).and_then(Layer::surface) {
+                let cb = surf.content_bounds().intersect(&doc.bounds());
+                if cb.width() >= 4 && cb.height() >= 4 { cb } else { doc.bounds() }
+            } else {
+                doc.bounds()
+            };
             // Cancel reaches the min cuts inside Select Subject, so Esc doesn't wait for them.
             let found = ctx
                 .stage(0.1, 0.6, "Finding subject", |ctl| {
-                    with_doc_sampler(doc, Some(id), sample_all, |smp, d| subject::select_subject_with(smp, d.bounds(), ctl))
+                    with_doc_sampler(doc, Some(id), sample_all, |smp, _| subject::select_subject_with(smp, bounds, ctl))
                 })
                 .map_err(|_| EngineError::Cancelled)?;
             let mut region = found.ok_or_else(|| EngineError::Other("no subject found".into()))?;
@@ -57,8 +63,8 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
             }
             if refine {
                 ctx.progress(0.6, "Refining edge");
-                let refined = with_doc_sampler(doc, Some(id), sample_all, |smp, d| {
-                    matting::refine_mask(smp, &matting::region_reader(&region), region.bbox, d.bounds(), &REFINE)
+                let refined = with_doc_sampler(doc, Some(id), sample_all, |smp, _| {
+                    matting::refine_mask(smp, &matting::region_reader(&region), region.bbox, bounds, &REFINE)
                 });
                 region = refined.unwrap_or(region);
                 if ctx.cancelled() {
