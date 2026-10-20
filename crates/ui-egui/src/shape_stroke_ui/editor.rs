@@ -40,8 +40,12 @@ fn style_button(ui: &mut egui::Ui, options: &StrokeOptions, label: &str, selecte
     let font = egui::TextStyle::Button.resolve(ui.style());
     let color = if selected && t.bevel { t.accent_text } else { t.text };
     let galley = ui.painter().layout_no_wrap(tl!(label).to_owned(), font, color);
-    let height = (galley.size().y + if opener { 8.0 } else { 14.0 }).max(if opener { 24.0 } else { 32.0 });
-    let (rect, response) = ui.allocate_exact_size(vec2(width.max(galley.size().x + 92.0), height), Sense::click());
+    let height = if opener { 22.0 } else { (galley.size().y + 14.0).max(32.0) };
+    let (rect, response) = if opener {
+        ui.allocate_exact_size(vec2(width.max(52.0), height), Sense::click())
+    } else {
+        ui.allocate_exact_size(vec2(width.max(galley.size().x + 92.0), height), Sense::click())
+    };
     response.widget_info(|| {
         if opener {
             egui::WidgetInfo::labeled(egui::WidgetType::Button, ui.is_enabled(), tl!("Stroke Options"))
@@ -59,19 +63,29 @@ fn style_button(ui: &mut egui::Ui, options: &StrokeOptions, label: &str, selecte
     };
     ui.painter().rect_filled(rect, t.radius_sm, fill);
     ui.painter().rect_stroke(rect, t.radius_sm, Stroke::new(1.0, if active { t.accent_border } else { t.field_border }), egui::StrokeKind::Inside);
-    ui.painter().galley(pos2(rect.left() + 8.0, rect.center().y - galley.size().y / 2.0), galley.clone(), color);
-    let sample = Rect::from_min_max(
-        pos2(rect.left() + galley.size().x + 18.0, rect.top() + 3.0),
-        pos2(rect.right() - if opener { 20.0 } else { 8.0 }, rect.bottom() - 3.0),
-    );
-    if enabled {
-        paint_sample(ui, sample, response.id.with("sample"), options, false, color);
-    } else {
-        ui.painter().line_segment([sample.left_center(), sample.right_center()], Stroke::new(1.0, t.text_faint));
-        ui.painter().line_segment([sample.center() + vec2(-4.0, 6.0), sample.center() + vec2(4.0, -6.0)], Stroke::new(1.5, t.danger));
-    }
     if opener {
-        crate::icons::paint(ui, Rect::from_center_size(rect.right_center() - vec2(10.0, 0.0), vec2(12.0, 12.0)), "chevron-down", 12.0, t.text_dim);
+        let sample = Rect::from_min_max(
+            pos2(rect.left() + 6.0, rect.top() + 3.0),
+            pos2(rect.right() - 16.0, rect.bottom() - 3.0),
+        );
+        if enabled {
+            paint_sample(ui, sample, response.id.with("sample"), options, false, color);
+        } else {
+            ui.painter().line_segment([sample.left_center(), sample.right_center()], Stroke::new(1.0, t.text_faint));
+        }
+        crate::icons::paint(ui, Rect::from_center_size(rect.right_center() - vec2(8.0, 0.0), vec2(10.0, 10.0)), "chevron-down", 10.0, t.text_dim);
+    } else {
+        ui.painter().galley(pos2(rect.left() + 8.0, rect.center().y - galley.size().y / 2.0), galley.clone(), color);
+        let sample = Rect::from_min_max(
+            pos2(rect.left() + galley.size().x + 18.0, rect.top() + 3.0),
+            pos2(rect.right() - 8.0, rect.bottom() - 3.0),
+        );
+        if enabled {
+            paint_sample(ui, sample, response.id.with("sample"), options, false, color);
+        } else {
+            ui.painter().line_segment([sample.left_center(), sample.right_center()], Stroke::new(1.0, t.text_faint));
+            ui.painter().line_segment([sample.center() + vec2(-4.0, 6.0), sample.center() + vec2(4.0, -6.0)], Stroke::new(1.5, t.danger));
+        }
     }
     response
 }
@@ -88,8 +102,8 @@ pub fn button(
     target: Option<(photocraft_doc::DocId, photocraft_doc::LayerId)>,
     stroke_enabled: bool,
 ) -> Option<StrokeChange> {
-    let label = if stroke_enabled { current.label() } else { "No Color" };
-    let response = style_button(ui, current, label, false, 138.0, true, stroke_enabled).on_hover_text(tl!("Stroke Options"));
+    let label = current.label();
+    let response = style_button(ui, current, label, false, 52.0, true, stroke_enabled).on_hover_text(tl!("Stroke Options"));
     let own = editor.as_ref().is_some_and(|e| e.key == key);
     if response.clicked() {
         if let Some(e) = editor.as_ref() {

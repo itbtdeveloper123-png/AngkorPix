@@ -1362,7 +1362,7 @@ fn picker_rgba(hsva: egui::ecolor::Hsva) -> [f32; 4] {
 /// data: opening the picker must never quantize an existing high-depth colour or enable paint.
 fn swatch(ui: &mut egui::Ui, fill: Option<&photocraft_doc::Fill>, fallback: [f32; 4], tip: &str) -> Option<PaintChange> {
     let t = Tokens::get(ui.ctx());
-    let (r, resp) = ui.allocate_exact_size(vec2(30.0, 22.0), Sense::click());
+    let (r, resp) = ui.allocate_exact_size(vec2(36.0, 22.0), Sense::click());
     resp.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::ColorButton, ui.is_enabled(), tip));
     let current = fill.and_then(color_of);
     crate::widgets::checker(ui.painter(), r.shrink(1.0), 4.0);
@@ -1499,8 +1499,22 @@ pub fn shape_properties(app: &mut PhotocraftApp, ui: &mut egui::Ui, id: photocra
     // The shared collapsible section headers (#155).
     // Prefs "Appearance" is theme chrome (Giao diện); shape fill/stroke is Diện mạo.
     if crate::props_layout::section(ui, "appearance", crate::i18n::tr_ctx(crate::i18n::current(), "shape", "Appearance")) {
+        let label_fill = tl!("Fill");
+        let label_stroke = tl!("Stroke");
+        let font = egui::TextStyle::Body.resolve(ui.style());
+        let w_fill = ui.painter().layout_no_wrap(label_fill.to_owned(), font.clone(), t.text_dim).size().x;
+        let w_stroke = ui.painter().layout_no_wrap(label_stroke.to_owned(), font, t.text_dim).size().x;
+        let label_w = w_fill.max(w_stroke).max(44.0);
+
+        // Row 1: Fill
         ui.horizontal(|ui| {
-            ui.label(egui::RichText::new(tl!("Fill")).color(t.text_dim).size(12.0));
+            ui.allocate_ui_with_layout(
+                vec2(label_w, 22.0),
+                egui::Layout::left_to_right(egui::Align::Center),
+                |ui| {
+                    ui.label(egui::RichText::new(label_fill).color(t.text_dim).size(12.0));
+                },
+            );
             if let Some(change) = swatch(ui, sh.fill.as_ref(), app.session.tools.foreground, tl!("Set shape fill type")) {
                 let fill = match change {
                     PaintChange::None => Value::Null,
@@ -1508,8 +1522,19 @@ pub fn shape_properties(app: &mut PhotocraftApp, ui: &mut egui::Ui, id: photocra
                 };
                 edit = Some(json!({"fill": fill, "coalesce": coalesce("fill")}));
             }
-            ui.add_space(12.0);
-            ui.label(egui::RichText::new(tl!("Stroke")).color(t.text_dim).size(12.0));
+        });
+
+        ui.add_space(2.0);
+
+        // Row 2: Stroke (Color Swatch + Width Field + Stroke Options Dropdown)
+        ui.horizontal(|ui| {
+            ui.allocate_ui_with_layout(
+                vec2(label_w, 22.0),
+                egui::Layout::left_to_right(egui::Align::Center),
+                |ui| {
+                    ui.label(egui::RichText::new(label_stroke).color(t.text_dim).size(12.0));
+                },
+            );
             if let Some(change) = swatch(ui, sh.stroke.as_ref().map(|s| &s.paint), app.session.tools.foreground, tl!("Set shape stroke type")) {
                 let stroke = match change {
                     PaintChange::None => Value::Null,
@@ -1517,30 +1542,32 @@ pub fn shape_properties(app: &mut PhotocraftApp, ui: &mut egui::Ui, id: photocra
                 };
                 edit = Some(json!({"stroke": stroke, "coalesce": coalesce("stroke")}));
             }
+            ui.add_space(2.0);
             let mut w = sh.stroke.as_ref().map_or(0.0, |s| s.width);
-            if crate::widgets::value_field(ui, &mut w, 0.0..=288.0, "px", 60.0).changed() {
+            if crate::widgets::value_field(ui, &mut w, 0.0..=288.0, "px", 54.0).changed() {
                 let stroke = if w <= 0.0 { Value::Null } else { json!({"width": w}) };
                 edit = Some(json!({"stroke": stroke, "coalesce": coalesce("stroke-w")}));
             }
-        });
-        let style = sh.stroke.as_ref().map(crate::shape_stroke_ui::StrokeOptions::from).unwrap_or_default();
-        let stroke_enabled = sh.stroke.as_ref().is_some_and(|stroke| stroke.width > 0.0);
-        if let Some(change) = crate::shape_stroke_ui::button(
-            ui,
-            &key("style"),
-            &style,
-            &mut app.ui.stroke_editor,
-            sh.path.subpaths.iter().all(|s| s.closed),
-            !matches!(sh.live, Some(photocraft_doc::LiveShape::Ellipse { .. })),
-            app.session.active().map(|st| (st.doc.id, id)),
-            stroke_enabled,
-        ) {
-            let mut stroke = change.options.params();
-            if !stroke_enabled {
-                stroke["width"] = json!(3.0);
+            ui.add_space(2.0);
+            let style = sh.stroke.as_ref().map(crate::shape_stroke_ui::StrokeOptions::from).unwrap_or_default();
+            let stroke_enabled = sh.stroke.as_ref().is_some_and(|stroke| stroke.width > 0.0);
+            if let Some(change) = crate::shape_stroke_ui::button(
+                ui,
+                &key("style"),
+                &style,
+                &mut app.ui.stroke_editor,
+                sh.path.subpaths.iter().all(|s| s.closed),
+                !matches!(sh.live, Some(photocraft_doc::LiveShape::Ellipse { .. })),
+                app.session.active().map(|st| (st.doc.id, id)),
+                stroke_enabled,
+            ) {
+                let mut stroke = change.options.params();
+                if !stroke_enabled {
+                    stroke["width"] = json!(3.0);
+                }
+                edit = Some(json!({"stroke": stroke, "coalesce": change.coalesce}));
             }
-            edit = Some(json!({"stroke": stroke, "coalesce": change.coalesce}));
-        }
+        });
     }
     if let Some(live) = &sh.live
         && crate::props_layout::section(ui, "liveShape", tl!("Shape"))

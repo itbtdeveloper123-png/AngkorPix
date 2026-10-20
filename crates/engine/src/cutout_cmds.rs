@@ -39,8 +39,8 @@ fn enabled(s: &Session) -> std::result::Result<(), String> {
 
 #[cfg(not(target_arch = "wasm32"))]
 fn run_ai_cutout(doc: &Document, layer_id: LayerId, bounds: Rect, sample_all: bool) -> std::result::Result<Region, String> {
-    let w = bounds.width() as u32;
-    let h = bounds.height() as u32;
+    let w = bounds.width();
+    let h = bounds.height();
     if w < 4 || h < 4 {
         return Err("layer bounds too small".into());
     }
@@ -79,11 +79,11 @@ fn run_ai_cutout(doc: &Document, layer_id: LayerId, bounds: Rect, sample_all: bo
     let mut script_candidates = vec![
         std::path::PathBuf::from("scripts/rmbg_infer.py"),
     ];
-    if let Ok(exe) = std::env::current_exe() {
-        if let Some(parent) = exe.parent() {
-            script_candidates.push(parent.join("scripts/rmbg_infer.py"));
-            script_candidates.push(parent.join("../../scripts/rmbg_infer.py"));
-        }
+    if let Ok(exe) = std::env::current_exe()
+        && let Some(parent) = exe.parent()
+    {
+        script_candidates.push(parent.join("scripts/rmbg_infer.py"));
+        script_candidates.push(parent.join("../../scripts/rmbg_infer.py"));
     }
     let script_path = script_candidates.into_iter().find(|p| p.exists())
         .ok_or_else(|| "scripts/rmbg_infer.py not found".to_string())?;

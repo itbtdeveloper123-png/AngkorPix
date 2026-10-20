@@ -112,14 +112,14 @@ pub fn toolbar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             }
 
             // Drag away from the edge undocks the toolbar to float over the canvas (Photoshop)
-            if resp.dragged() {
-                if let Some(pos) = ui.ctx().pointer_interact_pos() {
-                    let rtl = crate::direction::is_rtl();
-                    let undock = if rtl { resp.rect.left() - pos.x > 15.0 } else { pos.x - resp.rect.right() > 15.0 } || resp.drag_delta().length() > 20.0;
-                    if undock {
-                        app.ui.panels.toolbar_floating = true;
-                        app.ui.panels.toolbar_pos = Some([pos.x - w / 2.0, (pos.y - 10.0).max(30.0)]);
-                    }
+            if resp.dragged()
+                && let Some(pos) = ui.ctx().pointer_interact_pos()
+            {
+                let rtl = crate::direction::is_rtl();
+                let undock = if rtl { resp.rect.left() - pos.x > 15.0 } else { pos.x - resp.rect.right() > 15.0 } || resp.drag_delta().length() > 20.0;
+                if undock {
+                    app.ui.panels.toolbar_floating = true;
+                    app.ui.panels.toolbar_pos = Some([pos.x - w / 2.0, (pos.y - 10.0).max(30.0)]);
                 }
             }
 
