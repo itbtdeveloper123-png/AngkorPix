@@ -628,7 +628,13 @@ pub(crate) fn invoke_unguarded(app: &mut PhotocraftApp, ctx: &egui::Context, id:
                 "properties" => &mut p.properties,
                 "color" => &mut p.color,
                 "navigator" => &mut p.navigator,
-                "toolbar" => &mut p.toolbar,
+                "toolbar" => {
+                    if !p.toolbar && p.toolbar_floating {
+                        p.toolbar_floating = false;
+                        p.toolbar_pos = None;
+                    }
+                    &mut p.toolbar
+                }
                 "options" => &mut p.options_bar,
                 "brushSettings" => &mut p.brush_settings,
                 "brushes" => &mut p.brushes,
@@ -1572,6 +1578,9 @@ pub fn apply_workspace(app: &mut PhotocraftApp) {
     app.ui.docking_collapsed.clear();
     app.ui.dock_tabs = Default::default();
     let p = &mut app.ui.panels;
+    p.toolbar = true;
+    p.dock = true;
+    p.options_bar = true;
     p.toolbar_floating = false;
     p.toolbar_pos = None;
     let (nav, color, layers, history, props) = match app.ui.workspace.as_str() {

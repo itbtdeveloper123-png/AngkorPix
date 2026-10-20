@@ -166,6 +166,8 @@ pub fn floating_toolbar(app: &mut PhotocraftApp, ctx: &egui::Context) {
     let mut re_dock = false;
     let mut close = false;
     let mut toggle_double = false;
+    let mut is_dragging = false;
+    let mut was_stopped = false;
 
     egui::Area::new(card_id)
         .fixed_pos(initial_pos)
@@ -185,10 +187,14 @@ pub fn floating_toolbar(app: &mut PhotocraftApp, ctx: &egui::Context) {
                 }
 
                 if header_resp.dragged() {
+                    is_dragging = true;
                     let delta = header_resp.drag_delta();
                     let cur = initial_pos;
                     let target = pos2(cur.x + delta.x, cur.y + delta.y);
                     new_pos = Some([target.x, target.y]);
+                }
+                if header_resp.drag_stopped() {
+                    was_stopped = true;
                 }
 
                 let (shrink, grow) = if crate::direction::is_rtl() { ("chevrons-right", "chevrons-left") } else { ("chevrons-left", "chevrons-right") };
@@ -220,21 +226,30 @@ pub fn floating_toolbar(app: &mut PhotocraftApp, ctx: &egui::Context) {
             });
         });
 
-    if ctx.input(|i| i.pointer.primary_down()) && new_pos.is_some() {
-        if let Some(ptr) = ctx.pointer_interact_pos() {
-            let rtl = crate::direction::is_rtl();
-            let dock_zone = if rtl { ptr.x > screen_rect.right() - 60.0 } else { ptr.x < screen_rect.left() + 60.0 };
-            if dock_zone {
-                let line_x = if rtl { screen_rect.right() - 2.0 } else { screen_rect.left() + 2.0 };
-                ctx.debug_painter().line_segment(
-                    [pos2(line_x, screen_rect.top() + 40.0), pos2(line_x, (screen_rect.bottom() - 30.0).max(screen_rect.top() + 50.0))],
-                    Stroke::new(3.0, t.accent),
-                );
-                if ctx.input(|i| i.pointer.any_released()) {
-                    re_dock = true;
-                }
-            }
-        }
+    if ctx.input(|i| i.pointer.any_released()) {
+        was_stopped = true;
+    }
+
+    let current_x = new_pos.map(|p| p[0]).or_else(|| app.ui.panels.toolbar_pos.map(|p| p[0])).unwrap_or(initial_pos.x);
+    let ptr_x = ctx.pointer_interact_pos().or_else(|| ctx.input(|i| i.pointer.latest_pos())).map(|p| p.x);
+
+    let rtl = crate::direction::is_rtl();
+    let dock_zone = if rtl {
+        ptr_x.is_some_and(|x| x > screen_rect.right() - 80.0) || current_x > screen_rect.right() - w - 20.0
+    } else {
+        ptr_x.is_some_and(|x| x < screen_rect.left() + 80.0) || current_x < screen_rect.left() + 30.0
+    };
+
+    if (is_dragging || ctx.input(|i| i.pointer.primary_down())) && (new_pos.is_some() || is_dragging) && dock_zone {
+        let line_x = if rtl { screen_rect.right() - 2.0 } else { screen_rect.left() + 2.0 };
+        ctx.debug_painter().line_segment(
+            [pos2(line_x, screen_rect.top() + 40.0), pos2(line_x, (screen_rect.bottom() - 30.0).max(screen_rect.top() + 50.0))],
+            Stroke::new(4.0, t.accent),
+        );
+    }
+
+    if was_stopped && (is_dragging || new_pos.is_some()) && dock_zone {
+        re_dock = true;
     }
 
     if re_dock {
@@ -250,6 +265,8 @@ pub fn floating_toolbar(app: &mut PhotocraftApp, ctx: &egui::Context) {
     }
     if close {
         app.ui.panels.toolbar = false;
+        app.ui.panels.toolbar_floating = false;
+        app.ui.panels.toolbar_pos = None;
         ctx.request_repaint();
     }
 }
