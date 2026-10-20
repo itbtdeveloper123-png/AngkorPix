@@ -99,6 +99,10 @@ choice!(
     /// pointer (Photoshop), or erase with the current brush while dragging (Krita, Paint).
     RightClickPaint { BrushPicker = "brushPicker", Erase = "erase" } default BrushPicker
 );
+choice!(
+    /// Background removal engine: Standard heuristic or AI neural model.
+    RemoveBackgroundMethod { Heuristic = "heuristic", Ai = "ai" } default Heuristic
+);
 choice!(OtherCursor { Standard = "standard", Precise = "precise" } default Standard);
 choice!(CheckerSize { None = "none", Small = "small", Medium = "medium", Large = "large" } default Medium);
 choice!(CheckerColors { Light = "light", Medium = "medium", Dark = "dark", Red = "red", Orange = "orange", Green = "green", Blue = "blue", Purple = "purple", Custom = "custom" } default Light);
@@ -394,6 +398,8 @@ pub struct Tools {
     /// The longest pause, in milliseconds, between two nudges that still bundle into one state.
     /// Longer than a key's auto-repeat delay (about half a second), so a held key is one state.
     pub nudge_bundle_pause_ms: u32,
+    /// Background removal engine: "heuristic" (Standard / Fast) or "ai" (ONNX Model).
+    pub remove_background_method: RemoveBackgroundMethod,
 }
 
 impl Default for Tools {
@@ -414,6 +420,7 @@ impl Default for Tools {
             pressure_curve: vec![[0.0, 0.0], [1.0, 1.0]],
             bundle_nudges: true,
             nudge_bundle_pause_ms: 1000,
+            remove_background_method: RemoveBackgroundMethod::Heuristic,
         }
     }
 }
@@ -1088,6 +1095,7 @@ pub fn choices(path: &str) -> Option<&'static [&'static str]> {
         "cursors.painting" => PaintingCursor::NAMES,
         "cursors.other" => OtherCursor::NAMES,
         "tools.rightClickWithPaintingTools" => RightClickPaint::NAMES,
+        "tools.removeBackgroundMethod" => RemoveBackgroundMethod::NAMES,
         "transparencyAndGamut.gridSize" => CheckerSize::NAMES,
         "transparencyAndGamut.gridColors" => CheckerColors::NAMES,
         "unitsAndRulers.rulers" | "guidesGridAndSlices.gridUnit" => Unit::NAMES,

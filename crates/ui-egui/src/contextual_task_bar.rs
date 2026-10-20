@@ -358,10 +358,45 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
         let _ = crate::menus::invoke(app, ui.ctx(), "select.subject", json!({}));
     }
 
-    // 2. Remove Background (eraser-background icon + label)
-    if task_button(ui, Some("eraser-background"), Some(tl!("Remove Background")), tl!("Automatically isolate subject and mask out background"), t).clicked() {
-        let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({}));
+    // 2. Remove Background (with AI / Standard method selection)
+    let is_ai = app.session.prefs().tools.remove_background_method == photocraft_engine::prefs::RemoveBackgroundMethod::Ai;
+    let bg_label = if is_ai {
+        format!("{} (AI)", tl!("Remove Background"))
+    } else {
+        tl!("Remove Background").to_string()
+    };
+    let bg_btn = task_button(
+        ui,
+        Some(if is_ai { "wand-sparkles" } else { "eraser-background" }),
+        Some(&bg_label),
+        tl!("Automatically isolate subject and mask out background"),
+        t,
+    );
+    if bg_btn.clicked() {
+        let method_str = if is_ai { "ai" } else { "heuristic" };
+        let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": method_str }));
     }
+
+    let opt_btn = task_button(ui, Some("chevron-down"), None, tl!("Choose Background Removal Engine"), t);
+    egui::Popup::menu(&opt_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        ui.set_min_width(230.0);
+
+        if ui.selectable_label(!is_ai, tl!("⚡ Standard (Fast & Built-in)")).clicked() {
+            app.session.edit_prefs(|p| p.tools.remove_background_method = photocraft_engine::prefs::RemoveBackgroundMethod::Heuristic);
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "heuristic" }));
+            ui.close();
+        }
+
+        if ui.selectable_label(is_ai, tl!("✨ AI Neural Model (rmbg_model.onnx)")).clicked() {
+            app.session.edit_prefs(|p| p.tools.remove_background_method = photocraft_engine::prefs::RemoveBackgroundMethod::Ai);
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "ai" }));
+            ui.close();
+        }
+
+        ui.separator();
+        ui.label(egui::RichText::new(tl!("Model folder: models/rmbg_model.onnx")).weak().small());
+    });
 
     // 3. Adjust Colors (sliders-horizontal icon + label)
     let adj_btn = task_button(ui, Some("sliders-horizontal"), Some(tl!("Adjust Colors")), tl!("Add Adjustment Layer"), t);

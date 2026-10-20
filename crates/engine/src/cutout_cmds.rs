@@ -5,7 +5,9 @@
 
 use photocraft_algo::matting::{self, RefineParams};
 use photocraft_algo::segment::subject;
-use photocraft_doc::{Document, Layer, LayerContent, LayerMask};
+use photocraft_algo::selection::Region;
+use photocraft_doc::{Document, Layer, LayerContent, LayerId, LayerMask};
+use photocraft_geom::Rect;
 use serde_json::{Value, json};
 
 use crate::commands::{CommandSpec, layer_param};
@@ -35,12 +37,119 @@ fn enabled(s: &Session) -> std::result::Result<(), String> {
     check(&d.doc, crate::active_layer_of(s)?)
 }
 
+#[cfg(not(target_arch = "wasm32"))]
+fn run_ai_cutout(doc: &Document, layer_id: LayerId, bounds: Rect, sample_all: bool) -> std::result::Result<Region, String> {
+    let w = bounds.width() as u32;
+    let h = bounds.height() as u32;
+    if w < 4 || h < 4 {
+        return Err("layer bounds too small".into());
+    }
+
+    // Sample layer or composite pixels in bounds
+    let rgba_vec: Vec<[f32; 4]> = with_doc_sampler(doc, Some(layer_id), sample_all, |smp, _| smp.rgba(bounds));
+    let mut u8_data = Vec::with_capacity((w * h * 4) as usize);
+    for px in &rgba_vec {
+        u8_data.push((px[0].clamp(0.0, 1.0) * 255.0).round() as u8);
+        u8_data.push((px[1].clamp(0.0, 1.0) * 255.0).round() as u8);
+        u8_data.push((px[2].clamp(0.0, 1.0) * 255.0).round() as u8);
+        u8_data.push((px[3].clamp(0.0, 1.0) * 255.0).round() as u8);
+    }
+
+    let img = photocraft_codecs::Image::from_u8(w, h, photocraft_codecs::ChannelLayout::Rgba, u8_data)
+        .map_err(|e| format!("failed to create image: {e}"))?;
+    let png_bytes = photocraft_codecs::encode(&img, photocraft_codecs::Format::Png, &photocraft_codecs::EncodeOptions::default())
+        .map_err(|e| format!("failed to encode image: {e}"))?;
+
+    let in_file = tempfile::Builder::new()
+        .prefix("angkorpix_in_")
+        .suffix(".png")
+        .tempfile()
+        .map_err(|e| format!("failed to create temp file: {e}"))?;
+
+    let time_ms = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis())
+        .unwrap_or(0);
+    let out_path = std::env::temp_dir().join(format!("angkorpix_mask_{}_{}.png", std::process::id(), time_ms));
+
+    std::fs::write(in_file.path(), &png_bytes)
+        .map_err(|e| format!("failed to write input image: {e}"))?;
+
+    // Find script path relative to current exe or workspace
+    let mut script_candidates = vec![
+        std::path::PathBuf::from("scripts/rmbg_infer.py"),
+    ];
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(parent) = exe.parent() {
+            script_candidates.push(parent.join("scripts/rmbg_infer.py"));
+            script_candidates.push(parent.join("../../scripts/rmbg_infer.py"));
+        }
+    }
+    let script_path = script_candidates.into_iter().find(|p| p.exists())
+        .ok_or_else(|| "scripts/rmbg_infer.py not found".to_string())?;
+
+    let py_cmd = if cfg!(windows) { "python" } else { "python3" };
+    let mut cmd = std::process::Command::new(py_cmd);
+    cmd.arg(script_path)
+        .arg("--input").arg(in_file.path())
+        .arg("--output").arg(&out_path);
+
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        cmd.creation_flags(CREATE_NO_WINDOW);
+    }
+
+    let output = cmd.output().map_err(|e| format!("failed to execute Python ({py_cmd}): {e}. Please ensure Python with onnxruntime is installed."))?;
+    if !output.status.success() {
+        let err_msg = String::from_utf8_lossy(&output.stderr);
+        let err_trimmed = err_msg.trim();
+        return Err(if err_trimmed.is_empty() {
+            String::from_utf8_lossy(&output.stdout).to_string()
+        } else {
+            err_trimmed.to_string()
+        });
+    }
+
+    if !out_path.exists() {
+        return Err("AI script completed but output mask was not found".into());
+    }
+
+    let mask_bytes = std::fs::read(&out_path).map_err(|e| format!("failed to read mask: {e}"))?;
+    let _ = std::fs::remove_file(&out_path);
+
+    let mask_img = photocraft_codecs::decode(&mask_bytes).map_err(|e| format!("failed to decode mask: {e}"))?;
+    let ch = mask_img.layout().channels().max(1);
+    let raw = mask_img.data();
+    let total_px = (w * h) as usize;
+    let mut mask = Vec::with_capacity(total_px);
+    for i in 0..total_px {
+        if let Some(&b) = raw.get(i * ch) {
+            mask.push(b);
+        } else {
+            mask.push(0);
+        }
+    }
+
+    Ok(Region {
+        bbox: bounds,
+        mask,
+    })
+}
+
 fn run(s: &mut Session, p: &Value) -> Result<Value> {
     let id = layer_param(s, p)?;
     let doc = &s.active().ok_or(EngineError::NoDocument)?.doc;
     check(doc, doc.layer(id).ok_or(EngineError::NoLayer(id))?).map_err(EngineError::Other)?;
     let sample_all = p.get("sampleAllLayers").and_then(Value::as_bool).unwrap_or(false);
     let refine = p.get("refine").and_then(Value::as_bool).unwrap_or(true);
+    let method = p.get("method")
+        .and_then(Value::as_str)
+        .and_then(crate::prefs::RemoveBackgroundMethod::parse)
+        .unwrap_or(s.prefs().tools.remove_background_method);
+    let explicit_ai = p.get("method").and_then(Value::as_str) == Some("ai");
+
     crate::jobs::edit_job(
         s,
         "Remove Background",
@@ -51,17 +160,43 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
             } else {
                 doc.bounds()
             };
-            // Cancel reaches the min cuts inside Select Subject, so Esc doesn't wait for them.
-            let found = ctx
-                .stage(0.1, 0.6, "Finding subject", |ctl| {
-                    with_doc_sampler(doc, Some(id), sample_all, |smp, _| subject::select_subject_with(smp, bounds, ctl))
-                })
-                .map_err(|_| EngineError::Cancelled)?;
-            let mut region = found.ok_or_else(|| EngineError::Other("no subject found".into()))?;
+
+            let mut region_opt = None;
+            if method == crate::prefs::RemoveBackgroundMethod::Ai {
+                #[cfg(not(target_arch = "wasm32"))]
+                {
+                    ctx.progress(0.1, "Running AI model (rmbg_model.onnx)");
+                    match run_ai_cutout(doc, id, bounds, sample_all) {
+                        Ok(reg) => {
+                            region_opt = Some(reg);
+                        }
+                        Err(e) => {
+                            if explicit_ai {
+                                return Err(EngineError::Other(e));
+                            }
+                            eprintln!("AI background removal failed, falling back to heuristic: {e}");
+                        }
+                    }
+                }
+            }
+
+            let mut region = match region_opt {
+                Some(r) => r,
+                None => {
+                    // Cancel reaches the min cuts inside Select Subject, so Esc doesn't wait for them.
+                    let found = ctx
+                        .stage(0.1, 0.6, "Finding subject", |ctl| {
+                            with_doc_sampler(doc, Some(id), sample_all, |smp, _| subject::select_subject_with(smp, bounds, ctl))
+                        })
+                        .map_err(|_| EngineError::Cancelled)?;
+                    found.ok_or_else(|| EngineError::Other("no subject found".into()))?
+                }
+            };
+
             if ctx.cancelled() {
                 return Err(EngineError::Cancelled);
             }
-            if refine {
+            if refine && method != crate::prefs::RemoveBackgroundMethod::Ai {
                 ctx.progress(0.6, "Refining edge");
                 let refined = with_doc_sampler(doc, Some(id), sample_all, |smp, _| {
                     matting::refine_mask(smp, &matting::region_reader(&region), region.bbox, bounds, &REFINE)
@@ -88,7 +223,7 @@ pub fn specs() -> Vec<CommandSpec> {
         label: "Remove Background",
         menu: &[],
         shortcut: None,
-        params: r##"{"layer":id?,"sampleAllLayers":bool=false,"refine":bool=true} → {layer,bounds} (adds a layer mask from Select Subject; the Background becomes a normal layer)"##,
+        params: r##"{"layer":id?,"sampleAllLayers":bool=false,"refine":bool=true,"method":"heuristic"|"ai"} → {layer,bounds} (adds a layer mask from Select Subject or AI model; the Background becomes a normal layer)"##,
         enabled,
         run,
         journal: true,

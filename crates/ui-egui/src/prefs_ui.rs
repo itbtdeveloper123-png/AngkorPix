@@ -1154,6 +1154,9 @@ fn humanize(key: &str) -> String {
     if key == "nudgeBundlePauseMs" {
         return "Nudge Bundle Pause (ms)".into();
     }
+    if key == "removeBackgroundMethod" {
+        return "Background Removal Engine".into();
+    }
     // Performance: presentation without vsync (#1343); like the other graphics settings, it
     // takes effect when the window next opens.
     if key == "lowLatencyDrawing" {
@@ -1179,6 +1182,8 @@ fn humanize(key: &str) -> String {
 
 fn choice_label(v: &str) -> String {
     match v {
+        "heuristic" => "Standard (Fast & Built-in)".into(),
+        "ai" => "AI Neural Model (rmbg_model.onnx)".into(),
         "cm" => "Centimeters".into(),
         "mm" => "Millimeters".into(),
         "75" | "80" | "85" | "90" | "95" | "100" | "125" | "150" | "175" | "200" | "250" | "300" => format!("{v}%"),
