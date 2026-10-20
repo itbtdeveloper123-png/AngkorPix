@@ -162,12 +162,14 @@ pub fn floating_toolbar(app: &mut PhotocraftApp, ctx: &egui::Context) {
         .inner_margin(egui::Margin::symmetric(m, 6));
 
     let card_id = egui::Id::new("photocraft-floating-toolbar");
+    let dragging_key = card_id.with("is_dragging");
+    let was_dragging_prev: bool = ctx.data(|d| d.get_temp(dragging_key)).unwrap_or(false);
+
     let mut new_pos = None;
     let mut re_dock = false;
     let mut close = false;
     let mut toggle_double = false;
-    let mut is_dragging = false;
-    let mut was_stopped = false;
+    let mut drag_stopped_this_frame = false;
 
     egui::Area::new(card_id)
         .fixed_pos(initial_pos)
@@ -178,8 +180,10 @@ pub fn floating_toolbar(app: &mut PhotocraftApp, ctx: &egui::Context) {
 
                 // --- Title / Grip Header ---
                 let header_w = if double { bx * 2.0 + 2.0 } else { bx };
-                let (header_rect, header_resp) = ui.allocate_exact_size(vec2(header_w, 16.0), Sense::click_and_drag());
-                let header_resp = header_resp.on_hover_cursor(egui::CursorIcon::Grab);
+                let (header_rect, header_resp) = ui.allocate_exact_size(vec2(header_w, 18.0), Sense::click_and_drag());
+                let header_resp = header_resp
+                    .on_hover_cursor(egui::CursorIcon::Grab)
+                    .on_hover_text(tl!("Double-click to dock to sidebar, or drag to move"));
 
                 // Double clicking header docks it back (Photoshop behavior)
                 if header_resp.double_clicked() {
@@ -187,14 +191,14 @@ pub fn floating_toolbar(app: &mut PhotocraftApp, ctx: &egui::Context) {
                 }
 
                 if header_resp.dragged() {
-                    is_dragging = true;
+                    ctx.data_mut(|d| d.insert_temp(dragging_key, true));
                     let delta = header_resp.drag_delta();
                     let cur = initial_pos;
                     let target = pos2(cur.x + delta.x, cur.y + delta.y);
                     new_pos = Some([target.x, target.y]);
                 }
                 if header_resp.drag_stopped() {
-                    was_stopped = true;
+                    drag_stopped_this_frame = true;
                 }
 
                 let (shrink, grow) = if crate::direction::is_rtl() { ("chevrons-right", "chevrons-left") } else { ("chevrons-left", "chevrons-right") };
@@ -226,8 +230,10 @@ pub fn floating_toolbar(app: &mut PhotocraftApp, ctx: &egui::Context) {
             });
         });
 
-    if ctx.input(|i| i.pointer.any_released()) {
-        was_stopped = true;
+    let is_dragging_now = new_pos.is_some() || (was_dragging_prev && ctx.input(|i| i.pointer.primary_down()));
+    let released = drag_stopped_this_frame || (was_dragging_prev && ctx.input(|i| i.pointer.any_released()));
+    if released {
+        ctx.data_mut(|d| d.insert_temp(dragging_key, false));
     }
 
     let current_x = new_pos.map(|p| p[0]).or_else(|| app.ui.panels.toolbar_pos.map(|p| p[0])).unwrap_or(initial_pos.x);
@@ -235,12 +241,12 @@ pub fn floating_toolbar(app: &mut PhotocraftApp, ctx: &egui::Context) {
 
     let rtl = crate::direction::is_rtl();
     let dock_zone = if rtl {
-        ptr_x.is_some_and(|x| x > screen_rect.right() - 80.0) || current_x > screen_rect.right() - w - 20.0
+        ptr_x.is_some_and(|x| x > screen_rect.right() - 80.0) || current_x > screen_rect.right() - w - 25.0
     } else {
-        ptr_x.is_some_and(|x| x < screen_rect.left() + 80.0) || current_x < screen_rect.left() + 30.0
+        ptr_x.is_some_and(|x| x < screen_rect.left() + 80.0) || current_x < screen_rect.left() + 35.0
     };
 
-    if (is_dragging || ctx.input(|i| i.pointer.primary_down())) && (new_pos.is_some() || is_dragging) && dock_zone {
+    if (is_dragging_now || was_dragging_prev) && dock_zone {
         let line_x = if rtl { screen_rect.right() - 2.0 } else { screen_rect.left() + 2.0 };
         ctx.debug_painter().line_segment(
             [pos2(line_x, screen_rect.top() + 40.0), pos2(line_x, (screen_rect.bottom() - 30.0).max(screen_rect.top() + 50.0))],
@@ -248,8 +254,20 @@ pub fn floating_toolbar(app: &mut PhotocraftApp, ctx: &egui::Context) {
         );
     }
 
-    if was_stopped && (is_dragging || new_pos.is_some()) && dock_zone {
+    if released && dock_zone {
         re_dock = true;
+    }
+
+    // Auto-dock if sitting touching the dock edge when idle (e.g. dropped right at the margin)
+    if !is_dragging_now && !ctx.input(|i| i.pointer.primary_down()) {
+        let at_dock_margin = if rtl {
+            current_x >= screen_rect.right() - w - 15.0
+        } else {
+            current_x <= screen_rect.left() + 15.0
+        };
+        if at_dock_margin {
+            re_dock = true;
+        }
     }
 
     if re_dock {
