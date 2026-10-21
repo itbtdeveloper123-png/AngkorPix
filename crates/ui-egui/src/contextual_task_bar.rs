@@ -234,6 +234,173 @@ fn task_button(ui: &mut Ui, icon: Option<&str>, label: Option<&str>, tooltip: &s
     }
 }
 
+/// Floating Quick Color HUD chip and palette popup
+fn render_color_hud_chip(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
+    let fg = app.session.tools.foreground;
+    let bg = app.session.tools.background;
+    let fg_c32 = Color32::from_rgba_premultiplied(
+        (fg[0].clamp(0.0, 1.0) * 255.0).round() as u8,
+        (fg[1].clamp(0.0, 1.0) * 255.0).round() as u8,
+        (fg[2].clamp(0.0, 1.0) * 255.0).round() as u8,
+        255,
+    );
+    let bg_c32 = Color32::from_rgba_premultiplied(
+        (bg[0].clamp(0.0, 1.0) * 255.0).round() as u8,
+        (bg[1].clamp(0.0, 1.0) * 255.0).round() as u8,
+        (bg[2].clamp(0.0, 1.0) * 255.0).round() as u8,
+        255,
+    );
+
+    let (chip_rect, chip_resp) = ui.allocate_exact_size(vec2(44.0, 28.0), Sense::click());
+    let chip_hovered = chip_resp.hovered();
+
+    let (frame_bg, frame_stroke) = if chip_resp.is_pointer_button_down_on() {
+        if t.dark() { (Color32::from_rgb(28, 28, 30), Color32::from_rgb(100, 100, 105)) } else { (Color32::from_rgb(205, 205, 208), Color32::from_rgb(160, 160, 160)) }
+    } else if chip_hovered {
+        if t.dark() { (Color32::from_rgb(58, 58, 62), Color32::from_rgb(115, 115, 120)) } else { (Color32::from_rgb(228, 228, 232), Color32::from_rgb(175, 175, 175)) }
+    } else {
+        if t.dark() { (Color32::from_rgb(46, 46, 50), Color32::from_rgb(66, 66, 72)) } else { (Color32::from_rgb(240, 240, 244), Color32::from_rgb(215, 215, 218)) }
+    };
+
+    let painter = ui.painter();
+    painter.rect(chip_rect, CornerRadius::same(5), frame_bg, Stroke::new(1.0, frame_stroke), StrokeKind::Inside);
+
+    // Background color square (drawn behind, at right)
+    let bg_rect = Rect::from_min_size(pos2(chip_rect.left() + 16.0, chip_rect.top() + 8.0), vec2(14.0, 14.0));
+    painter.rect(bg_rect, CornerRadius::same(2), bg_c32, Stroke::new(1.0, if t.dark() { Color32::from_rgb(90, 90, 95) } else { Color32::from_rgb(160, 160, 165) }), StrokeKind::Inside);
+
+    // Foreground color square (drawn in front, at left)
+    let fg_rect = Rect::from_min_size(pos2(chip_rect.left() + 6.0, chip_rect.top() + 5.0), vec2(15.0, 15.0));
+    painter.rect(fg_rect, CornerRadius::same(2), fg_c32, Stroke::new(1.0, if t.dark() { Color32::from_rgb(110, 110, 115) } else { Color32::from_rgb(140, 140, 145) }), StrokeKind::Inside);
+
+    // Tiny down arrow indicator on far right
+    let chevron_pos = pos2(chip_rect.left() + 36.0, chip_rect.center().y);
+    painter.line_segment([pos2(chevron_pos.x - 2.5, chevron_pos.y - 1.5), pos2(chevron_pos.x, chevron_pos.y + 1.5)], Stroke::new(1.2, t.text_dim));
+    painter.line_segment([pos2(chevron_pos.x, chevron_pos.y + 1.5), pos2(chevron_pos.x + 2.5, chevron_pos.y - 1.5)], Stroke::new(1.2, t.text_dim));
+
+    let chip_resp = chip_resp.on_hover_text(tl!("Quick Color HUD (Foreground / Background)\nClick for Palette & Swatches"));
+
+    egui::Popup::menu(&chip_resp).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        ui.set_min_width(290.0);
+
+        ui.horizontal(|ui| {
+            ui.heading(tl!("🎨 Quick Color HUD"));
+        });
+        ui.add_space(3.0);
+
+        // Active Colors preview + Hex readouts
+        let fg_hex = crate::color_picker_ui::hex([fg[0], fg[1], fg[2]]);
+        let bg_hex = crate::color_picker_ui::hex([bg[0], bg[1], bg[2]]);
+
+        ui.horizontal(|ui| {
+            // Foreground row
+            ui.label(egui::RichText::new("FG:").small().strong());
+            let (f_rect, f_resp) = ui.allocate_exact_size(vec2(18.0, 18.0), Sense::click());
+            ui.painter().rect(f_rect, CornerRadius::same(3), fg_c32, Stroke::new(1.0, t.field_border), StrokeKind::Inside);
+            if f_resp.on_hover_text(tl!("Click to open Full Color Picker for Foreground")).clicked() {
+                crate::color_picker_ui::open(app, "foreground");
+                ui.close();
+            }
+            ui.monospace(egui::RichText::new(&fg_hex).small());
+
+            ui.add_space(8.0);
+
+            // Background row
+            ui.label(egui::RichText::new("BG:").small().strong());
+            let (b_rect, b_resp) = ui.allocate_exact_size(vec2(18.0, 18.0), Sense::click());
+            ui.painter().rect(b_rect, CornerRadius::same(3), bg_c32, Stroke::new(1.0, t.field_border), StrokeKind::Inside);
+            if b_resp.on_hover_text(tl!("Click to open Full Color Picker for Background")).clicked() {
+                crate::color_picker_ui::open(app, "background");
+                ui.close();
+            }
+            ui.monospace(egui::RichText::new(&bg_hex).small());
+        });
+
+        ui.add_space(4.0);
+
+        // Quick Tools: Swap (X) and Default (D)
+        ui.horizontal(|ui| {
+            if ui.button(tl!("🔄 Swap (X)")).on_hover_text(tl!("Swap Foreground & Background Colors (X)")).clicked() {
+                let _ = crate::menus::invoke(app, ui.ctx(), "tools.swapColors", json!({}));
+            }
+            if ui.button(tl!("⚪ Default B/W (D)")).on_hover_text(tl!("Default Black & White Colors (D)")).clicked() {
+                let _ = crate::menus::invoke(app, ui.ctx(), "tools.defaultColors", json!({}));
+            }
+        });
+
+        ui.add_space(6.0);
+        ui.separator();
+        ui.label(egui::RichText::new(tl!("ផ្ទាំងពណ៌រហ័ស (Designer Quick Palette):")).small().strong());
+        ui.label(egui::RichText::new(tl!("Left-click: Set FG • Right-click: Set BG")).weak().small());
+
+        const SWATCHES: &[(&str, [f32; 3])] = &[
+            ("Pure White", [1.0, 1.0, 1.0]),
+            ("Light Gray", [0.88, 0.88, 0.90]),
+            ("Slate Gray", [0.58, 0.64, 0.72]),
+            ("Dark Slate", [0.20, 0.25, 0.33]),
+            ("Deep Black", [0.0, 0.0, 0.0]),
+
+            ("Crimson Red", [0.94, 0.27, 0.27]),
+            ("Sunset Orange", [0.98, 0.45, 0.09]),
+            ("Amber Gold", [0.96, 0.62, 0.04]),
+            ("Royal Gold", [0.92, 0.70, 0.03]),
+            ("Lime Green", [0.52, 0.80, 0.09]),
+
+            ("Emerald Green", [0.06, 0.73, 0.51]),
+            ("Bright Cyan", [0.02, 0.71, 0.83]),
+            ("Sky Blue", [0.05, 0.65, 0.91]),
+            ("Royal Blue", [0.23, 0.51, 0.96]),
+            ("Indigo", [0.39, 0.40, 0.95]),
+
+            ("Violet", [0.55, 0.36, 0.96]),
+            ("Purple", [0.66, 0.33, 0.97]),
+            ("Fuchsia", [0.85, 0.27, 0.94]),
+            ("Hot Pink", [0.93, 0.28, 0.60]),
+            ("Bronze Brown", [0.52, 0.30, 0.05]),
+        ];
+
+        ui.horizontal_wrapped(|ui| {
+            ui.spacing_mut().item_spacing = vec2(5.0, 5.0);
+            for &(name, rgb) in SWATCHES {
+                let (sw_rect, sw_resp) = ui.allocate_exact_size(vec2(24.0, 24.0), Sense::click());
+                let sw_c32 = Color32::from_rgb(
+                    (rgb[0] * 255.0).round() as u8,
+                    (rgb[1] * 255.0).round() as u8,
+                    (rgb[2] * 255.0).round() as u8,
+                );
+                let is_hovered = sw_resp.hovered();
+                let border_stroke = if is_hovered {
+                    Stroke::new(1.5, Color32::WHITE)
+                } else {
+                    Stroke::new(1.0, if t.dark() { Color32::from_rgb(60, 60, 65) } else { Color32::from_rgb(180, 180, 185) })
+                };
+
+                let painter = ui.painter();
+                painter.rect(sw_rect, CornerRadius::same(4), sw_c32, border_stroke, StrokeKind::Inside);
+
+                let hex_str = crate::color_picker_ui::hex(rgb);
+                let tooltip = format!("{}\n{}\nLeft-click: Set FG • Right-click: Set BG", name, hex_str);
+                let sw_resp = sw_resp.on_hover_text(tooltip);
+
+                if sw_resp.clicked() {
+                    app.session.tools.foreground = [rgb[0], rgb[1], rgb[2], 1.0];
+                } else if sw_resp.secondary_clicked() {
+                    app.session.tools.background = [rgb[0], rgb[1], rgb[2], 1.0];
+                }
+            }
+        });
+
+        ui.add_space(8.0);
+        ui.separator();
+
+        if ui.button(tl!("🎨 Open Full Color Picker…")).clicked() {
+            crate::color_picker_ui::open(app, "foreground");
+            ui.close();
+        }
+    });
+}
+
 /// Context when there is an active selection
 fn render_selection_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     if task_button(ui, Some("lasso-select"), Some(tl!("Select and Mask…")), tl!("Refine selection edge (Cmd+Alt+R)"), t).clicked() {
@@ -282,6 +449,10 @@ fn render_selection_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
 
     separator(ui, t);
 
+    render_color_hud_chip(app, ui, t);
+
+    separator(ui, t);
+
     if task_button(ui, Some("scaling"), None, tl!("Transform Selection"), t).clicked() {
         let _ = crate::menus::invoke(app, ui.ctx(), "select.transformSelection", json!({}));
     }
@@ -306,6 +477,10 @@ fn render_type_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     if task_button(ui, Some("align-right"), None, tl!("Align Right"), t).clicked() {
         crate::type_tool::set_align(app, "right");
     }
+
+    separator(ui, t);
+
+    render_color_hud_chip(app, ui, t);
 
     separator(ui, t);
 
@@ -340,6 +515,10 @@ fn render_crop_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
 /// Context when Shape layer is active
 fn render_shape_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     let _ = task_button(ui, Some("pentagon"), Some(tl!("Shape Layer")), "", t);
+
+    separator(ui, t);
+
+    render_color_hud_chip(app, ui, t);
 
     separator(ui, t);
 
@@ -692,6 +871,10 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
 
     separator(ui, t);
 
+    render_color_hud_chip(app, ui, t);
+
+    separator(ui, t);
+
     // 4. Free Transform icon button
     if task_button(ui, Some("scaling"), None, tl!("Free Transform (Cmd+T)"), t).clicked() {
         let _ = crate::menus::invoke(app, ui.ctx(), "edit.freeTransform", json!({}));
@@ -781,5 +964,19 @@ mod tests {
         // Shape context commands
         assert!(photocraft_engine::commands::find("path.toSelection").is_some());
         assert!(photocraft_engine::commands::find("layer.rasterize.shape").is_some());
+        // Color HUD commands
+        assert!(photocraft_engine::commands::find("tools.swapColors").is_some());
+        assert!(photocraft_engine::commands::find("tools.defaultColors").is_some());
+    }
+
+    #[test]
+    fn color_hud_tools_swap_and_default() {
+        let mut app = crate::PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        assert!(app.run("tools.defaultColors", serde_json::json!({})).is_ok());
+        assert_eq!(app.session.tools.foreground, [0.0, 0.0, 0.0, 1.0]);
+        assert_eq!(app.session.tools.background, [1.0, 1.0, 1.0, 1.0]);
+        assert!(app.run("tools.swapColors", serde_json::json!({})).is_ok());
+        assert_eq!(app.session.tools.foreground, [1.0, 1.0, 1.0, 1.0]);
+        assert_eq!(app.session.tools.background, [0.0, 0.0, 0.0, 1.0]);
     }
 }
