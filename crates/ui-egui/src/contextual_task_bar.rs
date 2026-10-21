@@ -47,15 +47,15 @@ pub fn window(app: &mut PhotocraftApp, ctx: &egui::Context) {
     };
 
     let t = Tokens::get(ctx);
-    // Photoshop Contextual Taskbar frame: dark charcoal background, subtle dark border, soft shadow
-    let bar_bg = if t.dark() { Color32::from_rgb(42, 42, 42) } else { Color32::from_rgb(238, 238, 238) };
-    let bar_border = if t.dark() { Color32::from_rgb(64, 64, 64) } else { Color32::from_rgb(205, 205, 205) };
+    // Modern floating island frame: dark charcoal background, subtle dual-tone border, soft ambient shadow
+    let bar_bg = if t.dark() { Color32::from_rgb(34, 34, 36) } else { Color32::from_rgb(246, 246, 248) };
+    let bar_border = if t.dark() { Color32::from_rgba_premultiplied(255, 255, 255, 28) } else { Color32::from_rgb(212, 212, 216) };
     let frame = egui::Frame::NONE
         .fill(bar_bg)
         .stroke(Stroke::new(1.0, bar_border))
-        .corner_radius(CornerRadius::same(6))
-        .shadow(egui::Shadow { offset: [0, 4], blur: 18, spread: 0, color: Color32::from_black_alpha(if t.dark() { 160 } else { 70 }) })
-        .inner_margin(egui::Margin { left: 6, right: 6, top: 4, bottom: 4 });
+        .corner_radius(CornerRadius::same(8))
+        .shadow(egui::Shadow { offset: [0, 6], blur: 24, spread: 1, color: Color32::from_black_alpha(if t.dark() { 190 } else { 75 }) })
+        .inner_margin(egui::Margin { left: 8, right: 8, top: 4, bottom: 4 });
 
     let mut new_pos = None;
     let mut hide_bar = false;
@@ -170,7 +170,7 @@ fn separator(ui: &mut Ui, t: &Tokens) {
 
 /// Photoshop-style rounded rectangular button with optional icon and crisp typography.
 fn task_button(ui: &mut Ui, icon: Option<&str>, label: Option<&str>, tooltip: &str, t: &Tokens) -> Response {
-    let height = 26.0;
+    let height = 27.0;
     let font = theme::medium(12.0);
     let fg_text = if t.dark() { Color32::from_rgb(248, 248, 248) } else { Color32::from_rgb(30, 30, 30) };
     let fg_icon = if t.dark() { Color32::from_rgb(238, 238, 238) } else { Color32::from_rgb(45, 45, 45) };
@@ -193,17 +193,17 @@ fn task_button(ui: &mut Ui, icon: Option<&str>, label: Option<&str>, tooltip: &s
 
     let (rect, resp) = ui.allocate_exact_size(vec2(width, height), Sense::click());
 
-    // Background & Stroke styling matching Photoshop 2026 Contextual Task Bar
+    // Background & Stroke styling matching modern pro software (subtle glass highlight)
     let (bg, stroke_col) = if resp.is_pointer_button_down_on() {
-        if t.dark() { (Color32::from_rgb(38, 38, 38), Color32::from_rgb(90, 90, 90)) } else { (Color32::from_rgb(200, 200, 200), Color32::from_rgb(160, 160, 160)) }
+        if t.dark() { (Color32::from_rgb(28, 28, 30), Color32::from_rgb(100, 100, 105)) } else { (Color32::from_rgb(205, 205, 208), Color32::from_rgb(160, 160, 160)) }
     } else if resp.hovered() {
-        if t.dark() { (Color32::from_rgb(66, 66, 66), Color32::from_rgb(115, 115, 115)) } else { (Color32::from_rgb(222, 222, 222), Color32::from_rgb(175, 175, 175)) }
+        if t.dark() { (Color32::from_rgb(58, 58, 62), Color32::from_rgb(115, 115, 120)) } else { (Color32::from_rgb(228, 228, 232), Color32::from_rgb(175, 175, 175)) }
     } else {
-        if t.dark() { (Color32::from_rgb(52, 52, 52), Color32::from_rgb(72, 72, 72)) } else { (Color32::from_rgb(245, 245, 245), Color32::from_rgb(215, 215, 215)) }
+        if t.dark() { (Color32::from_rgb(46, 46, 50), Color32::from_rgb(66, 66, 72)) } else { (Color32::from_rgb(240, 240, 244), Color32::from_rgb(215, 215, 218)) }
     };
 
     let painter = ui.painter();
-    painter.rect(rect, CornerRadius::same(4), bg, Stroke::new(1.0, stroke_col), StrokeKind::Inside);
+    painter.rect(rect, CornerRadius::same(5), bg, Stroke::new(1.0, stroke_col), StrokeKind::Inside);
 
     // Draw Icon & Label
     match (icon, label) {
@@ -536,9 +536,12 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     let poster_btn = task_button(ui, Some("sparkles"), Some(tl!("🎨 Smart Poster")), tl!("Smart Poster Composer (រៀបចំ Poster ស្វ័យប្រវត្តពី Layers របស់អ្នក)"), t);
     egui::Popup::menu(&poster_btn).show(|ui| {
         crate::widgets::style_spectrum_popup_menu(ui);
-        ui.set_min_width(340.0);
+        ui.set_min_width(380.0);
 
         ui.horizontal(|ui| {
+            let (icon_r, _) = ui.allocate_exact_size(vec2(22.0, 22.0), Sense::hover());
+            ui.painter().circle_filled(icon_r.center(), 11.0, Color32::from_rgb(0, 120, 240));
+            crate::icons::paint(ui, icon_r, "sparkles", 14.0, Color32::WHITE);
             ui.heading(tl!("🎨 Smart Poster Composer"));
         });
         ui.label(egui::RichText::new(tl!("រៀបចំ Poster ស្វ័យប្រវត្តពី Layers របស់អ្នក (Auto Composition & Typography)")).small().weak());
@@ -547,62 +550,100 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
         let state_id = egui::Id::new("smart_poster_composer_state");
         let mut state = ui.data_mut(|d| d.get_temp_mut_or_default::<PosterComposerState>(state_id).clone());
 
-        ui.label(egui::RichText::new(tl!("រចនាបទ Poster (Poster Style):")).strong().small());
-        egui::ComboBox::from_id_salt("poster_style_combo")
-            .selected_text(match state.style.as_str() {
-                "luxury_gold" => tl!("👑 Luxury Gold (ផលិតផលប្រណិត មាស/ខ្មៅ)"),
-                "cyberpunk" => tl!("⚡ Cyberpunk Neon (យុវវ័យ/បច្ចេកវិទ្យា ភ្លើងណេអុង)"),
-                "super_sale" => tl!("🛍️ Super Sale (ប្រូម៉ូសិន បញ្ចុះតម្លៃពិសេស)"),
-                "minimal_clean" => tl!("🌿 Minimal Clean (បែបធម្មជាតិ សាមញ្ញ ស្អាត)"),
-                _ => tl!("🌴 Summer Fresh (ភេសជ្ជៈ/រដូវក្តៅ ស្រស់ស្រាយ)"),
-            })
-            .width(320.0)
-            .show_ui(ui, |ui| {
-                if ui.selectable_value(&mut state.style, "summer_fresh".into(), tl!("🌴 Summer Fresh (ភេសជ្ជៈ/រដូវក្តៅ ស្រស់ស្រាយ)")).clicked() {
-                    state.headline = "FRESH SUMMER".into();
-                    state.subhead = "100% Pure • Refreshing Taste".into();
-                }
-                if ui.selectable_value(&mut state.style, "luxury_gold".into(), tl!("👑 Luxury Gold (ផលិតផលប្រណិត មាស/ខ្មៅ)")).clicked() {
-                    state.headline = "PURE LUXURY".into();
-                    state.subhead = "Exclusive Edition • Premium Craftsmanship".into();
-                }
-                if ui.selectable_value(&mut state.style, "cyberpunk".into(), tl!("⚡ Cyberpunk Neon (យុវវ័យ/បច្ចេកវិទ្យា ភ្លើងណេអុង)")).clicked() {
-                    state.headline = "CYBER VIBES".into();
-                    state.subhead = "Next-Gen Experience • Limited Drop".into();
-                }
-                if ui.selectable_value(&mut state.style, "super_sale".into(), tl!("🛍️ Super Sale (ប្រូម៉ូសិន បញ្ចុះតម្លៃពិសេស)")).clicked() {
-                    state.headline = "SUPER SALE".into();
-                    state.subhead = "Up to 50% Off • Limited Time Offer".into();
-                }
-                if ui.selectable_value(&mut state.style, "minimal_clean".into(), tl!("🌿 Minimal Clean (បែបធម្មជាតិ សាមញ្ញ ស្អាត)")).clicked() {
-                    state.headline = "MINIMAL ART".into();
-                    state.subhead = "Simplicity & Elegance in Every Detail".into();
-                }
-            });
+        ui.label(egui::RichText::new(tl!("រចនាបទ Poster (Visual Styles):")).strong().small());
 
-        ui.add_space(6.0);
+        // Visual Style Card Selector
+        let styles: [(&str, &str, &str, Color32, &str, &str); 5] = [
+            ("summer_fresh", "🌴 Summer Fresh", "Tropical", Color32::from_rgb(6, 182, 212), "FRESH SUMMER", "100% Pure • Refreshing Taste"),
+            ("luxury_gold", "👑 Luxury Gold", "Premium", Color32::from_rgb(234, 179, 8), "PURE LUXURY", "Exclusive Edition • Premium Craftsmanship"),
+            ("cyberpunk", "⚡ Cyberpunk", "Neon", Color32::from_rgb(236, 72, 153), "CYBER VIBES", "Next-Gen Experience • Limited Drop"),
+            ("super_sale", "🛍️ Super Sale", "50% Off", Color32::from_rgb(239, 68, 68), "SUPER SALE", "Up to 50% Off • Limited Time Offer"),
+            ("minimal_clean", "🌿 Minimal Clean", "Studio", Color32::from_rgb(16, 185, 129), "MINIMAL ART", "Simplicity & Elegance in Every Detail"),
+        ];
+
+        ui.horizontal_wrapped(|ui| {
+            ui.spacing_mut().item_spacing = vec2(6.0, 6.0);
+            for (id, label, tag, color, def_h, def_s) in styles {
+                let is_selected = state.style == id;
+                let (card_r, card_resp) = ui.allocate_exact_size(vec2(178.0, 44.0), Sense::click());
+                let hovered = card_resp.hovered();
+
+                let bg = if is_selected {
+                    color.gamma_multiply(0.18)
+                } else if hovered {
+                    Color32::from_rgba_premultiplied(255, 255, 255, 15)
+                } else {
+                    Color32::from_rgba_premultiplied(255, 255, 255, 8)
+                };
+
+                let stroke_col = if is_selected {
+                    color
+                } else if hovered {
+                    Color32::from_rgba_premultiplied(255, 255, 255, 60)
+                } else {
+                    Color32::from_rgba_premultiplied(255, 255, 255, 20)
+                };
+
+                let painter = ui.painter();
+                painter.rect_filled(card_r, CornerRadius::same(6), bg);
+                painter.rect_stroke(card_r, CornerRadius::same(6), Stroke::new(if is_selected { 1.5 } else { 1.0 }, stroke_col), StrokeKind::Inside);
+
+                // Left accent vertical bar
+                let bar = Rect::from_min_max(pos2(card_r.left() + 2.0, card_r.top() + 4.0), pos2(card_r.left() + 6.0, card_r.bottom() - 4.0));
+                painter.rect_filled(bar, CornerRadius::same(2), color);
+
+                // Title
+                let title_galley = painter.layout_no_wrap(label.to_string(), theme::medium(12.0), if is_selected { Color32::WHITE } else { t.text });
+                painter.galley(pos2(card_r.left() + 12.0, card_r.top() + 6.0), title_galley, Color32::WHITE);
+
+                // Tag badge
+                let tag_galley = painter.layout_no_wrap(tag.to_string(), egui::FontId::proportional(10.0), color);
+                let tag_w = tag_galley.size().x + 8.0;
+                let tag_rect = Rect::from_min_size(pos2(card_r.left() + 12.0, card_r.top() + 23.0), vec2(tag_w, 15.0));
+                painter.rect_filled(tag_rect, CornerRadius::same(3), color.gamma_multiply(0.2));
+                painter.galley(pos2(tag_rect.left() + 4.0, tag_rect.top() + 1.0), tag_galley, color);
+
+                if card_resp.on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
+                    state.style = id.to_string();
+                    state.headline = def_h.to_string();
+                    state.subhead = def_s.to_string();
+                }
+            }
+        });
+
+        ui.add_space(8.0);
         ui.label(egui::RichText::new(tl!("ចំណងជើងធំ (Main Headline):")).small());
-        ui.add(egui::TextEdit::singleline(&mut state.headline).desired_width(320.0));
+        ui.add(egui::TextEdit::singleline(&mut state.headline).desired_width(365.0));
 
         ui.add_space(4.0);
         ui.label(egui::RichText::new(tl!("ចំណងជើងរង & ពាក្យស្លោក (Sub-Headline):")).small());
-        ui.add(egui::TextEdit::singleline(&mut state.subhead).desired_width(320.0));
+        ui.add(egui::TextEdit::singleline(&mut state.subhead).desired_width(365.0));
 
         ui.add_space(4.0);
         ui.horizontal(|ui| {
             ui.vertical(|ui| {
                 ui.label(egui::RichText::new(tl!("Badge (បញ្ចុះតម្លៃ):")).small());
-                ui.add(egui::TextEdit::singleline(&mut state.badge).desired_width(150.0));
+                ui.add(egui::TextEdit::singleline(&mut state.badge).desired_width(175.0));
             });
             ui.vertical(|ui| {
                 ui.label(egui::RichText::new(tl!("CTA (ប៊ូតុងសកម្មភាព):")).small());
-                ui.add(egui::TextEdit::singleline(&mut state.cta).desired_width(160.0));
+                ui.add(egui::TextEdit::singleline(&mut state.cta).desired_width(182.0));
             });
         });
 
-        ui.add_space(10.0);
+        ui.add_space(12.0);
         ui.separator();
-        if ui.button(egui::RichText::new(tl!("🚀 Compose Poster Now (បង្កើត Poster ភ្លាមៗ)")).strong()).clicked() {
+        let (btn_r, btn_resp) = ui.allocate_exact_size(vec2(ui.available_width(), 36.0), Sense::click());
+        let btn_hovered = btn_resp.hovered();
+        let btn_bg = if btn_hovered { Color32::from_rgb(28, 130, 248) } else { Color32::from_rgb(0, 110, 235) };
+        let painter = ui.painter();
+        painter.rect_filled(btn_r, CornerRadius::same(6), btn_bg);
+        painter.rect_stroke(btn_r, CornerRadius::same(6), Stroke::new(1.0, Color32::from_white_alpha(50)), StrokeKind::Inside);
+        let btn_text = tl!("🚀 Compose Poster Now (បង្កើត Poster ភ្លាមៗ)");
+        let btn_g = painter.layout_no_wrap(btn_text.to_string(), theme::semibold(13.0), Color32::WHITE);
+        painter.galley(pos2(btn_r.center().x - btn_g.size().x / 2.0, btn_r.center().y - btn_g.size().y / 2.0), btn_g, Color32::WHITE);
+
+        if btn_resp.on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
             let _ = crate::menus::invoke(
                 app,
                 ui.ctx(),

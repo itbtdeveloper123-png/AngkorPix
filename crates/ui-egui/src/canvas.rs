@@ -4,7 +4,7 @@
 //! update only their damage rectangle (`set_partial`). The wgpu compositor (M5) will replace this
 //! with direct GPU rendering behind the same `CanvasCache` interface.
 
-use egui::{Color32, Mesh, PointerButton, Pos2, Rect, Sense, Stroke, TextureOptions, Vec2, pos2, vec2};
+use egui::{Color32, CornerRadius, Mesh, PointerButton, Pos2, Rect, Sense, Stroke, TextureOptions, Vec2, pos2, vec2};
 use photocraft_doc::{Document, LayerContent};
 use photocraft_geom::Rect as DRect;
 use serde_json::json;
@@ -2182,6 +2182,16 @@ fn documents(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
         let area = ui.available_rect_before_wrap();
         paint_dots(ui, area, app.session.prefs().interface.show_canvas_dots);
         open_on_double_click(app, ui, area);
+
+        // Subtle elegant watermark pill in canvas center
+        let t = crate::theme::Tokens::get(ui.ctx());
+        let center = area.center();
+        let pill_r = Rect::from_center_size(center, vec2(300.0, 36.0));
+        let painter = ui.painter();
+        painter.rect_filled(pill_r, CornerRadius::same(18), Color32::from_black_alpha(if t.dark() { 80 } else { 25 }));
+        painter.rect_stroke(pill_r, CornerRadius::same(18), Stroke::new(1.0, Color32::from_white_alpha(if t.dark() { 20 } else { 50 })), egui::StrokeKind::Inside);
+        let hint_g = painter.layout_no_wrap(tl!("Drop files or double-click to open").into(), crate::theme::medium(12.0), t.text_faint);
+        painter.galley(pos2(pill_r.center().x - hint_g.size().x / 2.0, pill_r.center().y - hint_g.size().y / 2.0), hint_g, t.text_faint);
         return;
     }
     if !app.ui.view.hides_tabs() || opening {
@@ -3010,28 +3020,71 @@ fn start_screen(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
     });
 }
 
-fn home_empty_drop_zone(app: &PhotocraftApp, ui: &mut egui::Ui) {
+fn home_empty_drop_zone(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
     let t = crate::theme::Tokens::get(ui.ctx());
     let area = ui.available_rect_before_wrap();
-    let box_w = (area.width() - 40.0).clamp(300.0, 700.0);
-    let box_h = 240.0;
+    let box_w = (area.width() - 40.0).clamp(340.0, 740.0);
+    let box_h = 320.0;
     let box_r = Rect::from_center_size(area.center(), egui::vec2(box_w, box_h));
 
-    ui.painter().rect_stroke(box_r, 8.0, Stroke::new(1.5, t.separator), egui::StrokeKind::Inside);
+    ui.painter().rect_filled(box_r, CornerRadius::same(12), Color32::from_rgba_premultiplied(255, 255, 255, 6));
+    ui.painter().rect_stroke(box_r, CornerRadius::same(12), Stroke::new(1.5, Color32::from_white_alpha(24)), egui::StrokeKind::Inside);
+
+    let mut create_preset: Option<(u32, u32)> = None;
 
     ui.scope_builder(egui::UiBuilder::new().max_rect(box_r), |ui| {
         ui.vertical_centered(|ui| {
-            ui.add_space(45.0);
-            let (icon_r, _) = ui.allocate_exact_size(egui::vec2(48.0, 48.0), Sense::hover());
-            crate::icons::paint(ui, icon_r, "image", 42.0, t.text_faint);
-            ui.add_space(14.0);
+            ui.add_space(30.0);
+            let (icon_r, _) = ui.allocate_exact_size(vec2(52.0, 52.0), Sense::hover());
+            ui.painter().circle_filled(icon_r.center(), 26.0, Color32::from_rgb(0, 110, 235).gamma_multiply(0.2));
+            ui.painter().circle_stroke(icon_r.center(), 26.0, Stroke::new(1.0, Color32::from_rgb(0, 120, 245).gamma_multiply(0.4)));
+            crate::icons::paint(ui, icon_r, "sparkles", 26.0, Color32::from_rgb(0, 140, 255));
+            ui.add_space(12.0);
 
+            ui.label(egui::RichText::new(tl!("AngkorPix Creative Studio")).font(crate::theme::semibold(18.0)).color(t.text));
+            ui.add_space(4.0);
             let msg = start_screen_drop_hint(app);
-            ui.label(egui::RichText::new(msg).font(crate::theme::semibold(15.0)).color(t.text));
-            ui.add_space(6.0);
-            ui.label(egui::RichText::new(tl!("Create a new document or open an existing file.")).font(egui::FontId::proportional(13.0)).color(t.text_faint));
+            ui.label(egui::RichText::new(msg).font(egui::FontId::proportional(13.0)).color(t.text_dim));
+
+            ui.add_space(22.0);
+            ui.label(egui::RichText::new(tl!("Start with a Canvas Preset:")).font(crate::theme::medium(12.0)).color(t.text_faint));
+            ui.add_space(10.0);
+
+            let presets: [(&str, &str, u32, u32); 4] = [
+                ("📱 Social Post", "1080 × 1080", 1080, 1080),
+                ("🖥️ Full HD", "1920 × 1080", 1920, 1080),
+                ("📄 Print A4", "2480 × 3508", 2480, 3508),
+                ("🎬 Story / Reel", "1080 × 1920", 1080, 1920),
+            ];
+
+            ui.horizontal(|ui| {
+                let card_w = (box_w - 56.0) / 4.0;
+                for (name, dim, w, h) in presets {
+                    let (cr, cresp) = ui.allocate_exact_size(vec2(card_w, 56.0), Sense::click());
+                    let chover = cresp.hovered();
+                    let cbg = if chover { Color32::from_rgba_premultiplied(255, 255, 255, 18) } else { Color32::from_rgba_premultiplied(255, 255, 255, 8) };
+                    let cstroke = if chover { Color32::from_rgb(0, 120, 245) } else { Color32::from_white_alpha(22) };
+
+                    ui.painter().rect_filled(cr, CornerRadius::same(6), cbg);
+                    ui.painter().rect_stroke(cr, CornerRadius::same(6), Stroke::new(1.0, cstroke), egui::StrokeKind::Inside);
+
+                    let name_g = ui.painter().layout_no_wrap(name.to_string(), crate::theme::medium(11.5), if chover { Color32::WHITE } else { t.text });
+                    ui.painter().galley(pos2(cr.center().x - name_g.size().x / 2.0, cr.top() + 10.0), name_g, Color32::WHITE);
+
+                    let dim_g = ui.painter().layout_no_wrap(dim.to_string(), egui::FontId::proportional(10.0), t.text_faint);
+                    ui.painter().galley(pos2(cr.center().x - dim_g.size().x / 2.0, cr.top() + 28.0), dim_g, t.text_faint);
+
+                    if cresp.on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
+                        create_preset = Some((w, h));
+                    }
+                }
+            });
         });
     });
+
+    if let Some((w, h)) = create_preset {
+        let _ = app.run("file.new", json!({"width": w, "height": h}));
+    }
 }
 
 /// Wayland has no native file drops (winit 0.30, #386), so the hint offers File › Open and paste.

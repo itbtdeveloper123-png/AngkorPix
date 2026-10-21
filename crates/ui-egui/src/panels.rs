@@ -3220,6 +3220,9 @@ fn layer_row(
     if t.pro {
         if selected {
             painter.rect_filled(rect, 0.0, t.row_selected);
+            if row.primary {
+                painter.rect_filled(Rect::from_min_size(rect.left_top(), vec2(3.0, rect.height())), 0.0, t.accent);
+            }
         } else if is_hovered {
             painter.rect_filled(rect, 0.0, t.hover.gamma_multiply(0.5));
             painter.rect_filled(rect, 0.0, t.accent.gamma_multiply(0.12));
@@ -3227,6 +3230,9 @@ fn layer_row(
     } else if selected {
         painter.rect_filled(rect, t.radius, t.hover);
         painter.rect_stroke(rect, t.radius, Stroke::new(1.0, t.field_border), StrokeKind::Inside);
+        if row.primary {
+            painter.rect_filled(Rect::from_min_size(rect.left_top(), vec2(3.0, rect.height())), CornerRadius::same(1), t.accent);
+        }
     } else if is_hovered {
         painter.rect_filled(rect, t.radius, t.hover.gamma_multiply(0.5));
         painter.rect_filled(rect, t.radius, t.accent.gamma_multiply(0.12));
