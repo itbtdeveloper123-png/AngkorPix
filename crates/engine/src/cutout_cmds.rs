@@ -117,9 +117,14 @@ fn native_ps_glass_cutout(bounds: Rect, rgba_vec: &[[f32; 4]]) -> CutoutResult {
         }
     };
 
-    let fill_threshold = 0.14f32;
+    // Gradient-aware flood fill: matches both uniform studio backgrounds AND complex room backgrounds (table + wall)
+    let fill_threshold = 0.16f32;
+    let local_step_threshold = 0.08f32;
 
     while let Some((cx, cy)) = queue.pop_front() {
+        let cidx = cy * w + cx;
+        let cpx = rgba_vec.get(cidx).copied().unwrap_or([0.0, 0.0, 0.0, 1.0]);
+
         let neighbors = [
             (cx.wrapping_sub(1), cy),
             (cx + 1, cy),
@@ -131,7 +136,13 @@ fn native_ps_glass_cutout(bounds: Rect, rgba_vec: &[[f32; 4]]) -> CutoutResult {
                 let nidx = ny * w + nx;
                 if is_outer_bg.get(nidx).copied() == Some(false) {
                     if let Some(npx) = rgba_vec.get(nidx) {
-                        if color_dist(npx) < fill_threshold {
+                        let matches_global = color_dist(npx) < fill_threshold;
+                        let local_delta = (npx[0] - cpx[0]).abs() + (npx[1] - cpx[1]).abs() + (npx[2] - cpx[2]).abs();
+                        // Stop at sharp glass refraction/contour boundaries (local delta > 0.18)
+                        let is_glass_edge = local_delta > 0.18;
+                        let matches_local = local_delta < local_step_threshold && !is_glass_edge;
+
+                        if matches_global || matches_local {
                             if let Some(val) = is_outer_bg.get_mut(nidx) {
                                 *val = true;
                             }
@@ -617,6 +628,23 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                 let h = bounds.height() as usize;
                 let total = w * h;
 
+                // Calculate horizontal bottle boundaries per row to isolate the center interior
+                let mut row_left = vec![w; h];
+                let mut row_right = vec![0; h];
+                let mut min_y = h;
+                let mut max_y = 0;
+                for y in 0..h {
+                    for x in 0..w {
+                        if region.mask.get(y * w + x).copied().unwrap_or(0) > 0 {
+                            if x < row_left[y] { row_left[y] = x; }
+                            if x > row_right[y] { row_right[y] = x; }
+                            if y < min_y { min_y = y; }
+                            if y > max_y { max_y = y; }
+                        }
+                    }
+                }
+                let bottle_h = (max_y.saturating_sub(min_y)).max(1);
+
                 // 1. Shadows & Refractions Layer (Multiply mode)
                 let mut shadow_surf = photocraft_raster::Surface::new(fmt);
                 let mut shadow_rgba = Vec::with_capacity(total * 4);
@@ -624,14 +652,40 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
 
                 let src_rgba = with_doc_sampler(doc, Some(id), sample_all, |smp, _| smp.rgba(bounds));
                 for idx in 0..total {
+                    let y = idx / w;
+                    let x = idx % w;
                     let px = src_rgba.get(idx).copied().unwrap_or([0.0, 0.0, 0.0, 1.0]);
                     let m = region.mask.get(idx).copied().unwrap_or(0);
                     if m > 0 {
-                        // Inside subject: original refraction colors for Multiply
-                        shadow_rgba.extend_from_slice(&[px[0], px[1], px[2], 1.0]);
+                        let x_l = row_left.get(y).copied().unwrap_or(0);
+                        let x_r = row_right.get(y).copied().unwrap_or(w);
+                        let bottle_w = (x_r.saturating_sub(x_l)).max(1);
+                        let x_center = x_l as f32 + bottle_w as f32 / 2.0;
+                        let half_w = (bottle_w as f32 / 2.0).max(1.0);
+                        let dx = ((x as f32 - x_center).abs() / half_w).clamp(0.0, 1.0);
+                        let vy = ((y.saturating_sub(min_y)) as f32 / bottle_h as f32).clamp(0.0, 1.0);
+
+                        // Photoshop Desaturate (Ctrl+Shift+U):
+                        // Eliminates old room background colors (brown wood, gray wall, sofa)
                         let lum = 0.299 * px[0] + 0.587 * px[1] + 0.114 * px[2];
-                        let highlight = ((lum - 0.88) / 0.12).clamp(0.0, 1.0);
+
+                        // Highlights (Screen mode):
+                        // Specular light reflections on the glass surface are bright white (L > 0.78)
+                        let highlight = ((lum - 0.78) / 0.22).clamp(0.0, 1.0);
                         highlight_rgba.extend_from_slice(&[highlight, highlight, highlight, 1.0]);
+
+                        // Shadows & Refractions (Multiply mode):
+                        // Outer glass rims (dx > 0.72), Base (vy > 0.86), Neck (vy < 0.26) have dark glass refractions: KEEP THEM!
+                        // Center interior where the old background table/wall showed through:
+                        // PUSH TO PURE WHITE 1.0 so Multiply makes it 100% transparent!
+                        let is_rim_or_base = dx > 0.72 || vy > 0.86 || vy < 0.26;
+                        let shadow_val = if is_rim_or_base {
+                            lum
+                        } else {
+                            let fade = (1.0 - dx / 0.72).clamp(0.0, 1.0);
+                            lum + (1.0 - lum) * fade * 0.94
+                        };
+                        shadow_rgba.extend_from_slice(&[shadow_val, shadow_val, shadow_val, 1.0]);
                     } else {
                         // Outside subject: pure white (1.0) for Multiply mode, pure black (0.0) for Screen mode
                         shadow_rgba.extend_from_slice(&[1.0, 1.0, 1.0, 1.0]);

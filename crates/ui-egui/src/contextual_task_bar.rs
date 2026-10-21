@@ -461,9 +461,9 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
         egui::ScrollArea::vertical().max_height(420.0).show(ui, |ui| {
             // Section 1: Glass & Transparent Objects
             ui.collapsing(tl!("🍸 1. ដបកែវ និងបំពង់ថ្លា (Glass & Transparent Objects)"), |ui| {
-                ui.label(egui::RichText::new(tl!("• បញ្ហា: កញ្ចក់ថ្លាគ្មានពណ៌ផ្ទាល់ខ្លួនទេ (ឆ្លុះពន្លឺ និងស្រមោល)។ ការកាត់ធម្មតានឹងជាប់ដុំស ឬរលុបផ្ទៃកែវខាងក្នុងចោល។")).small());
-                ui.label(egui::RichText::new(tl!("• ជំហានក្នុង Photoshop:")).strong().small());
-                ui.label(egui::RichText::new(tl!("   1. Pen Tool (P) កាត់យកតែរាងគ្រោងដបខាងក្រៅ (Silhouette Mask)។\n   2. បំបែកជា ២ ស្រទាប់ (Duplicate Layer):\n      - Layer ក្រោម (Multiply): សម្រាប់ស្រូបយកស្រមោល និងគែមងងឹត (លុបពណ៌សស្វ័យប្រវត្តិ)។\n      - Layer លើ (Screen): ប្រើ Levels (Ctrl+L) ទាញខ្មៅជិត 0 ទុកតែពន្លឺចាំងសៗ (Highlights)។\n   3. ពេលដាក់លើ Background ថ្មី ដបកែវនឹងថ្លាឆ្លុះ Background នោះ ១០០%។")).small());
+                ui.label(egui::RichText::new(tl!("• បញ្ហា: កញ្ចក់ថ្លាគ្មានពណ៌ផ្ទាល់ខ្លួនទេ (ឆ្លុះតុឈើ និងជញ្ជាំងចាស់)។ ការកាត់ធម្មតានឹងជាប់រូបតុឈើ និងសាឡុង ឬរលុបកែវខាងក្នុងចោល។")).small());
+                ui.label(egui::RichText::new(tl!("• ជំហានក្នុង Photoshop (Commercial Glass Retouching):")).strong().small());
+                ui.label(egui::RichText::new(tl!("   1. Pen Tool (P) កាត់រាងគ្រោងដបខាងក្រៅ (Silhouette Mask)។\n   2. បំបែកជា ២ ស្រទាប់ក្នុង Folder Group:\n      - Layer ក្រោម (Multiply): Desaturate (Ctrl+Shift+U) លុបពណ៌តុឈើត្នោតចោល រួចទាញកម្រិតឱ្យផ្ទៃកណ្តាលដបទៅជាពណ៌សសុទ្ធ (ដើម្បីឱ្យ Multiply Mode លុបរូបតុឈើចាស់ចោល ១០០% ក្លាយជាថ្លា) ដោយរក្សាទុកតែគែមដប និងបាតដប។\n      - Layer លើ (Screen): Desaturate និងប្រើ Levels (Ctrl+L) ទាញខ្មៅជិត ០ ទុកតែពន្លឺចាំងសៗ (Specular Highlights)។\n   3. ពេលដាក់លើ Background ថ្មី ដបកែវនឹងថ្លាឆ្លុះ Background នោះ ១០០% ដោយគ្មានជាប់ពណ៌តុឈើ ឬជញ្ជាំងចាស់ឡើយ។")).small());
                 if ui.button(tl!("⚡ អនុវត្តកាត់ដបកែវភ្លាមៗ (PS Native Glass Cutout - Instant)")).clicked() {
                     let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "glass", "glass": true, "ai": false }));
                     ui.close();
