@@ -58,7 +58,21 @@ def main():
         sys.stderr.write("ERROR: onnxruntime is not installed in Python environment.\n")
         sys.exit(2)
 
-    sess = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
+    sess_options = ort.SessionOptions()
+    # Optimize memory usage to prevent GatherND bad allocation on large models (BiRefNet/RMBG-2.0)
+    sess_options.enable_mem_pattern = False
+    sess_options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
+    sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+
+    available_providers = ort.get_available_providers()
+    providers = []
+    if "DmlExecutionProvider" in available_providers:
+        providers.append("DmlExecutionProvider")
+    if "CUDAExecutionProvider" in available_providers:
+        providers.append("CUDAExecutionProvider")
+    providers.append("CPUExecutionProvider")
+
+    sess = ort.InferenceSession(model_path, sess_options=sess_options, providers=providers)
     inp = sess.get_inputs()[0]
     
     # Determine target resolution from model input tensor
@@ -82,7 +96,14 @@ def main():
 
     norm = ((arr - mean) / std).transpose(2, 0, 1)[np.newaxis, ...]
 
-    preds = sess.run(None, {inp.name: norm.astype(np.float32)})
+    try:
+        preds = sess.run(None, {inp.name: norm.astype(np.float32)})
+    except Exception as e:
+        # Fallback to minimal-arena execution if initial allocation fails
+        sys.stderr.write(f"Inference error ({e}), retrying with minimal memory arena...\n")
+        sess_options.enable_cpu_mem_arena = False
+        sess_fallback = ort.InferenceSession(model_path, sess_options=sess_options, providers=["CPUExecutionProvider"])
+        preds = sess_fallback.run(None, {inp.name: norm.astype(np.float32)})
     pred = preds[0]
     while pred.ndim > 2:
         pred = pred[0]

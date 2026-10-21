@@ -534,10 +534,8 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                             rgba_opt = res.rgba_pixels;
                         }
                         Err(e) => {
-                            if explicit_ai {
-                                return Err(EngineError::Other(e));
-                            }
-                            // Fallback to Select Subject
+                            // If AI process reports an error (e.g. out of memory), gracefully fall back to native engine
+                            let _ = e;
                         }
                     }
                 }

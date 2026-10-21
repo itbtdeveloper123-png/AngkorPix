@@ -351,7 +351,7 @@ mod tests {
 
     fn settings() -> Value {
         json!({"width":16,"height":24,"resolution":254.5,"mode":"lab","depth":16,
-            "background":"backgroundColor","backgroundColor":[0.125,0.375,0.625],"unit":"mm","resolutionUnit":"cm"})
+            "background":"backgroundColor","backgroundColor":[0.125,0.375,0.625],"unit":"mm","resolutionUnit":"cm","artboards":false})
     }
 
     fn saved(s: &mut Session, name: &str, settings: Value) -> Value {
