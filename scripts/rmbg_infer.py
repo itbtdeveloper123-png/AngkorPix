@@ -133,21 +133,21 @@ def main():
 
     if (is_glass_detected or args.mode == "glass") and args.mode not in ["standard", "tree", "cloud", "plastic"]:
         # Smart Glass Cutout: extract transparency, highlights, shadows, and decontaminate background
-        mask_clean = np.clip((mask_arr - 25.0) / 200.0, 0.0, 1.0)
+        mask_clean = np.clip((mask_arr - 15.0) / 210.0, 0.0, 1.0)
         orig_f32 = orig_np / 255.0
         lum = 0.299 * orig_f32[:, :, 0] + 0.587 * orig_f32[:, :, 1] + 0.114 * orig_f32[:, :, 2]
-        darkness = np.clip(1.0 - lum, 0.0, 1.0)
+        darkness = np.clip((0.85 - lum) / 0.85, 0.0, 1.0)
 
-        # Specular reflection highlights
-        hl = np.clip((lum - 0.965) / (1.0 - 0.965), 0.0, 1.0) ** 2.0
+        # Specular reflection highlights (L > 0.76)
+        hl = np.clip((lum - 0.76) / 0.24, 0.0, 1.0)
 
-        # Alpha channel: opaque along contours and highlights, subtle transparency on glass body
-        alpha = np.clip(darkness * 2.2 + hl * 1.5 + 0.02, 0.0, 1.0) * mask_clean
+        # Alpha channel: opaque along contours and highlights, optical transparency on glass body
+        # Base glass transparency is 0.28 so the bottle is always clearly visible on any background!
+        alpha = np.clip(0.28 + darkness * 0.68 + hl * 0.65, 0.25, 0.98) * mask_clean
 
-        # Decontaminate background white color from reflections
-        hl_sum = darkness + hl
-        ratio = np.where(hl_sum > 0.001, hl / hl_sum, 0.5)[:, :, np.newaxis]
-        rgb_decontam = orig_f32 * (1.0 - ratio) + 1.0 * ratio
+        # Blend highlight (pure white) with glass body
+        hl_3d = hl[:, :, np.newaxis]
+        rgb_decontam = orig_f32 * (1.0 - hl_3d) + 1.0 * hl_3d
 
         rgba = np.dstack([rgb_decontam, alpha])
         rgba_u8 = (np.clip(rgba, 0.0, 1.0) * 255.0).astype(np.uint8)

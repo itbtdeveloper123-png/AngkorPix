@@ -91,64 +91,32 @@ fn native_ps_glass_cutout(bounds: Rect, rgba_vec: &[[f32; 4]]) -> CutoutResult {
     };
     let bg_lum = 0.299 * bg_color[0] + 0.587 * bg_color[1] + 0.114 * bg_color[2];
 
-    // 2. Flood fill from borders to identify outer background (outside bottle)
+    // 2. Identify outer background by global color distance from sampled background
     let mut is_outer_bg = vec![false; total];
-    let mut queue = std::collections::VecDeque::new();
+    let fill_threshold = 0.15f32;
 
-    // Push border pixels
-    for x in 0..w {
-        queue.push_back((x, 0));
-        queue.push_back((x, h - 1));
-        if let Some(val) = is_outer_bg.get_mut(0 * w + x) { *val = true; }
-        if let Some(val) = is_outer_bg.get_mut((h - 1) * w + x) { *val = true; }
-    }
-    for y in 1..h - 1 {
-        queue.push_back((0, y));
-        queue.push_back((w - 1, y));
-        if let Some(val) = is_outer_bg.get_mut(y * w + 0) { *val = true; }
-        if let Some(val) = is_outer_bg.get_mut(y * w + (w - 1)) { *val = true; }
-    }
-
-    let color_dist = |px: &[f32; 4]| -> f32 {
-        if px[3] < 0.2 {
-            0.0 // transparent is outer background
-        } else {
-            (px[0] - bg_color[0]).abs() + (px[1] - bg_color[1]).abs() + (px[2] - bg_color[2]).abs()
+    for idx in 0..total {
+        if let Some(px) = rgba_vec.get(idx) {
+            if px[3] < 0.2 {
+                if let Some(v) = is_outer_bg.get_mut(idx) { *v = true; }
+            } else {
+                let dist = (px[0] - bg_color[0]).abs() + (px[1] - bg_color[1]).abs() + (px[2] - bg_color[2]).abs();
+                if dist < fill_threshold {
+                    if let Some(v) = is_outer_bg.get_mut(idx) { *v = true; }
+                }
+            }
         }
-    };
+    }
 
-    // Gradient-aware flood fill: matches both uniform studio backgrounds AND complex room backgrounds (table + wall)
-    let fill_threshold = 0.16f32;
-    let local_step_threshold = 0.08f32;
-
-    while let Some((cx, cy)) = queue.pop_front() {
-        let cidx = cy * w + cx;
-        let cpx = rgba_vec.get(cidx).copied().unwrap_or([0.0, 0.0, 0.0, 1.0]);
-
-        let neighbors = [
-            (cx.wrapping_sub(1), cy),
-            (cx + 1, cy),
-            (cx, cy.wrapping_sub(1)),
-            (cx, cy + 1),
-        ];
-        for (nx, ny) in neighbors {
-            if nx < w && ny < h {
-                let nidx = ny * w + nx;
-                if is_outer_bg.get(nidx).copied() == Some(false) {
-                    if let Some(npx) = rgba_vec.get(nidx) {
-                        let matches_global = color_dist(npx) < fill_threshold;
-                        let local_delta = (npx[0] - cpx[0]).abs() + (npx[1] - cpx[1]).abs() + (npx[2] - cpx[2]).abs();
-                        // Stop at sharp glass refraction/contour boundaries (local delta > 0.18)
-                        let is_glass_edge = local_delta > 0.18;
-                        let matches_local = local_delta < local_step_threshold && !is_glass_edge;
-
-                        if matches_global || matches_local {
-                            if let Some(val) = is_outer_bg.get_mut(nidx) {
-                                *val = true;
-                            }
-                            queue.push_back((nx, ny));
-                        }
-                    }
+    // Safeguard: If outer bg marked > 85% of total, preserve center subject
+    let outer_count = is_outer_bg.iter().filter(|v| **v).count();
+    if outer_count > (total * 85) / 100 {
+        let margin_x = w / 5;
+        let margin_y = h / 6;
+        for y in margin_y..(h.saturating_sub(margin_y)) {
+            for x in margin_x..(w.saturating_sub(margin_x)) {
+                if let Some(v) = is_outer_bg.get_mut(y * w + x) {
+                    *v = false;
                 }
             }
         }
@@ -171,38 +139,26 @@ fn native_ps_glass_cutout(bounds: Rect, rgba_vec: &[[f32; 4]]) -> CutoutResult {
 
             // Darkness (absorption / glass refractions):
             let darkness = if bg_lum > 0.01 {
-                ((bg_lum - lum) / bg_lum).max(0.0)
+                ((bg_lum - lum) / bg_lum).clamp(0.0, 1.0)
             } else {
                 0.0
             };
 
-            // Specular highlights (pure white light reflections on glass surface):
-            let highlight = ((lum - 0.90) / 0.10).clamp(0.0, 1.0);
+            // Specular highlights:
+            let highlight = ((lum - 0.74) / 0.26).clamp(0.0, 1.0);
 
-            // True glass opacity
-            let alpha = (darkness * 1.8 + highlight * 0.95 + 0.08).clamp(0.05, 1.0);
+            // True optical glass opacity (0.28 base opacity ensures bottle is always visible)
+            let alpha = (0.28 + darkness * 0.65 + highlight * 0.60).clamp(0.25, 0.98);
 
-            // Color decontamination: remove background wash so there's no milky residue
-            let unmixed_r = if alpha > 0.05 {
-                ((px[0] - (1.0 - alpha) * bg_color[0]) / alpha).clamp(0.0, 1.0)
-            } else {
-                px[0]
-            };
-            let unmixed_g = if alpha > 0.05 {
-                ((px[1] - (1.0 - alpha) * bg_color[1]) / alpha).clamp(0.0, 1.0)
-            } else {
-                px[1]
-            };
-            let unmixed_b = if alpha > 0.05 {
-                ((px[2] - (1.0 - alpha) * bg_color[2]) / alpha).clamp(0.0, 1.0)
-            } else {
-                px[2]
-            };
+            // Desaturate old room background tint:
+            let desat = 0.80;
+            let r = px[0] * (1.0 - desat) + lum * desat;
+            let g = px[1] * (1.0 - desat) + lum * desat;
+            let b = px[2] * (1.0 - desat) + lum * desat;
 
-            // Blend highlight (white) with unmixed glass refraction
-            let final_r = unmixed_r * (1.0 - highlight) + 1.0 * highlight;
-            let final_g = unmixed_g * (1.0 - highlight) + 1.0 * highlight;
-            let final_b = unmixed_b * (1.0 - highlight) + 1.0 * highlight;
+            let final_r = r * (1.0 - highlight) + 1.0 * highlight;
+            let final_g = g * (1.0 - highlight) + 1.0 * highlight;
+            let final_b = b * (1.0 - highlight) + 1.0 * highlight;
 
             if let Some(m) = mask.get_mut(idx) {
                 *m = (alpha * 255.0).round() as u8;
@@ -548,33 +504,27 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
             let mut region_opt = None;
             let mut rgba_opt = None;
 
-            if is_specialized && !explicit_ai {
+            if (is_tree || is_cloud) && !explicit_ai {
                 // Photoshop Native Algorithmic Cutout (Runs instantly in < 15ms)
                 ctx.progress(0.2, match mode_str {
-                    "glass" => "Photoshop Glass Matting (Instant)",
                     "tree" => "Photoshop Channel Masking (Instant)",
                     "cloud" => "Photoshop Blend-If (Instant)",
-                    "plastic" => "Photoshop Multi-Pass (Instant)",
                     _ => "Photoshop Native Matting",
                 });
                 let rgba_vec: Vec<[f32; 4]> = with_doc_sampler(doc, Some(id), sample_all, |smp, _| smp.rgba(bounds));
                 let res = match mode_str {
-                    "glass" => native_ps_glass_cutout(bounds, &rgba_vec),
                     "tree" => native_ps_tree_cutout(bounds, &rgba_vec),
                     "cloud" => native_ps_cloud_cutout(bounds, &rgba_vec),
-                    "plastic" => native_ps_plastic_cutout(bounds, &rgba_vec),
-                    _ => native_ps_glass_cutout(bounds, &rgba_vec),
+                    _ => native_ps_cloud_cutout(bounds, &rgba_vec),
                 };
                 region_opt = Some(res.region);
                 rgba_opt = res.rgba_pixels;
-            } else if is_ai {
+            } else if is_ai || is_glass || is_plastic {
                 #[cfg(not(target_arch = "wasm32"))]
                 {
                     let progress_msg = match mode_str {
-                        "glass" => "Running AI Glass model (rmbg_model.onnx)",
-                        "tree" => "Running AI Tree Channel model (rmbg_model.onnx)",
-                        "cloud" => "Running AI Cloud Blend model (rmbg_model.onnx)",
-                        "plastic" => "Running AI Plastic Wrap model (rmbg_model.onnx)",
+                        "glass" => "Detecting Glass Silhouette & Highlights…",
+                        "plastic" => "Detecting Plastic Silhouette & Reflections…",
                         _ => "Running AI model (rmbg_model.onnx)",
                     };
                     ctx.progress(0.1, progress_msg);
@@ -587,7 +537,7 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                             if explicit_ai {
                                 return Err(EngineError::Other(e));
                             }
-                            eprintln!("AI background removal failed, falling back to heuristic: {e}");
+                            // Fallback to Select Subject
                         }
                     }
                 }
@@ -602,7 +552,23 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                             with_doc_sampler(doc, Some(id), sample_all, |smp, _| subject::select_subject_with(smp, bounds, ctl))
                         })
                         .map_err(|_| EngineError::Cancelled)?;
-                    found.ok_or_else(|| EngineError::Other("no subject found".into()))?
+                    match found {
+                        Some(f) => f,
+                        None => {
+                            if is_glass || is_plastic {
+                                let rgba_vec: Vec<[f32; 4]> = with_doc_sampler(doc, Some(id), sample_all, |smp, _| smp.rgba(bounds));
+                                let res = if is_plastic {
+                                    native_ps_plastic_cutout(bounds, &rgba_vec)
+                                } else {
+                                    native_ps_glass_cutout(bounds, &rgba_vec)
+                                };
+                                rgba_opt = res.rgba_pixels;
+                                res.region
+                            } else {
+                                return Err(EngineError::Other("no subject found".into()));
+                            }
+                        }
+                    }
                 }
             };
 
@@ -628,7 +594,7 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                 let h = bounds.height() as usize;
                 let total = w * h;
 
-                // Calculate horizontal bottle boundaries per row to isolate the center interior
+                // Calculate horizontal bottle boundaries per row to isolate contours vs interior
                 let mut row_left = vec![w; h];
                 let mut row_right = vec![0; h];
                 let mut min_y = h;
@@ -645,9 +611,9 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                 }
                 let bottle_h = (max_y.saturating_sub(min_y)).max(1);
 
-                // 1. Shadows & Refractions Layer (Multiply mode)
-                let mut shadow_surf = photocraft_raster::Surface::new(fmt);
-                let mut shadow_rgba = Vec::with_capacity(total * 4);
+                // 1. Glass Body & Refraction Layer (Normal mode with true optical transparency)
+                let mut body_surf = photocraft_raster::Surface::new(fmt);
+                let mut body_rgba = Vec::with_capacity(total * 4);
                 let mut highlight_rgba = Vec::with_capacity(total * 4);
 
                 let src_rgba = with_doc_sampler(doc, Some(id), sample_all, |smp, _| smp.rgba(bounds));
@@ -657,6 +623,7 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                     let px = src_rgba.get(idx).copied().unwrap_or([0.0, 0.0, 0.0, 1.0]);
                     let m = region.mask.get(idx).copied().unwrap_or(0);
                     if m > 0 {
+                        let mask_k = m as f32 / 255.0;
                         let x_l = row_left.get(y).copied().unwrap_or(0);
                         let x_r = row_right.get(y).copied().unwrap_or(w);
                         let bottle_w = (x_r.saturating_sub(x_l)).max(1);
@@ -665,37 +632,44 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                         let dx = ((x as f32 - x_center).abs() / half_w).clamp(0.0, 1.0);
                         let vy = ((y.saturating_sub(min_y)) as f32 / bottle_h as f32).clamp(0.0, 1.0);
 
-                        // Photoshop Desaturate (Ctrl+Shift+U):
-                        // Eliminates old room background colors (brown wood, gray wall, sofa)
                         let lum = 0.299 * px[0] + 0.587 * px[1] + 0.114 * px[2];
 
                         // Highlights (Screen mode):
-                        // Specular light reflections on the glass surface are bright white (L > 0.78)
-                        let highlight = ((lum - 0.78) / 0.22).clamp(0.0, 1.0);
-                        highlight_rgba.extend_from_slice(&[highlight, highlight, highlight, 1.0]);
+                        // Specular light reflections on the glass surface (L > 0.74)
+                        let highlight = ((lum - 0.74) / 0.26).clamp(0.0, 1.0);
+                        let hl_alpha = (highlight * 0.95) * mask_k;
+                        highlight_rgba.extend_from_slice(&[1.0, 1.0, 1.0, hl_alpha]);
 
-                        // Shadows & Refractions (Multiply mode):
-                        // Outer glass rims (dx > 0.72), Base (vy > 0.86), Neck (vy < 0.26) have dark glass refractions: KEEP THEM!
-                        // Center interior where the old background table/wall showed through:
-                        // PUSH TO PURE WHITE 1.0 so Multiply makes it 100% transparent!
-                        let is_rim_or_base = dx > 0.72 || vy > 0.86 || vy < 0.26;
-                        let shadow_val = if is_rim_or_base {
-                            lum
-                        } else {
-                            let fade = (1.0 - dx / 0.72).clamp(0.0, 1.0);
-                            lum + (1.0 - lum) * fade * 0.94
-                        };
-                        shadow_rgba.extend_from_slice(&[shadow_val, shadow_val, shadow_val, 1.0]);
+                        // Glass Body, Contours, Base & Neck (Normal mode):
+                        let darkness = ((0.78 - lum) / 0.78).clamp(0.0, 1.0);
+                        let is_rim_or_base = dx > 0.70 || vy > 0.85 || vy < 0.24;
+                        let rim_boost = if is_rim_or_base { 0.35 } else { 0.0 };
+
+                        // Real optical alpha:
+                        // Center body has ~0.30 alpha (clean optical glass showing background through)
+                        // Contours, base, neck have 0.85..0.96 alpha (sharp, solid, dark glass refractions)
+                        let alpha = (0.28 + darkness * 0.65 + rim_boost).clamp(0.25, 0.96) * mask_k;
+
+                        // Desaturate interior to eliminate old room background wash:
+                        let desat = if is_rim_or_base { 0.30 } else { 0.85 };
+                        let r = px[0] * (1.0 - desat) + lum * desat;
+                        let g = px[1] * (1.0 - desat) + lum * desat;
+                        let b = px[2] * (1.0 - desat) + lum * desat;
+
+                        body_rgba.extend_from_slice(&[r, g, b, alpha]);
                     } else {
-                        // Outside subject: pure white (1.0) for Multiply mode, pure black (0.0) for Screen mode
-                        shadow_rgba.extend_from_slice(&[1.0, 1.0, 1.0, 1.0]);
-                        highlight_rgba.extend_from_slice(&[0.0, 0.0, 0.0, 1.0]);
+                        // Outside subject: completely transparent (0.0)
+                        body_rgba.extend_from_slice(&[0.0, 0.0, 0.0, 0.0]);
+                        highlight_rgba.extend_from_slice(&[0.0, 0.0, 0.0, 0.0]);
                     }
                 }
-                shadow_surf.write_region(bounds, &shadow_rgba);
-                let mut shadow_layer = Layer::new("🌑 1. Shadows & Refractions [Multiply]", LayerContent::Raster(shadow_surf));
-                shadow_layer.blend = photocraft_color::BlendMode::Multiply;
-                shadow_layer.opacity = 1.0;
+                body_surf.write_region(bounds, &body_rgba);
+                let mut body_layer = Layer::new(
+                    if is_plastic { "🛍️ 1. Plastic Film & Refraction [Normal]" } else { "🍸 1. Glass Body & Refraction [Normal]" },
+                    LayerContent::Raster(body_surf),
+                );
+                body_layer.blend = photocraft_color::BlendMode::Normal;
+                body_layer.opacity = 1.0;
 
                 // 2. Highlights & Reflections Layer (Screen mode)
                 let mut highlight_surf = photocraft_raster::Surface::new(fmt);
@@ -709,7 +683,7 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                 } else {
                     "📁 Glass Cutout (ដបកែវថ្លា - Photoshop)"
                 };
-                let mut group = Layer::group(group_title, vec![shadow_layer, highlight_layer]);
+                let mut group = Layer::group(group_title, vec![body_layer, highlight_layer]);
                 let mask_surf = matting::region_surface(&region);
                 group.mask = Some(LayerMask { surface: mask_surf, ..LayerMask::reveal_all() });
 
@@ -726,7 +700,11 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                     }
                 }
                 if let Some(l) = doc.layer_mut(id) {
-                    if is_tree {
+                    if is_glass {
+                        l.name = "🍸 Glass Bottle (Transparent Matting)".to_string();
+                    } else if is_plastic {
+                        l.name = "🛍️ Plastic Wrap (Transparent Matting)".to_string();
+                    } else if is_tree {
                         l.name = "🌳 Tree (Blue Channel Masked)".to_string();
                     } else if is_cloud {
                         l.name = "☁️ Cloud (Blend-If Luminance)".to_string();
