@@ -52,8 +52,12 @@ pub fn run(s: &mut Session, p: &Value) -> Result<Value> {
             surface.fill_rect(bounds, &px);
         }
         // Nothing may sit under the Background: below it the layer lands above it instead.
+        // If an Artboard is selected, the new layer is created inside the Artboard (Photoshop parity).
         let id = match *active {
             Some(a) if below && doc.layer(a).is_some() && !doc.is_background(a) => doc.insert_below(Some(a), layer),
+            Some(a) if doc.layer(a).is_some_and(|l| l.artboard().is_some()) => {
+                doc.insert_into(a, layer.clone()).unwrap_or_else(|| doc.insert_above(Some(a), layer))
+            }
             _ => doc.insert_above(*active, layer),
         };
         crate::clip_group::settle(doc, &[id], &Default::default(), clip);

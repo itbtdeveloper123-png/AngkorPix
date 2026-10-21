@@ -852,7 +852,22 @@ pub fn specs() -> Vec<CommandSpec> {
                 let name = p.get("name").and_then(Value::as_str).map(str::to_string).unwrap_or_else(|| layer_name(&t.text));
                 let id = s.edit("New Type Layer", |doc, active| {
                     refresh(doc, &mut t);
-                    let id = doc.insert_above(*active, Layer::new(name, LayerContent::Text(t)));
+                    let target_artboard = if let Some(a) = *active && doc.layer(a).is_some_and(|l| l.artboard().is_some()) {
+                        Some(a)
+                    } else {
+                        let (px, py) = if let Some(b) = p.get("box").and_then(Value::as_array).filter(|a| a.len() >= 2) {
+                            (b[0].as_f64().unwrap_or(0.0) as i32, b[1].as_f64().unwrap_or(0.0) as i32)
+                        } else {
+                            (p.get("x").and_then(Value::as_f64).unwrap_or(0.0) as i32, p.get("y").and_then(Value::as_f64).unwrap_or(0.0) as i32)
+                        };
+                        doc.artboards().into_iter().rev().find(|(_, _, ab)| ab.rect.contains(px, py)).map(|(id, _, _)| id)
+                    };
+                    let new_layer = Layer::new(name, LayerContent::Text(t));
+                    let id = if let Some(ab) = target_artboard {
+                        doc.insert_into(ab, new_layer.clone()).unwrap_or_else(|| doc.insert_above(*active, new_layer))
+                    } else {
+                        doc.insert_above(*active, new_layer)
+                    };
                     *active = Some(id);
                     Ok(id)
                 })?;

@@ -1188,6 +1188,15 @@ impl Document {
         id
     }
 
+    /// Insert `layer` as the top child inside group/artboard `parent`.
+    pub fn insert_into(&mut self, parent: LayerId, layer: Layer) -> Option<LayerId> {
+        let id = layer.id;
+        let path = self.path_of(parent)?;
+        let children = self.layer_at_mut(&path).and_then(Layer::children_mut)?;
+        children.push(layer);
+        Some(id)
+    }
+
     pub fn remove(&mut self, id: LayerId) -> Option<Layer> {
         let path = self.path_of(id)?;
         let (sib, idx) = self.siblings_mut(&path)?;

@@ -34,6 +34,7 @@ pub mod comps_cmds;
 mod crop_fill;
 pub mod cutout_cmds;
 pub mod poster_cmds;
+pub mod quick_action_cmds;
 pub mod display_color;
 pub mod distort_cmds;
 pub mod doc_path;

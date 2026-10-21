@@ -392,6 +392,35 @@ pub fn translate(s: &mut Session, p: &Value) -> Result<Value> {
             }
             ids.push(id);
         }
+        // Auto-nest into artboards on move when not artboard-locked (Photoshop parity)
+        if doc.has_artboards() {
+            let artboards: Vec<(LayerId, Rect)> = doc.artboards().into_iter().map(|(id, _, ab)| (id, ab.rect)).collect();
+            for &id in &ids {
+                let is_artboard = doc.layer(id).is_some_and(|l| l.artboard().is_some());
+                let is_locked = doc.effective_locks(id).artboard;
+                if is_artboard || is_locked {
+                    continue;
+                }
+                if let Some(l) = doc.layer(id) {
+                    if let Some(b) = layer_bounds(l) {
+                        let cx = b.x0 + (b.width() as i32) / 2;
+                        let cy = b.y0 + (b.height() as i32) / 2;
+                        let target_ab = artboards.iter().rev().find(|(_, rect)| rect.contains(cx, cy)).map(|(ab_id, _)| *ab_id);
+                        let cur_ab = doc.artboard_of(id);
+                        if target_ab != cur_ab {
+                            if let Some(l_obj) = doc.remove(id) {
+                                if let Some(tab) = target_ab {
+                                    doc.insert_into(tab, l_obj);
+                                } else {
+                                    doc.insert_above(None, l_obj);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // A board moved past any canvas edge grows the canvas, as a new one does (#1531, #3070).
         if ids.iter().any(|id| doc.layer(*id).is_some_and(|l| l.artboard().is_some())) {
             crate::artboard_cmds::fit_canvas(doc);

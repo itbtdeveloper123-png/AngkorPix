@@ -841,6 +841,9 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
         ui.data_mut(|d| d.insert_temp(state_id, state));
     });
 
+    // 2.3 ⚡ 1-Click Pro Actions
+    render_one_click_tools_button(app, ui, t);
+
     // 3. Adjust Colors (sliders-horizontal icon + label)
     let adj_btn = task_button(ui, Some("sliders-horizontal"), Some(tl!("Adjust Colors")), tl!("Add Adjustment Layer"), t);
     egui::Popup::menu(&adj_btn).show(|ui| {
@@ -914,6 +917,83 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     }
 }
 
+/// 1-Click Pro Quick Actions popup matching Photoshop 2026 commercial workflows
+fn render_one_click_tools_button(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
+    let one_click_btn = task_button(
+        ui,
+        Some("sparkles"),
+        Some(tl!("⚡ 1-Click Tools")),
+        tl!("Instant 1-Click Pro Actions inspired by Adobe Photoshop (គ្រាន់តែចុចគឺធ្វើឱ្យភ្លាមៗ)"),
+        t,
+    );
+    egui::Popup::menu(&one_click_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        ui.set_min_width(380.0);
+
+        ui.horizontal(|ui| {
+            let (icon_r, _) = ui.allocate_exact_size(vec2(22.0, 22.0), Sense::hover());
+            ui.painter().circle_filled(icon_r.center(), 11.0, Color32::from_rgb(245, 158, 11));
+            crate::icons::paint(ui, icon_r, "sparkles", 14.0, Color32::WHITE);
+            ui.heading(tl!("⚡ 1-Click Pro Quick Actions"));
+        });
+        ui.label(egui::RichText::new(tl!("ឧបករណ៍ជំនាញ ចុចមួយភ្លែតបានផលភ្លាមៗ ដោយមិនបាច់សារ៉េអីច្រើន")).small().weak());
+        ui.separator();
+
+        let actions: [(&str, &str, &str, &str, Color32); 8] = [
+            ("quickAction.autoEnhance", "⚡ Auto Enhance", "កែពន្លឺ ពណ៌ និង Contrast ស្វ័យប្រវត្តិ", "Auto Tone + Contrast + Color", Color32::from_rgb(59, 130, 246)),
+            ("layer.removeBackground", "✂️ Remove Background", "កាត់ផ្ទៃក្រោយភ្លាមៗ (< 0.1s)", "Auto subject detection & mask", Color32::from_rgb(16, 185, 129)),
+            ("quickAction.blurBackground", "🌫️ Blur Background", "ព្រិលផ្ទៃក្រោយ Portrait Depth / Bokeh", "Sharp subject + creamy bokeh blur", Color32::from_rgb(139, 92, 246)),
+            ("quickAction.blackWhiteBackground", "🎭 B&W Background", "ផ្ទៃក្រោយ ស-ខ្មៅ រំលេចមនុស្ស (Color Splash)", "Vivid subject + dramatic B&W backdrop", Color32::from_rgb(236, 72, 153)),
+            ("quickAction.goldenHour", "🌅 Golden Hour Glow", "ពន្លឺថ្ងៃលិច ស្រទន់កក់ក្តៅ", "Warm amber glow & sunlight grade", Color32::from_rgb(245, 158, 11)),
+            ("quickAction.cinematicTealOrange", "🎬 Cinematic Grade", "ពណ៌កុន Teal & Orange Blockbuster", "Hollywood split-toning movie grade", Color32::from_rgb(6, 182, 212)),
+            ("quickAction.popColors", "✨ Pop Colors & Vibrance", "ពណ៌រស់រវើក HDR Pop", "Dynamic punch for social media", Color32::from_rgb(234, 179, 8)),
+            ("quickAction.studioProductWhite", "🛍️ Studio Product White", "ផ្ទៃក្រោយសស្ទូឌីយោ + ស្រមោលជាន់ដី", "Pure white e-commerce + contact shadow", Color32::from_rgb(99, 102, 241)),
+        ];
+
+        egui::ScrollArea::vertical().max_height(460.0).show(ui, |ui| {
+            ui.spacing_mut().item_spacing = vec2(4.0, 5.0);
+            for (cmd, title, khmer_desc, en_desc, accent) in actions {
+                let (card_r, card_resp) = ui.allocate_exact_size(vec2(ui.available_width(), 46.0), Sense::click());
+                let hovered = card_resp.hovered();
+
+                let bg = if hovered {
+                    accent.gamma_multiply(0.18)
+                } else {
+                    Color32::from_rgba_premultiplied(255, 255, 255, if t.dark() { 8 } else { 200 })
+                };
+
+                let stroke_col = if hovered {
+                    accent
+                } else {
+                    Color32::from_rgba_premultiplied(255, 255, 255, if t.dark() { 24 } else { 180 })
+                };
+
+                let painter = ui.painter();
+                painter.rect_filled(card_r, CornerRadius::same(6), bg);
+                painter.rect_stroke(card_r, CornerRadius::same(6), Stroke::new(if hovered { 1.5 } else { 1.0 }, stroke_col), StrokeKind::Inside);
+
+                // Left accent vertical indicator
+                let bar = Rect::from_min_max(pos2(card_r.left() + 2.0, card_r.top() + 4.0), pos2(card_r.left() + 6.0, card_r.bottom() - 4.0));
+                painter.rect_filled(bar, CornerRadius::same(2), accent);
+
+                // Title
+                let title_galley = painter.layout_no_wrap(title.to_string(), theme::medium(12.5), if hovered { Color32::WHITE } else { t.text });
+                painter.galley(pos2(card_r.left() + 14.0, card_r.top() + 6.0), title_galley, Color32::WHITE);
+
+                // Description (Khmer + English)
+                let desc_text = format!("{} • {}", khmer_desc, en_desc);
+                let desc_galley = painter.layout_no_wrap(desc_text, egui::FontId::proportional(10.5), if hovered { accent } else { t.text_dim });
+                painter.galley(pos2(card_r.left() + 14.0, card_r.top() + 24.0), desc_galley, t.text_dim);
+
+                if card_resp.on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
+                    let _ = crate::menus::invoke(app, ui.ctx(), cmd, json!({}));
+                    ui.close();
+                }
+            }
+        });
+    });
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
@@ -955,6 +1035,14 @@ mod tests {
         assert!(app.session.is_enabled("layer.newAdjustmentLayer.brightnessContrast"));
         assert!(app.session.is_enabled("layer.newAdjustmentLayer.hueSaturation"));
         assert!(app.session.is_enabled("layer.newAdjustmentLayer.blackWhite"));
+        // 1-Click Pro Quick Action commands
+        assert!(app.session.is_enabled("quickAction.autoEnhance"));
+        assert!(app.session.is_enabled("quickAction.blurBackground"));
+        assert!(app.session.is_enabled("quickAction.blackWhiteBackground"));
+        assert!(app.session.is_enabled("quickAction.goldenHour"));
+        assert!(app.session.is_enabled("quickAction.cinematicTealOrange"));
+        assert!(app.session.is_enabled("quickAction.popColors"));
+        assert!(app.session.is_enabled("quickAction.studioProductWhite"));
         // Selection context commands
         assert!(photocraft_engine::commands::find("select.inverse").is_some());
         assert!(photocraft_engine::commands::find("edit.fill").is_some());
