@@ -358,44 +358,157 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
         let _ = crate::menus::invoke(app, ui.ctx(), "select.subject", json!({}));
     }
 
-    // 2. Remove Background (with AI / Standard method selection)
-    let is_ai = app.session.prefs().tools.remove_background_method == photocraft_engine::prefs::RemoveBackgroundMethod::Ai;
-    let bg_label = if is_ai {
+    // 2. Remove Background (with AI / Standard / Specialized method selection)
+    let current_method = app.session.prefs().tools.remove_background_method;
+    let is_glass = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Glass;
+    let is_tree = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Tree;
+    let is_cloud = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Cloud;
+    let is_plastic = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Plastic;
+    let is_special = is_glass || is_tree || is_cloud || is_plastic;
+    let is_ai = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Ai;
+    let bg_label = if is_glass {
+        format!("{} ({})", tl!("Remove Background"), tl!("Glass"))
+    } else if is_tree {
+        format!("{} ({})", tl!("Remove Background"), tl!("Tree"))
+    } else if is_cloud {
+        format!("{} ({})", tl!("Remove Background"), tl!("Cloud"))
+    } else if is_plastic {
+        format!("{} ({})", tl!("Remove Background"), tl!("Plastic"))
+    } else if is_ai {
         format!("{} (AI)", tl!("Remove Background"))
     } else {
         tl!("Remove Background").to_string()
     };
     let bg_btn = task_button(
         ui,
-        Some(if is_ai { "wand-sparkles" } else { "eraser-background" }),
+        Some(if is_ai || is_special { "wand-sparkles" } else { "eraser-background" }),
         Some(&bg_label),
         tl!("Automatically isolate subject and mask out background"),
         t,
     );
     if bg_btn.clicked() {
-        let method_str = if is_ai { "ai" } else { "heuristic" };
-        let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": method_str }));
+        let method_str = match current_method {
+            photocraft_engine::prefs::RemoveBackgroundMethod::Glass => "glass",
+            photocraft_engine::prefs::RemoveBackgroundMethod::Tree => "tree",
+            photocraft_engine::prefs::RemoveBackgroundMethod::Cloud => "cloud",
+            photocraft_engine::prefs::RemoveBackgroundMethod::Plastic => "plastic",
+            photocraft_engine::prefs::RemoveBackgroundMethod::Ai => "ai",
+            photocraft_engine::prefs::RemoveBackgroundMethod::Heuristic => "heuristic",
+        };
+        let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": method_str, "glass": is_glass }));
     }
 
     let opt_btn = task_button(ui, Some("chevron-down"), None, tl!("Choose Background Removal Engine"), t);
     egui::Popup::menu(&opt_btn).show(|ui| {
         crate::widgets::style_spectrum_popup_menu(ui);
-        ui.set_min_width(230.0);
+        ui.set_min_width(280.0);
 
-        if ui.selectable_label(!is_ai, tl!("⚡ Standard (Fast & Built-in)")).clicked() {
+        if ui.selectable_label(current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Heuristic, tl!("⚡ Standard (Fast & Built-in)")).clicked() {
             app.session.edit_prefs(|p| p.tools.remove_background_method = photocraft_engine::prefs::RemoveBackgroundMethod::Heuristic);
             let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "heuristic" }));
             ui.close();
         }
 
-        if ui.selectable_label(is_ai, tl!("✨ AI Neural Model (rmbg_model.onnx)")).clicked() {
+        if ui.selectable_label(is_ai, tl!("✨ AI Neural Model (Auto Detect)")).clicked() {
             app.session.edit_prefs(|p| p.tools.remove_background_method = photocraft_engine::prefs::RemoveBackgroundMethod::Ai);
             let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "ai" }));
             ui.close();
         }
 
         ui.separator();
+        ui.label(egui::RichText::new(tl!("Pro Cutout Presets (កាត់រូបភាពស្មុគស្មាញ):")).small().strong());
+
+        if ui.selectable_label(is_glass, tl!("🍸 AI Glass / Transparent (ដបកែវ/បំពង់ថ្លា)")).clicked() {
+            app.session.edit_prefs(|p| p.tools.remove_background_method = photocraft_engine::prefs::RemoveBackgroundMethod::Glass);
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "glass", "glass": true }));
+            ui.close();
+        }
+
+        if ui.selectable_label(is_tree, tl!("🌳 AI Tree / Foliage (ដើមឈើ/ស្លឹកឈើ)")).clicked() {
+            app.session.edit_prefs(|p| p.tools.remove_background_method = photocraft_engine::prefs::RemoveBackgroundMethod::Tree);
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "tree" }));
+            ui.close();
+        }
+
+        if ui.selectable_label(is_cloud, tl!("☁️ AI Cloud / Sky (ពពក/មេឃ/ផ្សែង)")).clicked() {
+            app.session.edit_prefs(|p| p.tools.remove_background_method = photocraft_engine::prefs::RemoveBackgroundMethod::Cloud);
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "cloud" }));
+            ui.close();
+        }
+
+        if ui.selectable_label(is_plastic, tl!("🛍️ AI Plastic Wrap (ថង់ប្លាស្ទិក)")).clicked() {
+            app.session.edit_prefs(|p| p.tools.remove_background_method = photocraft_engine::prefs::RemoveBackgroundMethod::Plastic);
+            let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "plastic" }));
+            ui.close();
+        }
+
+        ui.separator();
         ui.label(egui::RichText::new(tl!("Model folder: models/rmbg_model.onnx")).weak().small());
+    });
+
+    // 2.1 Photoshop Pro Cutout Tips button with "!"
+    let tip_btn = task_button(ui, Some("info"), Some("! Tips"), tl!("Photoshop Pro Cutout Tips (គន្លឹះ និងជំហានកាត់ក្នុង PS)"), t);
+    egui::Popup::menu(&tip_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        ui.set_max_width(560.0);
+
+        ui.horizontal(|ui| {
+            ui.heading(tl!("💡 Photoshop Pro Cutout Tips & Steps"));
+        });
+        ui.label(egui::RichText::new(tl!("រៀនពីបច្ចេកទេសជំនាញក្នុង Photoshop និងចុចកាត់ស្វ័យប្រវត្តិតាមរូបមន្តនីមួយៗ")).small().weak());
+        ui.separator();
+
+        egui::ScrollArea::vertical().max_height(420.0).show(ui, |ui| {
+            // Section 1: Glass & Transparent Objects
+            ui.collapsing(tl!("🍸 1. ដបកែវ និងបំពង់ថ្លា (Glass & Transparent Objects)"), |ui| {
+                ui.label(egui::RichText::new(tl!("• បញ្ហា: កញ្ចក់ថ្លាគ្មានពណ៌ផ្ទាល់ខ្លួនទេ (ឆ្លុះពន្លឺ និងស្រមោល)។ ការកាត់ធម្មតានឹងជាប់ដុំស ឬរលុបផ្ទៃកែវខាងក្នុងចោល។")).small());
+                ui.label(egui::RichText::new(tl!("• ជំហានក្នុង Photoshop:")).strong().small());
+                ui.label(egui::RichText::new(tl!("   1. Pen Tool (P) កាត់យកតែរាងគ្រោងដបខាងក្រៅ (Silhouette Mask)។\n   2. បំបែកជា ២ ស្រទាប់ (Duplicate Layer):\n      - Layer ក្រោម (Multiply): សម្រាប់ស្រូបយកស្រមោល និងគែមងងឹត (លុបពណ៌សស្វ័យប្រវត្តិ)។\n      - Layer លើ (Screen): ប្រើ Levels (Ctrl+L) ទាញខ្មៅជិត 0 ទុកតែពន្លឺចាំងសៗ (Highlights)។\n   3. ពេលដាក់លើ Background ថ្មី ដបកែវនឹងថ្លាឆ្លុះ Background នោះ ១០០%។")).small());
+                if ui.button(tl!("⚡ អនុវត្តកាត់ដបកែវភ្លាមៗ (1-Click Glass Cutout)")).clicked() {
+                    let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "glass", "glass": true }));
+                    ui.close();
+                }
+            });
+
+            ui.separator();
+
+            // Section 2: Trees & Foliage
+            ui.collapsing(tl!("🌳 2. ដើមឈើ និងស្លឹកស្មុគស្មាញ (Trees & Foliage against Sky)"), |ui| {
+                ui.label(egui::RichText::new(tl!("• បញ្ហា: ស្លឹកឈើតូចៗរាប់ពាន់ជាប់មេឃខៀវ/ស។ AI ទូទៅតែងតែរលុបស្លឹកតូចៗ ឬសល់រង្វង់ខៀវ (Color Fringing) ជុំវិញស្លឹក។")).small());
+                ui.label(egui::RichText::new(tl!("• ជំហានក្នុង Photoshop (Channel Masking):")).strong().small());
+                ui.label(egui::RichText::new(tl!("   1. បើក Channels Panel រកមើល Blue Channel (ព្រោះមេឃខៀវភ្លឺខ្លាំង ឯស្លឹកឈើងងឹតខ្មៅ Contrast ដាច់ខ្លាំង)។\n   2. Duplicate Blue Channel រួចចុច Ctrl+L (Levels) ទាញឱ្យស្លឹកខ្មៅដាច់ និងមេឃសសុទ្ធ។\n   3. ចុច Ctrl+I (Invert) ឱ្យដើមឈើស (Reveal) និងមេឃខ្មៅ (Hide)។\n   4. Ctrl+Click លើ Channel នោះដើម្បីយក Selection មកបង្កើត Layer Mask លើរូបដើម។\n   5. ប្រើ Layer > Matting > Defringe ដើម្បីលុបពណ៌ខៀវមេឃដែលសល់តាមគែមស្លឹក។")).small());
+                if ui.button(tl!("⚡ អនុវត្តកាត់ដើមឈើភ្លាមៗ (1-Click Tree Cutout)")).clicked() {
+                    let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "tree" }));
+                    ui.close();
+                }
+            });
+
+            ui.separator();
+
+            // Section 3: Clouds & Smoke
+            ui.collapsing(tl!("☁️ 3. ពពក មេឃ និងផ្សែង (Clouds, Sky & Smoke)"), |ui| {
+                ui.label(egui::RichText::new(tl!("• បញ្ហា: ពពកមានសភាពទន់ និងថ្លាពាក់កណ្តាល (Semi-transparent) រលាយចូលមេឃ មិនអាចកាត់ដោយគែមរឹងបានឡើយ។")).small());
+                ui.label(egui::RichText::new(tl!("• ជំហានក្នុង Photoshop (Blend If):")).strong().small());
+                ui.label(egui::RichText::new(tl!("   1. Double click លើ Layer ដើម្បីបើក Layer Style > Blending Options។\n   2. ត្រង់ Blend If ជ្រើសរើស Blue Channel។\n   3. ចុច Alt + Drag គ្រាប់ស្លាយខាងស្តាំ (Split Slider) មកឆ្វេង ដើម្បីឱ្យមេឃខៀវរលាយបាត់បន្តិចម្តងៗ ដោយសល់ដុំពពកយ៉ាងរលូន។")).small());
+                if ui.button(tl!("⚡ អនុវត្តកាត់ពពកភ្លាមៗ (1-Click Cloud Cutout)")).clicked() {
+                    let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "cloud" }));
+                    ui.close();
+                }
+            });
+
+            ui.separator();
+
+            // Section 4: Plastic Bags
+            ui.collapsing(tl!("🛍️ 4. ថង់ប្លាស្ទិកថ្លា (Plastic Bags & Wrap)"), |ui| {
+                ui.label(egui::RichText::new(tl!("• បញ្ហា: ថង់ប្លាស្ទិកថ្លាមានផ្នត់ជ្រួញ និងពន្លឺជះ ព្រមទាំងបង្ហាញរបស់នៅខាងក្នុង។")).small());
+                ui.label(egui::RichText::new(tl!("• ជំហានក្នុង Photoshop:")).strong().small());
+                ui.label(egui::RichText::new(tl!("   1. Mask រាងគ្រោងថង់ខាងក្រៅដោយ Pen Tool។\n   2. Layer ខាងក្រោមដាក់ Blend Mode = Multiply សម្រាប់ស្រមោល និងរបស់ក្នុងថង់។\n   3. Layer ខាងលើប្រើ Filter > Other > High Pass រួចដាក់ Blend Mode = Screen សម្រាប់ពន្លឺចាំងផ្នត់ជ្រួញ។")).small());
+                if ui.button(tl!("⚡ អនុវត្តកាត់ថង់ប្លាស្ទិកភ្លាមៗ (1-Click Plastic Cutout)")).clicked() {
+                    let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "plastic" }));
+                    ui.close();
+                }
+            });
+        });
     });
 
     // 3. Adjust Colors (sliders-horizontal icon + label)

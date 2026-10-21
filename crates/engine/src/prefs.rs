@@ -100,8 +100,8 @@ choice!(
     RightClickPaint { BrushPicker = "brushPicker", Erase = "erase" } default BrushPicker
 );
 choice!(
-    /// Background removal engine: Standard heuristic or AI neural model.
-    RemoveBackgroundMethod { Heuristic = "heuristic", Ai = "ai" } default Heuristic
+    /// Background removal engine: Standard heuristic, AI neural model, or specialized presets (Glass, Tree, Cloud, Plastic).
+    RemoveBackgroundMethod { Heuristic = "heuristic", Ai = "ai", Glass = "glass", Tree = "tree", Cloud = "cloud", Plastic = "plastic" } default Heuristic
 );
 choice!(OtherCursor { Standard = "standard", Precise = "precise" } default Standard);
 choice!(CheckerSize { None = "none", Small = "small", Medium = "medium", Large = "large" } default Medium);

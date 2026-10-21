@@ -43,6 +43,8 @@ def main():
     parser.add_argument("--input", required=True, help="Input RGBA or RGB image path")
     parser.add_argument("--output", required=True, help="Output single-channel grayscale mask path")
     parser.add_argument("--model", default=None, help="Explicit path to ONNX model")
+    parser.add_argument("--mode", default="auto", choices=["auto", "standard", "glass", "tree", "cloud", "plastic"],
+                        help="Cutout mode: auto, standard (solid subjects), glass, tree, cloud, or plastic")
     args = parser.parse_args()
 
     model_path = find_model(args.model)
@@ -107,28 +109,105 @@ def main():
 
     b_mean = np.mean(borders, axis=0)
     is_border_bright_neutral = (
-        np.abs(b_mean[0] - b_mean[1]) < 12 and 
-        np.abs(b_mean[1] - b_mean[2]) < 12 and 
-        b_mean.mean() > 190
+        np.abs(b_mean[0] - b_mean[1]) < 14 and 
+        np.abs(b_mean[1] - b_mean[2]) < 14 and 
+        b_mean.mean() > 185
     )
 
-    if is_border_bright_neutral:
-        # Clear out background checkerboard/white patches inside holes
-        is_bg_match = (
-            (orig_np[:, :, 0] > 190) & (orig_np[:, :, 1] > 190) & (orig_np[:, :, 2] > 190) &
-            (np.abs(orig_np[:, :, 0] - orig_np[:, :, 1]) < 18) &
-            (np.abs(orig_np[:, :, 1] - orig_np[:, :, 2]) < 18)
-        )
-        mask_arr[is_bg_match] = 0.0
+    is_bg_match = (
+        (orig_np[:, :, 0] > 185) & (orig_np[:, :, 1] > 185) & (orig_np[:, :, 2] > 185) &
+        (np.abs(orig_np[:, :, 0] - orig_np[:, :, 1]) < 18) &
+        (np.abs(orig_np[:, :, 1] - orig_np[:, :, 2]) < 18)
+    )
 
-    # Suppress weak edge noise / halos
-    mask_arr[mask_arr < 20] = 0.0
-
-    mask_cleaned = Image.fromarray(mask_arr.clip(0, 255).astype(np.uint8))
+    # Detect if subject is a transparent / glass object
+    raw_fg = mask_arr > 120
+    raw_fg_count = np.sum(raw_fg)
+    bg_inside_fg_count = np.sum(raw_fg & is_bg_match)
+    is_glass_detected = (
+        args.mode == "glass" or 
+        (args.mode == "auto" and is_border_bright_neutral and raw_fg_count > 100 and (bg_inside_fg_count / raw_fg_count) > 0.30)
+    )
 
     os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
-    mask_cleaned.save(args.output, format="PNG")
-    print(f"SUCCESS: {model_path}")
+
+    if (is_glass_detected or args.mode == "glass") and args.mode not in ["standard", "tree", "cloud", "plastic"]:
+        # Smart Glass Cutout: extract transparency, highlights, shadows, and decontaminate background
+        mask_clean = np.clip((mask_arr - 25.0) / 200.0, 0.0, 1.0)
+        orig_f32 = orig_np / 255.0
+        lum = 0.299 * orig_f32[:, :, 0] + 0.587 * orig_f32[:, :, 1] + 0.114 * orig_f32[:, :, 2]
+        darkness = np.clip(1.0 - lum, 0.0, 1.0)
+
+        # Specular reflection highlights
+        hl = np.clip((lum - 0.965) / (1.0 - 0.965), 0.0, 1.0) ** 2.0
+
+        # Alpha channel: opaque along contours and highlights, subtle transparency on glass body
+        alpha = np.clip(darkness * 2.2 + hl * 1.5 + 0.02, 0.0, 1.0) * mask_clean
+
+        # Decontaminate background white color from reflections
+        hl_sum = darkness + hl
+        ratio = np.where(hl_sum > 0.001, hl / hl_sum, 0.5)[:, :, np.newaxis]
+        rgb_decontam = orig_f32 * (1.0 - ratio) + 1.0 * ratio
+
+        rgba = np.dstack([rgb_decontam, alpha])
+        rgba_u8 = (np.clip(rgba, 0.0, 1.0) * 255.0).astype(np.uint8)
+        out_img = Image.fromarray(rgba_u8)
+        out_img.save(args.output, format="PNG")
+        print(f"SUCCESS_GLASS: {model_path}")
+    elif args.mode == "tree":
+        # Photoshop Blue Channel Masking technique for fine leaves & branches
+        orig_f32 = orig_np / 255.0
+        r, g, b = orig_f32[:, :, 0], orig_f32[:, :, 1], orig_f32[:, :, 2]
+        sky_intensity = np.clip((b - 0.5 * r - 0.1) / 0.4, 0.0, 1.0)
+        mask_clean = np.clip((mask_arr - 20.0) / 210.0, 0.0, 1.0)
+        tree_alpha = np.clip(mask_clean * (1.0 - sky_intensity), 0.0, 1.0)
+        decontam_rgb = orig_f32.copy()
+        is_spill = (b > g) & (b > r) & (tree_alpha < 0.8)
+        decontam_rgb[is_spill, 2] = np.maximum(r[is_spill], g[is_spill] * 0.8)
+        rgba = np.dstack([decontam_rgb, tree_alpha])
+        rgba_u8 = (np.clip(rgba, 0.0, 1.0) * 255.0).astype(np.uint8)
+        out_img = Image.fromarray(rgba_u8)
+        out_img.save(args.output, format="PNG")
+        print(f"SUCCESS_TREE: {model_path}")
+    elif args.mode == "cloud":
+        # Photoshop Blend If / Color Range technique for soft clouds & smoke
+        orig_f32 = orig_np / 255.0
+        r, g, b = orig_f32[:, :, 0], orig_f32[:, :, 1], orig_f32[:, :, 2]
+        cloud_density = np.clip((r + g - 1.2 * b + 0.2) / 0.7, 0.0, 1.0)
+        lum = 0.299 * r + 0.587 * g + 0.114 * b
+        mask_clean = np.clip((mask_arr - 20.0) / 210.0, 0.0, 1.0)
+        cloud_alpha = np.clip(mask_clean * (cloud_density * 0.7 + lum * 0.3), 0.0, 1.0)
+        rgba = np.dstack([orig_f32, cloud_alpha])
+        rgba_u8 = (np.clip(rgba, 0.0, 1.0) * 255.0).astype(np.uint8)
+        out_img = Image.fromarray(rgba_u8)
+        out_img.save(args.output, format="PNG")
+        print(f"SUCCESS_CLOUD: {model_path}")
+    elif args.mode == "plastic":
+        # Photoshop High Pass / Screen + Multiply technique for transparent plastic bags
+        mask_clean = np.clip((mask_arr - 25.0) / 200.0, 0.0, 1.0)
+        orig_f32 = orig_np / 255.0
+        lum = 0.299 * orig_f32[:, :, 0] + 0.587 * orig_f32[:, :, 1] + 0.114 * orig_f32[:, :, 2]
+        darkness = np.clip(1.0 - lum, 0.0, 1.0)
+        hl = np.clip((lum - 0.88) / 0.12, 0.0, 1.0) ** 1.6
+        alpha = np.clip(darkness * 2.0 + hl * 1.8 + 0.04, 0.0, 1.0) * mask_clean
+        hl_sum = darkness + hl
+        ratio = np.where(hl_sum > 0.001, hl / hl_sum, 0.5)[:, :, np.newaxis]
+        rgb_decontam = orig_f32 * (1.0 - ratio) + 1.0 * ratio
+        rgba = np.dstack([rgb_decontam, alpha])
+        rgba_u8 = (np.clip(rgba, 0.0, 1.0) * 255.0).astype(np.uint8)
+        out_img = Image.fromarray(rgba_u8)
+        out_img.save(args.output, format="PNG")
+        print(f"SUCCESS_PLASTIC: {model_path}")
+    else:
+        if is_border_bright_neutral:
+            mask_arr[is_bg_match] = 0.0
+
+        # Suppress weak edge noise / halos
+        mask_arr[mask_arr < 20] = 0.0
+
+        mask_cleaned = Image.fromarray(mask_arr.clip(0, 255).astype(np.uint8))
+        mask_cleaned.save(args.output, format="PNG")
+        print(f"SUCCESS: {model_path}")
 
 if __name__ == "__main__":
     main()

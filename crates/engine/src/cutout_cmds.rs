@@ -38,7 +38,13 @@ fn enabled(s: &Session) -> std::result::Result<(), String> {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-fn run_ai_cutout(doc: &Document, layer_id: LayerId, bounds: Rect, sample_all: bool) -> std::result::Result<Region, String> {
+struct AiCutoutResult {
+    region: Region,
+    rgba_pixels: Option<Vec<f32>>,
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn run_ai_cutout(doc: &Document, layer_id: LayerId, bounds: Rect, sample_all: bool, mode: &str) -> std::result::Result<AiCutoutResult, String> {
     let w = bounds.width();
     let h = bounds.height();
     if w < 4 || h < 4 {
@@ -92,7 +98,8 @@ fn run_ai_cutout(doc: &Document, layer_id: LayerId, bounds: Rect, sample_all: bo
     let mut cmd = std::process::Command::new(py_cmd);
     cmd.arg(script_path)
         .arg("--input").arg(in_file.path())
-        .arg("--output").arg(&out_path);
+        .arg("--output").arg(&out_path)
+        .arg("--mode").arg(mode);
 
     #[cfg(windows)]
     {
@@ -124,17 +131,39 @@ fn run_ai_cutout(doc: &Document, layer_id: LayerId, bounds: Rect, sample_all: bo
     let raw = mask_img.data();
     let total_px = (w * h) as usize;
     let mut mask = Vec::with_capacity(total_px);
-    for i in 0..total_px {
-        if let Some(&b) = raw.get(i * ch) {
-            mask.push(b);
-        } else {
-            mask.push(0);
+    let mut rgba_pixels = None;
+
+    if ch >= 4 {
+        let mut rgba = Vec::with_capacity(total_px * 4);
+        for i in 0..total_px {
+            let offset = i * ch;
+            let r = raw.get(offset).copied().unwrap_or(0);
+            let g = raw.get(offset + 1).copied().unwrap_or(0);
+            let b = raw.get(offset + 2).copied().unwrap_or(0);
+            let a = raw.get(offset + 3).copied().unwrap_or(0);
+            rgba.push(r as f32 / 255.0);
+            rgba.push(g as f32 / 255.0);
+            rgba.push(b as f32 / 255.0);
+            rgba.push(a as f32 / 255.0);
+            mask.push(a);
+        }
+        rgba_pixels = Some(rgba);
+    } else {
+        for i in 0..total_px {
+            if let Some(&b) = raw.get(i * ch) {
+                mask.push(b);
+            } else {
+                mask.push(0);
+            }
         }
     }
 
-    Ok(Region {
-        bbox: bounds,
-        mask,
+    Ok(AiCutoutResult {
+        region: Region {
+            bbox: bounds,
+            mask,
+        },
+        rgba_pixels,
     })
 }
 
@@ -148,11 +177,44 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
         .and_then(Value::as_str)
         .and_then(crate::prefs::RemoveBackgroundMethod::parse)
         .unwrap_or(s.prefs().tools.remove_background_method);
-    let explicit_ai = p.get("method").and_then(Value::as_str) == Some("ai");
+    let method_param = p.get("method").and_then(Value::as_str);
+    let is_glass = p.get("glass").and_then(Value::as_bool).unwrap_or(false)
+        || method == crate::prefs::RemoveBackgroundMethod::Glass
+        || method_param == Some("glass");
+    let is_tree = method == crate::prefs::RemoveBackgroundMethod::Tree || method_param == Some("tree");
+    let is_cloud = method == crate::prefs::RemoveBackgroundMethod::Cloud || method_param == Some("cloud");
+    let is_plastic = method == crate::prefs::RemoveBackgroundMethod::Plastic || method_param == Some("plastic");
+    let is_specialized = is_glass || is_tree || is_cloud || is_plastic;
+    let is_ai = method == crate::prefs::RemoveBackgroundMethod::Ai || is_specialized;
+    let explicit_ai = method_param == Some("ai") || is_specialized;
+
+    let mode_str = if is_glass {
+        "glass"
+    } else if is_tree {
+        "tree"
+    } else if is_cloud {
+        "cloud"
+    } else if is_plastic {
+        "plastic"
+    } else {
+        "auto"
+    };
+
+    let job_label = if is_glass {
+        "Remove Background (Glass)"
+    } else if is_tree {
+        "Remove Background (Tree)"
+    } else if is_cloud {
+        "Remove Background (Cloud)"
+    } else if is_plastic {
+        "Remove Background (Plastic)"
+    } else {
+        "Remove Background"
+    };
 
     crate::jobs::edit_job(
         s,
-        "Remove Background",
+        job_label,
         move |doc, _, ctx| {
             let bounds = if !sample_all && let Some(surf) = doc.layer(id).and_then(Layer::surface) {
                 let cb = surf.content_bounds().intersect(&doc.bounds());
@@ -162,13 +224,22 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
             };
 
             let mut region_opt = None;
-            if method == crate::prefs::RemoveBackgroundMethod::Ai {
+            let mut rgba_opt = None;
+            if is_ai {
                 #[cfg(not(target_arch = "wasm32"))]
                 {
-                    ctx.progress(0.1, "Running AI model (rmbg_model.onnx)");
-                    match run_ai_cutout(doc, id, bounds, sample_all) {
-                        Ok(reg) => {
-                            region_opt = Some(reg);
+                    let progress_msg = match mode_str {
+                        "glass" => "Running AI Glass model (rmbg_model.onnx)",
+                        "tree" => "Running AI Tree Channel model (rmbg_model.onnx)",
+                        "cloud" => "Running AI Cloud Blend model (rmbg_model.onnx)",
+                        "plastic" => "Running AI Plastic Wrap model (rmbg_model.onnx)",
+                        _ => "Running AI model (rmbg_model.onnx)",
+                    };
+                    ctx.progress(0.1, progress_msg);
+                    match run_ai_cutout(doc, id, bounds, sample_all, mode_str) {
+                        Ok(res) => {
+                            region_opt = Some(res.region);
+                            rgba_opt = res.rgba_pixels;
                         }
                         Err(e) => {
                             if explicit_ai {
@@ -196,7 +267,7 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
             if ctx.cancelled() {
                 return Err(EngineError::Cancelled);
             }
-            if refine && method != crate::prefs::RemoveBackgroundMethod::Ai {
+            if refine && !is_ai {
                 ctx.progress(0.6, "Refining edge");
                 let refined = with_doc_sampler(doc, Some(id), sample_all, |smp, _| {
                     matting::refine_mask(smp, &matting::region_reader(&region), region.bbox, bounds, &REFINE)
@@ -207,6 +278,13 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                 }
             }
             crate::extra_cmds::background_to_layer_for_mask(doc, id);
+            if let Some(rgba) = &rgba_opt {
+                if let Some(surf) = doc.layer_mut(id).and_then(Layer::surface_mut) {
+                    if surf.channels() == 4 && rgba.len() == (bounds.width() as usize * bounds.height() as usize * 4) {
+                        surf.write_region(bounds, rgba);
+                    }
+                }
+            }
             doc.layer_mut(id).ok_or(EngineError::NoLayer(id))?.mask = Some(LayerMask { surface: matting::region_surface(&region), ..LayerMask::reveal_all() });
             doc.selection = None;
             let b = region.bbox;
@@ -218,16 +296,91 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
 
 /// Remove Background command spec (no menu path: a Properties Quick Action in Photoshop).
 pub fn specs() -> Vec<CommandSpec> {
-    vec![CommandSpec {
-        id: CMD,
-        label: "Remove Background",
-        menu: &[],
-        shortcut: None,
-        params: r##"{"layer":id?,"sampleAllLayers":bool=false,"refine":bool=true,"method":"heuristic"|"ai"} → {layer,bounds} (adds a layer mask from Select Subject or AI model; the Background becomes a normal layer)"##,
-        enabled,
-        run,
-        journal: true,
-    }]
+    vec![
+        CommandSpec {
+            id: CMD,
+            label: "Remove Background",
+            menu: &[],
+            shortcut: None,
+            params: r##"{"layer":id?,"sampleAllLayers":bool=false,"refine":bool=true,"method":"heuristic"|"ai"|"glass"|"tree"|"cloud"|"plastic","glass":bool=false} → {layer,bounds} (adds a layer mask from Select Subject or AI model; the Background becomes a normal layer)"##,
+            enabled,
+            run,
+            journal: true,
+        },
+        CommandSpec {
+            id: "layer.cutoutGlass",
+            label: "Remove Background (Glass / Transparent)",
+            menu: &[],
+            shortcut: None,
+            params: r##"{"layer":id?} → {layer,bounds} (auto AI cutout with glass transparency for transparent objects)"##,
+            enabled,
+            run: |s, p| {
+                let mut params = p.clone();
+                if let Some(obj) = params.as_object_mut() {
+                    obj.insert("method".into(), json!("glass"));
+                    obj.insert("glass".into(), json!(true));
+                } else {
+                    params = json!({"method": "glass", "glass": true});
+                }
+                run(s, &params)
+            },
+            journal: true,
+        },
+        CommandSpec {
+            id: "layer.cutoutTree",
+            label: "Remove Background (Tree / Foliage)",
+            menu: &[],
+            shortcut: None,
+            params: r##"{"layer":id?} → {layer,bounds} (Photoshop blue-channel sky masking for fine foliage)"##,
+            enabled,
+            run: |s, p| {
+                let mut params = p.clone();
+                if let Some(obj) = params.as_object_mut() {
+                    obj.insert("method".into(), json!("tree"));
+                } else {
+                    params = json!({"method": "tree"});
+                }
+                run(s, &params)
+            },
+            journal: true,
+        },
+        CommandSpec {
+            id: "layer.cutoutCloud",
+            label: "Remove Background (Cloud / Sky)",
+            menu: &[],
+            shortcut: None,
+            params: r##"{"layer":id?} → {layer,bounds} (Photoshop soft blend-if matting for clouds and smoke)"##,
+            enabled,
+            run: |s, p| {
+                let mut params = p.clone();
+                if let Some(obj) = params.as_object_mut() {
+                    obj.insert("method".into(), json!("cloud"));
+                } else {
+                    params = json!({"method": "cloud"});
+                }
+                run(s, &params)
+            },
+            journal: true,
+        },
+        CommandSpec {
+            id: "layer.cutoutPlastic",
+            label: "Remove Background (Plastic Bag)",
+            menu: &[],
+            shortcut: None,
+            params: r##"{"layer":id?} → {layer,bounds} (Photoshop wrinkle highlights and multiply shadow matting)"##,
+            enabled,
+            run: |s, p| {
+                let mut params = p.clone();
+                if let Some(obj) = params.as_object_mut() {
+                    obj.insert("method".into(), json!("plastic"));
+                } else {
+                    params = json!({"method": "plastic"});
+                }
+                run(s, &params)
+            },
+            journal: true,
+        },
+    ]
 }
 
 #[cfg(test)]
