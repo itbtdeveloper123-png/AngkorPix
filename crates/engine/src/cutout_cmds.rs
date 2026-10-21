@@ -526,7 +526,7 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
     crate::jobs::edit_job(
         s,
         job_label,
-        move |doc, _, ctx| {
+        move |doc, active, ctx| {
             let bounds = if !sample_all && let Some(surf) = doc.layer(id).and_then(Layer::surface) {
                 let cb = surf.content_bounds().intersect(&doc.bounds());
                 if cb.width() >= 4 && cb.height() >= 4 { cb } else { doc.bounds() }
@@ -608,15 +608,78 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                     return Err(EngineError::Cancelled);
                 }
             }
-            crate::extra_cmds::background_to_layer_for_mask(doc, id);
-            if let Some(rgba) = &rgba_opt {
-                if let Some(surf) = doc.layer_mut(id).and_then(Layer::surface_mut) {
-                    if surf.channels() == 4 && rgba.len() == (bounds.width() as usize * bounds.height() as usize * 4) {
-                        surf.write_region(bounds, rgba);
+
+            let is_multi_layer_preset = (is_glass || is_plastic) && !explicit_ai;
+            if is_multi_layer_preset {
+                crate::extra_cmds::background_to_layer_for_mask(doc, id);
+                let fmt = doc.layer(id).and_then(Layer::surface).map(|s| s.format()).unwrap_or(photocraft_color::PixelFormat::RGBA8);
+                let w = bounds.width() as usize;
+                let h = bounds.height() as usize;
+                let total = w * h;
+
+                // 1. Shadows & Refractions Layer (Multiply mode)
+                let mut shadow_surf = photocraft_raster::Surface::new(fmt);
+                let mut shadow_rgba = Vec::with_capacity(total * 4);
+                let mut highlight_rgba = Vec::with_capacity(total * 4);
+
+                let src_rgba = with_doc_sampler(doc, Some(id), sample_all, |smp, _| smp.rgba(bounds));
+                for idx in 0..total {
+                    let px = src_rgba.get(idx).copied().unwrap_or([0.0, 0.0, 0.0, 1.0]);
+                    let m = region.mask.get(idx).copied().unwrap_or(0);
+                    if m > 0 {
+                        // Inside subject: original refraction colors for Multiply
+                        shadow_rgba.extend_from_slice(&[px[0], px[1], px[2], 1.0]);
+                        let lum = 0.299 * px[0] + 0.587 * px[1] + 0.114 * px[2];
+                        let highlight = ((lum - 0.88) / 0.12).clamp(0.0, 1.0);
+                        highlight_rgba.extend_from_slice(&[highlight, highlight, highlight, 1.0]);
+                    } else {
+                        // Outside subject: pure white (1.0) for Multiply mode, pure black (0.0) for Screen mode
+                        shadow_rgba.extend_from_slice(&[1.0, 1.0, 1.0, 1.0]);
+                        highlight_rgba.extend_from_slice(&[0.0, 0.0, 0.0, 1.0]);
                     }
                 }
+                shadow_surf.write_region(bounds, &shadow_rgba);
+                let mut shadow_layer = Layer::new("🌑 1. Shadows & Refractions [Multiply]", LayerContent::Raster(shadow_surf));
+                shadow_layer.blend = photocraft_color::BlendMode::Multiply;
+                shadow_layer.opacity = 1.0;
+
+                // 2. Highlights & Reflections Layer (Screen mode)
+                let mut highlight_surf = photocraft_raster::Surface::new(fmt);
+                highlight_surf.write_region(bounds, &highlight_rgba);
+                let mut highlight_layer = Layer::new("✨ 2. Highlights & Reflections [Screen]", LayerContent::Raster(highlight_surf));
+                highlight_layer.blend = photocraft_color::BlendMode::Screen;
+                highlight_layer.opacity = 1.0;
+
+                let group_title = if is_plastic {
+                    "📁 Plastic Cutout (ថង់ប្លាស្ទិកថ្លា - Photoshop)"
+                } else {
+                    "📁 Glass Cutout (ដបកែវថ្លា - Photoshop)"
+                };
+                let mut group = Layer::group(group_title, vec![shadow_layer, highlight_layer]);
+                let mask_surf = matting::region_surface(&region);
+                group.mask = Some(LayerMask { surface: mask_surf, ..LayerMask::reveal_all() });
+
+                let gid = doc.insert_above(Some(id), group);
+                doc.remove(id);
+                *active = Some(gid);
+            } else {
+                crate::extra_cmds::background_to_layer_for_mask(doc, id);
+                if let Some(rgba) = &rgba_opt {
+                    if let Some(surf) = doc.layer_mut(id).and_then(Layer::surface_mut) {
+                        if surf.channels() == 4 && rgba.len() == (bounds.width() as usize * bounds.height() as usize * 4) {
+                            surf.write_region(bounds, rgba);
+                        }
+                    }
+                }
+                if let Some(l) = doc.layer_mut(id) {
+                    if is_tree {
+                        l.name = "🌳 Tree (Blue Channel Masked)".to_string();
+                    } else if is_cloud {
+                        l.name = "☁️ Cloud (Blend-If Luminance)".to_string();
+                    }
+                    l.mask = Some(LayerMask { surface: matting::region_surface(&region), ..LayerMask::reveal_all() });
+                }
             }
-            doc.layer_mut(id).ok_or(EngineError::NoLayer(id))?.mask = Some(LayerMask { surface: matting::region_surface(&region), ..LayerMask::reveal_all() });
             doc.selection = None;
             let b = region.bbox;
             Ok([b.x0, b.y0, b.width() as i32, b.height() as i32])
