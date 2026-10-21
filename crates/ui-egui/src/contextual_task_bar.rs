@@ -351,6 +351,27 @@ fn render_shape_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     }
 }
 
+#[derive(Clone, Debug, PartialEq)]
+struct PosterComposerState {
+    style: String,
+    headline: String,
+    subhead: String,
+    badge: String,
+    cta: String,
+}
+
+impl Default for PosterComposerState {
+    fn default() -> Self {
+        Self {
+            style: "summer_fresh".into(),
+            headline: "FRESH SUMMER".into(),
+            subhead: "100% Pure • Refreshing Taste".into(),
+            badge: "NEW ARRIVAL • 50% OFF".into(),
+            cta: "BUY NOW".into(),
+        }
+    }
+}
+
 /// Default context when idle on an image/raster layer with no active selection (matches Photoshop 2026)
 fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     // 1. Select Subject (wand-sparkles icon + label)
@@ -509,6 +530,95 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
                 }
             });
         });
+    });
+
+    // 2.2 Smart Poster Composer button
+    let poster_btn = task_button(ui, Some("sparkles"), Some(tl!("🎨 Smart Poster")), tl!("Smart Poster Composer (រៀបចំ Poster ស្វ័យប្រវត្តពី Layers របស់អ្នក)"), t);
+    egui::Popup::menu(&poster_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        ui.set_min_width(340.0);
+
+        ui.horizontal(|ui| {
+            ui.heading(tl!("🎨 Smart Poster Composer"));
+        });
+        ui.label(egui::RichText::new(tl!("រៀបចំ Poster ស្វ័យប្រវត្តពី Layers របស់អ្នក (Auto Composition & Typography)")).small().weak());
+        ui.separator();
+
+        let state_id = egui::Id::new("smart_poster_composer_state");
+        let mut state = ui.data_mut(|d| d.get_temp_mut_or_default::<PosterComposerState>(state_id).clone());
+
+        ui.label(egui::RichText::new(tl!("រចនាបទ Poster (Poster Style):")).strong().small());
+        egui::ComboBox::from_id_salt("poster_style_combo")
+            .selected_text(match state.style.as_str() {
+                "luxury_gold" => tl!("👑 Luxury Gold (ផលិតផលប្រណិត មាស/ខ្មៅ)"),
+                "cyberpunk" => tl!("⚡ Cyberpunk Neon (យុវវ័យ/បច្ចេកវិទ្យា ភ្លើងណេអុង)"),
+                "super_sale" => tl!("🛍️ Super Sale (ប្រូម៉ូសិន បញ្ចុះតម្លៃពិសេស)"),
+                "minimal_clean" => tl!("🌿 Minimal Clean (បែបធម្មជាតិ សាមញ្ញ ស្អាត)"),
+                _ => tl!("🌴 Summer Fresh (ភេសជ្ជៈ/រដូវក្តៅ ស្រស់ស្រាយ)"),
+            })
+            .width(320.0)
+            .show_ui(ui, |ui| {
+                if ui.selectable_value(&mut state.style, "summer_fresh".into(), tl!("🌴 Summer Fresh (ភេសជ្ជៈ/រដូវក្តៅ ស្រស់ស្រាយ)")).clicked() {
+                    state.headline = "FRESH SUMMER".into();
+                    state.subhead = "100% Pure • Refreshing Taste".into();
+                }
+                if ui.selectable_value(&mut state.style, "luxury_gold".into(), tl!("👑 Luxury Gold (ផលិតផលប្រណិត មាស/ខ្មៅ)")).clicked() {
+                    state.headline = "PURE LUXURY".into();
+                    state.subhead = "Exclusive Edition • Premium Craftsmanship".into();
+                }
+                if ui.selectable_value(&mut state.style, "cyberpunk".into(), tl!("⚡ Cyberpunk Neon (យុវវ័យ/បច្ចេកវិទ្យា ភ្លើងណេអុង)")).clicked() {
+                    state.headline = "CYBER VIBES".into();
+                    state.subhead = "Next-Gen Experience • Limited Drop".into();
+                }
+                if ui.selectable_value(&mut state.style, "super_sale".into(), tl!("🛍️ Super Sale (ប្រូម៉ូសិន បញ្ចុះតម្លៃពិសេស)")).clicked() {
+                    state.headline = "SUPER SALE".into();
+                    state.subhead = "Up to 50% Off • Limited Time Offer".into();
+                }
+                if ui.selectable_value(&mut state.style, "minimal_clean".into(), tl!("🌿 Minimal Clean (បែបធម្មជាតិ សាមញ្ញ ស្អាត)")).clicked() {
+                    state.headline = "MINIMAL ART".into();
+                    state.subhead = "Simplicity & Elegance in Every Detail".into();
+                }
+            });
+
+        ui.add_space(6.0);
+        ui.label(egui::RichText::new(tl!("ចំណងជើងធំ (Main Headline):")).small());
+        ui.add(egui::TextEdit::singleline(&mut state.headline).desired_width(320.0));
+
+        ui.add_space(4.0);
+        ui.label(egui::RichText::new(tl!("ចំណងជើងរង & ពាក្យស្លោក (Sub-Headline):")).small());
+        ui.add(egui::TextEdit::singleline(&mut state.subhead).desired_width(320.0));
+
+        ui.add_space(4.0);
+        ui.horizontal(|ui| {
+            ui.vertical(|ui| {
+                ui.label(egui::RichText::new(tl!("Badge (បញ្ចុះតម្លៃ):")).small());
+                ui.add(egui::TextEdit::singleline(&mut state.badge).desired_width(150.0));
+            });
+            ui.vertical(|ui| {
+                ui.label(egui::RichText::new(tl!("CTA (ប៊ូតុងសកម្មភាព):")).small());
+                ui.add(egui::TextEdit::singleline(&mut state.cta).desired_width(160.0));
+            });
+        });
+
+        ui.add_space(10.0);
+        ui.separator();
+        if ui.button(egui::RichText::new(tl!("🚀 Compose Poster Now (បង្កើត Poster ភ្លាមៗ)")).strong()).clicked() {
+            let _ = crate::menus::invoke(
+                app,
+                ui.ctx(),
+                "doc.composePoster",
+                json!({
+                    "style": state.style,
+                    "headline": state.headline,
+                    "subhead": state.subhead,
+                    "badge": state.badge,
+                    "cta": state.cta,
+                }),
+            );
+            ui.close();
+        }
+
+        ui.data_mut(|d| d.insert_temp(state_id, state));
     });
 
     // 3. Adjust Colors (sliders-horizontal icon + label)
