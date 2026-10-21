@@ -783,15 +783,17 @@ fn preview_image(
     bare: bool,
 ) -> (egui::ColorImage, [f32; 2]) {
     let layer = doc.layer(id);
+    let has_clipped = layer.is_some_and(|l| has_clipped_layers(doc, l.id));
     // Linked masks move with the pixels, so the moving texels carry them (#205).
     let mask = layer.and_then(|l| preview_mask(l, b));
-    // Groups and type/fill layers preview from a flattened render of just that layer.
+    // Groups, type/fill layers, and layers with clipped masks preview from a flattened render.
     let rendered;
     let surf: Option<&photocraft_raster::Surface> = match (lifted, layer.and_then(|l| l.surface())) {
         (Some(s), _) => Some(s),
-        (None, Some(s)) if layer.is_some_and(|l| matches!(l.content, LayerContent::Raster(_))) => Some(s),
+        (None, Some(s)) if layer.is_some_and(|l| matches!(l.content, LayerContent::Raster(_))) && !has_clipped => Some(s),
         _ => {
             let mut solo = doc.clone();
+            clear_artboard_backgrounds(&mut solo.layers);
             if layer.is_some() {
                 solo_layer(&mut solo.layers, id);
             } else {
@@ -816,7 +818,7 @@ fn preview_image(
     };
     let Some(surf) = surf else { return (egui::ColorImage::new([1, 1], vec![Color32::TRANSPARENT]), [1.0, 1.0]) };
     // A flattened render already has the masks applied.
-    let raw = lifted.is_some() || layer.is_some_and(|l| matches!(l.content, LayerContent::Raster(_)));
+    let raw = (lifted.is_some() || layer.is_some_and(|l| matches!(l.content, LayerContent::Raster(_)))) && !has_clipped;
     crate::transform_tex::read_surface(surf, mask.as_ref().filter(|_| raw), b, max_side)
 }
 
@@ -865,6 +867,7 @@ impl Above {
         covering(&doc.layers, id, &mut self.ids);
         let mut up = doc.clone();
         show_only(&mut up.layers, &self.ids);
+        clear_artboard_backgrounds(&mut up.layers);
         let canvas = up.bounds();
         let rect = up
             .layers
@@ -989,22 +992,68 @@ fn show_only(layers: &mut [photocraft_doc::Layer], keep: &[LayerId]) {
     }
 }
 
-/// Leave only `id`, its descendants and the groups holding it visible. Every layer on that path
-/// is detached from its clipping base because the base is hidden in this isolated render (#5239).
-/// Hide every layer but `id` and the groups holding it, and unclip those, so a render shows that
-/// layer alone (the Free Transform preview, Liquify's one-layer backdrop).
+/// Leave only `id`, its descendants, its clipped layers, and the groups holding it visible.
+/// Ancestor artboard backgrounds are made transparent so the artboard's background is not
+/// baked into the layer's preview texture.
 pub(crate) fn solo_layer(layers: &mut [photocraft_doc::Layer], id: LayerId) {
-    for l in layers {
-        if l.id == id {
-            l.clipped = false;
+    let mut i = 0;
+    while i < layers.len() {
+        if layers[i].id == id {
+            layers[i].clipped = false;
+            layers[i].visible = true;
+            // Keep any layers clipped directly to `id` visible and clipped to it
+            let mut j = i + 1;
+            while j < layers.len() && layers[j].clipped {
+                layers[j].visible = true;
+                j += 1;
+            }
+            i = j;
             continue;
         }
-        match &mut l.content {
+        match &mut layers[i].content {
             LayerContent::Group(g) if g.children.iter().any(|c| contains(c, id)) => {
-                l.clipped = false;
+                layers[i].clipped = false;
+                layers[i].visible = true;
+                if let Some(ab) = &mut g.artboard {
+                    ab.background = photocraft_doc::ArtboardBackground::Transparent;
+                }
                 solo_layer(&mut g.children, id);
             }
-            _ => l.visible = false,
+            _ => layers[i].visible = false,
+        }
+        i += 1;
+    }
+}
+
+/// The layers clipped directly to `id` (the clipped run above it among its siblings).
+fn has_clipped_layers(doc: &Document, id: LayerId) -> bool {
+    let Some(path) = doc.path_of(id) else { return false };
+    let (&idx, parent) = match path.split_last() {
+        Some(p) => p,
+        None => return false,
+    };
+    let list = if parent.is_empty() {
+        &doc.layers[..]
+    } else {
+        match doc.layer_at(parent).and_then(|l| l.children()) {
+            Some(ch) => ch,
+            None => return false,
+        }
+    };
+    if list.get(idx).is_some_and(|l| l.clipped) {
+        return false;
+    }
+    list.get(idx + 1).is_some_and(|l| l.clipped)
+}
+
+/// Clear any artboard backgrounds to transparent so they are not baked into preview textures.
+fn clear_artboard_backgrounds(layers: &mut [photocraft_doc::Layer]) {
+    for l in layers {
+        if let LayerContent::Group(g) = &mut l.content {
+            if let Some(ab) = &mut g.artboard {
+                ab.background = photocraft_doc::ArtboardBackground::Transparent;
+            }
+            clear_artboard_backgrounds(&mut g.children);
         }
     }
 }
@@ -5577,5 +5626,63 @@ mod tests {
         let st = app.session.active().unwrap();
         assert!(matches!(&st.doc.layer(st.active_layer.unwrap()).unwrap().content, LayerContent::Text(t) if t.warp.is_none()));
         assert_eq!(past(&app), before + 2);
+    }
+
+    #[test]
+    fn preview_of_layer_inside_artboard_has_transparent_background() {
+        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        app.session.execute("file.new", json!({"width": 100, "height": 100, "artboards": true})).unwrap();
+        app.sync_views();
+        // Create a small 20x20 square inside the artboard from (40, 40) to (60, 60)
+        app.run("layer.new.layer", json!({})).unwrap();
+        app.session
+            .edit("paint", |doc, a| {
+                doc.layer_mut(a.unwrap()).unwrap().surface_mut().unwrap().fill_rect(photocraft_geom::Rect::new(40, 40, 60, 60), &[1.0, 0.0, 0.0, 1.0]);
+                Ok(())
+            })
+            .unwrap();
+        let st = app.session.active().unwrap();
+        let id = st.active_layer.unwrap();
+        let b = photocraft_geom::Rect::new(0, 0, 100, 100);
+        let (img, _) = preview_image(&st.doc, id, None, b, 4096, false);
+        // Pixels outside the square (e.g. at (10, 10)) must NOT be opaque white from the artboard background!
+        assert_eq!(texel_alpha(&img, 10, 10), 0, "artboard background must stay transparent in preview");
+        // Pixels inside the square must be opaque
+        assert_eq!(texel_alpha(&img, 50, 50), 255, "layer content is opaque");
+    }
+
+    #[test]
+    fn preview_of_base_layer_includes_clipped_layers() {
+        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        app.session.execute("file.new", json!({"width": 100, "height": 100})).unwrap();
+        app.sync_views();
+        // Base layer: a 30x30 white square at (20, 20) to (50, 50)
+        app.run("layer.new.layer", json!({"name": "Base"})).unwrap();
+        app.session
+            .edit("paint", |doc, a| {
+                doc.layer_mut(a.unwrap()).unwrap().surface_mut().unwrap().fill_rect(photocraft_geom::Rect::new(20, 20, 50, 50), &[1.0, 1.0, 1.0, 1.0]);
+                Ok(())
+            })
+            .unwrap();
+        let st = app.session.active().unwrap();
+        let base_id = st.active_layer.unwrap();
+
+        // Clipped layer: a blue square filling the whole canvas, clipped to Base
+        app.run("layer.new.layer", json!({"name": "Clipped"})).unwrap();
+        app.session
+            .edit("paint", |doc, a| {
+                doc.layer_mut(a.unwrap()).unwrap().surface_mut().unwrap().fill_rect(photocraft_geom::Rect::new(0, 0, 100, 100), &[0.0, 0.0, 1.0, 1.0]);
+                Ok(())
+            })
+            .unwrap();
+        app.session.execute("layer.createClippingMask", json!({})).unwrap();
+
+        let st = app.session.active().unwrap();
+        let b = photocraft_geom::Rect::new(20, 20, 50, 50);
+        let (img, _) = preview_image(&st.doc, base_id, None, b, 4096, false);
+        // The preview texture of the base layer must contain the blue pixels from the clipped layer!
+        let px = img.pixels[15 * img.size[0] + 15]; // center of 30x30
+        assert_eq!(px.b(), 255, "clipped layer blue color is visible on base");
+        assert_eq!(px.r(), 0, "not bare white base");
     }
 }
