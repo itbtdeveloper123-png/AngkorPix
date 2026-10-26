@@ -387,7 +387,16 @@ pub fn configure(setup: &mut egui_wgpu::WgpuSetup, plan: &Plan, os: Os, wanted: 
                         }
                     })
                     .collect();
+                for a in adapters {
+                    let info = a.get_info();
+                    let supported = surface.is_none_or(|s| a.is_surface_supported(s));
+                    log::info!("GPU adapter candidate: {} ({:?}, {:?}), surface_ok: {supported}", info.name, info.backend, info.device_type);
+                }
                 let i = pick(&cands, backend, os).ok_or_else(|| "no graphics adapter found".to_string())?;
+                if let Some(chosen) = adapters.get(i) {
+                    let info = chosen.get_info();
+                    log::info!("GPU chosen adapter: {} ({:?}, {:?})", info.name, info.backend, info.device_type);
+                }
                 if let Some(w) = wanted.as_deref().filter(|_| wanted_missed(&cands, wanted.as_deref())) {
                     *note.lock().unwrap_or_else(PoisonError::into_inner) =
                         Some(format!("No graphics adapter named \"{w}\" can draw the window; using the automatic choice"));

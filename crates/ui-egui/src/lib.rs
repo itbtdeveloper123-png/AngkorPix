@@ -912,6 +912,19 @@ pub struct PhotocraftApp {
     live_tokens: theme::live::LiveTokens,
 }
 
+/// Initialize Rayon thread pool to prevent CPU starvation on low-core machines.
+/// On systems with 4 or fewer cores, reserves at least 1 core for the UI thread
+/// so image operations and background tile rendering never block the egui event loop.
+#[cfg(not(target_arch = "wasm32"))]
+pub fn init_thread_pool() {
+    let cpus = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4);
+    let worker_threads = if cpus <= 4 { (cpus - 1).max(1) } else { cpus };
+    let _ = rayon::ThreadPoolBuilder::new().num_threads(worker_threads).build_global();
+}
+
+#[cfg(target_arch = "wasm32")]
+pub fn init_thread_pool() {}
+
 impl PhotocraftApp {
     pub fn new(session: Session, services: Services) -> Self {
         let mut app = Self {
@@ -1066,6 +1079,17 @@ impl PhotocraftApp {
     /// Draw the document canvas on the GPU (custom WGSL shader) instead of via egui textures.
     /// Call from the app creator with `cc.wgpu_render_state`; without it the CPU path is used.
     pub fn set_wgpu(&mut self, rs: eframe::egui_wgpu::RenderState) {
+        let info = rs.adapter.get_info();
+        // Hardware auto-tuning: Integrated GPUs (e.g. Intel HD Graphics) have limited shared VRAM.
+        // Cap tile size to 2048 to prevent massive VRAM allocations and severe frame drops.
+        if info.device_type != eframe::wgpu::DeviceType::DiscreteGpu && self.session.prefs().performance.cache_tile_size > 2048 {
+            log::info!(
+                "Auto-tune: clamping cache tile size from {} to 2048 for integrated GPU ({})",
+                self.session.prefs().performance.cache_tile_size,
+                info.name
+            );
+            self.session.prefs.edit(|p| p.performance.cache_tile_size = 2048);
+        }
         // Preferences › Performance › cache tile size (PHOTOCRAFT_GPU_TILE still overrides).
         let tile = self.session.prefs().performance.cache_tile_size;
         // Escaped driver/setup panics must leave the session and CPU canvas alive.
@@ -1973,9 +1997,14 @@ impl PhotocraftApp {
     fn cap_frame_rate(&mut self) {
         #[cfg(not(target_arch = "wasm32"))]
         if let Some(min) = self.min_frame_ms.filter(|m| m.is_finite() && *m > 0.0) {
-            let wait = min.min(100.0) - (gpu_canvas::now_ms() - self.last_frame_start_ms);
+            let elapsed = gpu_canvas::now_ms() - self.last_frame_start_ms;
+            let wait = min.min(100.0) - elapsed;
             if wait > 0.0 {
                 std::thread::sleep(std::time::Duration::from_secs_f64(wait / 1000.0));
+            } else if min >= 30.0 {
+                // On capped software profiles, always yield at least 2ms to the OS
+                // so window messages and mouse movements never starve.
+                std::thread::sleep(std::time::Duration::from_millis(2));
             }
         }
         self.last_frame_start_ms = gpu_canvas::now_ms();

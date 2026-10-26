@@ -255,6 +255,52 @@ pub fn load(app: &mut PhotocraftApp) {
     if !invalid.is_empty() {
         repair_invalid(app, &invalid);
     }
+    auto_tune_hardware(app);
+}
+
+/// Automatically adapt performance preferences to the machine's actual hardware:
+/// - Cap memory usage to at most 70% of physical RAM (prevents system disk paging / freezing).
+/// - On systems with 8GB or less RAM, adapt history states and effect cache to prevent memory exhaustion.
+fn auto_tune_hardware(app: &mut PhotocraftApp) {
+    if cfg!(test) {
+        return;
+    }
+    if let Some(ram_bytes) = crate::gpu_canvas::physical_memory().filter(|b| *b > 0) {
+        let ram_mb = (ram_bytes >> 20) as u32;
+        // Allocate at most 70% of physical RAM to avoid virtual memory thrashing / SSD swap
+        let max_safe_mb = (ram_mb * 7 / 10).clamp(512, ram_mb.saturating_sub(1024));
+        let current_mem = app.session.prefs().performance.memory_usage_mb;
+        let mut edited = false;
+        if current_mem > max_safe_mb {
+            log::info!("Auto-tune: capping memory usage from {current_mem} MB to {max_safe_mb} MB (installed RAM: {ram_mb} MB)");
+            app.session.prefs.edit(|p| p.performance.memory_usage_mb = max_safe_mb);
+            edited = true;
+        }
+        if ram_mb <= 8192 {
+            let current_history = app.session.prefs().performance.history_states;
+            if current_history > 30 {
+                app.session.prefs.edit(|p| p.performance.history_states = 30);
+                edited = true;
+            }
+            let current_fx = app.session.prefs().performance.effect_cache_mb;
+            if current_fx > 256 {
+                app.session.prefs.edit(|p| p.performance.effect_cache_mb = 256);
+                edited = true;
+            }
+        }
+        // If the machine was previously demoted to CPU software rendering by a fallback or crash,
+        // give the hardware GPU another chance unless the user explicitly requested CPU mode.
+        if app.session.prefs().performance.gpu_backend == photocraft_engine::prefs::GpuBackend::Cpu
+            && app.session.prefs().performance.rendering_mode != Some(photocraft_engine::prefs::RenderingMode::Cpu)
+        {
+            log::info!("Auto-tune: recovering from CPU fallback, setting GPU backend back to Auto");
+            app.session.prefs.edit(|p| p.performance.gpu_backend = photocraft_engine::prefs::GpuBackend::Auto);
+            edited = true;
+        }
+        if edited {
+            let _ = save_preferences(app);
+        }
+    }
 }
 
 /// Some saved values couldn't be read and took their defaults (#6611): say which, and write

@@ -449,6 +449,8 @@ fn main() -> eframe::Result {
     // First, so the panic hook and every start-up warning are recorded (`logging`).
     let logger = logging::install();
     crash_guard::install_hook();
+    // Tune Rayon thread pool to keep UI responsive on lower-core machines.
+    photocraft_ui_egui::init_thread_pool();
     // The system font scan can take seconds (minutes on some Macs): run it off the UI thread.
     photocraft_ui_egui::type_tool::warm_fonts();
     let mut launch = LaunchArgs {
@@ -664,11 +666,14 @@ fn main() -> eframe::Result {
     // driver moves to a safer one), and lock this start's marker until the first frames render.
     let t_sentinel = std::time::Instant::now();
     let os = gpu_startup::Os::current();
-    let (pref, mode) = gpu_startup::read_rendering_prefs(services::prefs_file().as_deref());
+    let (mut pref, mode) = gpu_startup::read_rendering_prefs(services::prefs_file().as_deref());
     let (previous, sentinel) = match services::config_dir() {
         Some(dir) => gpu_startup::Sentinel::begin(&dir),
         None => (gpu_startup::Previous::Clean, None),
     };
+    if pref == photocraft_engine::prefs::GpuBackend::Cpu && mode != photocraft_engine::prefs::RenderingMode::Cpu && previous.crashed().is_none() && !safe_gpu {
+        pref = photocraft_engine::prefs::GpuBackend::Auto;
+    }
     let env_backend = std::env::var("WGPU_BACKEND").ok();
     let plan = gpu_startup::plan_with_mode(pref, mode, previous.crashed(), env_backend.as_deref(), safe_gpu, os);
     if let Some(m) = previous.crashed() {
@@ -787,6 +792,11 @@ fn main() -> eframe::Result {
                 app.perf.gpu_info.set_adapter(&rs.adapter.get_info());
                 app.perf.gpu_info.set_available(&rs.available_adapters);
                 let software_window = rs.adapter.get_info().device_type == eframe::wgpu::DeviceType::Cpu;
+                if software_window {
+                    // Software CPU rasterizer (WARP / llvmpipe) runs entirely on CPU cores.
+                    // Cap frame rate to 30 FPS (33.3ms) so the CPU doesn't spike to 100% and UI stays responsive.
+                    app.min_frame_ms = Some(1000.0 / 30.0);
+                }
                 if software_window && mode != photocraft_engine::prefs::RenderingMode::Cpu {
                     // Keep an earlier note, such as a requested adapter that couldn't be used.
                     let software = "No compatible hardware graphics adapter; using software graphics.";

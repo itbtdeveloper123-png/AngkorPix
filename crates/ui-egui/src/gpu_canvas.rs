@@ -155,7 +155,14 @@ impl GpuCanvas {
     pub fn with_tile(rs: &RenderState, tile: Option<u32>) -> Self {
         let max = rs.device.limits().max_texture_dimension_2d;
         let env_tile = std::env::var("PHOTOCRAFT_GPU_TILE").ok().and_then(|v| v.parse::<u32>().ok());
-        let tile = env_tile.or(tile).unwrap_or(DEFAULT_TILE).clamp(64, max);
+        let info = rs.adapter.get_info();
+        let is_discrete = info.device_type == wgpu::DeviceType::DiscreteGpu;
+        let vram = video_memory(&info);
+        // Integrated GPUs and low-VRAM GPUs (<= 2GB) cannot comfortably handle oversized
+        // tiles (e.g. 4096 or 8192 require hundreds of MBs per tile with mips) without
+        // video memory thrashing. Cap tile size to 2048 on these devices for smooth rendering.
+        let safe_max = if is_discrete && vram.is_none_or(|b| b >= (3 << 30)) { max } else { max.min(DEFAULT_TILE) };
+        let tile = env_tile.or(tile).unwrap_or(DEFAULT_TILE).clamp(64, safe_max);
         let high = match std::env::var("PHOTOCRAFT_CANVAS_F16").ok().as_deref() {
             _ if !supports_f16_canvas(&rs.adapter) => HighPolicy::Off,
             Some("0") => HighPolicy::Off,
