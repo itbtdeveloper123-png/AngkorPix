@@ -504,13 +504,28 @@ fn main() -> eframe::Result {
                 }
             }
             #[cfg(target_os = "linux")]
-            let session = {
+            let mut session = {
                 let mut session = Session::new();
                 session.print_spooler = print_portal::spooler();
                 session
             };
             #[cfg(not(target_os = "linux"))]
-            let session = Session::new();
+            let mut session = Session::new();
+
+            // Default UI language to Khmer ("km") on first install / unconfigured launches
+            let needs_km_default = services::prefs_file().map_or(true, |p| {
+                if !p.exists() {
+                    return true;
+                }
+                std::fs::read_to_string(&p).ok().and_then(|t| serde_json::from_str::<serde_json::Value>(&t).ok()).map_or(true, |v| {
+                    let lang = v.pointer("/interface/language").and_then(|l| l.as_str());
+                    lang.is_none() || lang == Some("auto")
+                })
+            });
+            if needs_km_default {
+                session.edit_prefs(|p| p.interface.language = "km".into());
+            }
+
             PhotocraftApp::install_type_reset_hooks(&cc.egui_ctx);
             let mut app = PhotocraftApp::new(session, services);
             app.min_frame_ms = uncapped.then_some(1000.0 / 240.0);
