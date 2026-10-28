@@ -219,8 +219,8 @@ pub fn remembers(fields: &Map<String, Value>) -> bool {
 /// The Refine Edge Brush (R): painting on the canvas sets where edge refinement happens.
 fn brush_controls(ui: &mut egui::Ui, fields: &mut Map<String, Value>) {
     let t = Tokens::get(ui.ctx());
+    let mut on = brush_on(fields);
     ui.horizontal(|ui| {
-        let mut on = brush_on(fields);
         crate::widgets::checkbox(ui, &mut on, tl!("Refine Edge Brush (R)"));
         fields.insert("__brush".into(), json!(on));
 
