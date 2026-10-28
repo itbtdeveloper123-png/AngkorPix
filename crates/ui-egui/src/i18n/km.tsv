@@ -1666,7 +1666,7 @@ cameraRaw	Roundness	ភាពមូល
 cameraRaw	Roughness	ភាពគគ្រើម
 cameraRaw	Size	ទំហំ
 # Phase 4.13 — New Document + Home + Image Size
-	Home	Home
+	Home	ទំព័រដើម (Home)
 	Recent	ថ្មីៗ (Recent)
 	Photo	Photo
 	Print	Print
@@ -1677,6 +1677,11 @@ cameraRaw	Size	ទំហំ
 	New Document	ឯកសារថ្មី (New Document)
 	Create a new document or open an existing file.	បង្កើតឯកសារថ្មី ឬបើកឯកសារដែលមានស្រាប់។
 	Drop an image or PSD anywhere to open it.	ទម្លាក់រូបភាព ឬឯកសារ PSD ទីនេះដើម្បីបើក។
+	Drag and drop a file	ទម្លាក់ឯកសារទីនេះ
+	Or 	ឬ 
+	select one	ជ្រើសរើសឯកសារ
+	 from your computer to get started.	 ពីកុំព្យូទ័ររបស់អ្នកដើម្បីចាប់ផ្ដើម។
+	Back to document	ត្រឡប់ទៅឯកសារវិញ
 	Use File › Open to open an image.	Use File › Open to open an image
 	BLANK DOCUMENT PRESETS ({n})	BLANK DOCUMENT PRESETS ({n})
 	PRESET DETAILS	PRESET DETAILS
