@@ -194,9 +194,10 @@ impl PhotocraftApp {
             p => {
                 let source = p.as_deref().unwrap_or(&st.doc.name);
                 let ext = match photocraft_engine::file_cmds::extension(source).as_deref() {
-                    Some("pdn") => "pcraft",
+                    Some("pdn" | "pcraft" | "angkorpix") => "angkorpix",
                     Some("kra" | "krz") => "ora",
-                    _ => "psd",
+                    Some("psd" | "psb") => "psd",
+                    _ => "angkorpix",
                 };
                 std::path::Path::new(source).with_extension(ext).to_string_lossy().into_owned()
             }

@@ -43,7 +43,7 @@ def main():
     parser.add_argument("--input", required=True, help="Input RGBA or RGB image path")
     parser.add_argument("--output", required=True, help="Output single-channel grayscale mask path")
     parser.add_argument("--model", default=None, help="Explicit path to ONNX model")
-    parser.add_argument("--mode", default="auto", choices=["auto", "standard", "glass", "tree", "cloud", "plastic"],
+    parser.add_argument("--mode", default="auto", choices=["auto", "standard", "glass", "tree", "cloud", "plastic", "portrait", "hair"],
                         help="Cutout mode: auto, standard (solid subjects), glass, tree, cloud, or plastic")
     args = parser.parse_args()
 
@@ -73,6 +73,9 @@ def main():
     providers.append("CPUExecutionProvider")
 
     sess = ort.InferenceSession(model_path, sess_options=sess_options, providers=providers)
+    active_providers = sess.get_providers()
+    active_provider = active_providers[0] if active_providers else "Unknown"
+    sys.stderr.write(f"[AngkorPix AI] Active Execution Provider: {active_provider}\n")
     inp = sess.get_inputs()[0]
     
     # Determine target resolution from model input tensor
@@ -219,6 +222,33 @@ def main():
         out_img = Image.fromarray(rgba_u8)
         out_img.save(args.output, format="PNG")
         print(f"SUCCESS_PLASTIC: {model_path}")
+    elif args.mode in ["portrait", "hair"]:
+        # Professional Portrait & Hair Matting
+        # Decontaminate background color fringes and preserve thin hair strands
+        mask_clean = np.clip((mask_arr - 10.0) / 235.0, 0.0, 1.0)
+        orig_f32 = orig_np / 255.0
+
+        # Identify fine hair transition boundary (soft alpha region)
+        hair_boundary = (mask_clean > 0.05) & (mask_clean < 0.92)
+
+        # Color decontamination: neutralize background spill in hair boundary
+        decontam_rgb = orig_f32.copy()
+        if np.any(hair_boundary):
+            fg_core = mask_clean > 0.85
+            if np.any(fg_core):
+                fg_mean = np.mean(orig_f32[fg_core], axis=0)
+                blend_factor = (1.0 - mask_clean[hair_boundary, np.newaxis]) * 0.45
+                decontam_rgb[hair_boundary] = (
+                    decontam_rgb[hair_boundary] * (1.0 - blend_factor) + 
+                    fg_mean * blend_factor
+                )
+
+        hair_alpha = np.clip(mask_clean ** 0.92, 0.0, 1.0)
+        rgba = np.dstack([decontam_rgb, hair_alpha])
+        rgba_u8 = (np.clip(rgba, 0.0, 1.0) * 255.0).astype(np.uint8)
+        out_img = Image.fromarray(rgba_u8)
+        out_img.save(args.output, format="PNG")
+        print(f"SUCCESS_HAIR: {model_path}")
     else:
         if is_border_bright_neutral:
             mask_arr[is_bg_match] = 0.0

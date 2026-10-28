@@ -35,6 +35,47 @@ mod pointer;
 use defaults::{apply, default_style_params, default_styles, shown_scale};
 pub use defaults::{foreground_changed, open_color_picker};
 pub(crate) use defaults::{formatting_params, target, target_text, type_unit};
+
+/// Set paragraph alignment on active text edit or selected type layers.
+pub fn set_align(app: &mut PhotocraftApp, align: &str) {
+    app.ui.tool_options.type_align = align.into();
+    if let Some(mut params) = defaults::formatting_params(app) {
+        params["align"] = json!(align);
+        let _ = app.run("type.setStyle", params);
+    }
+}
+
+/// Set font size on active text edit or selected type layers.
+pub fn set_size(app: &mut PhotocraftApp, size: f32) {
+    app.ui.tool_options.type_size = size;
+    if let Some(mut params) = defaults::formatting_params(app) {
+        params["size"] = json!(size);
+        let _ = app.run("type.setStyle", params);
+    }
+}
+
+/// Toggle faux bold on active text edit or selected type layers.
+pub fn toggle_bold(app: &mut PhotocraftApp) {
+    let cur = defaults::target_text(app)
+        .and_then(|t| t.styles.first())
+        .map_or(false, |s| s.style.faux_bold);
+    if let Some(mut params) = defaults::formatting_params(app) {
+        params["fauxBold"] = json!(!cur);
+        let _ = app.run("type.setStyle", params);
+    }
+}
+
+/// Toggle faux italic on active text edit or selected type layers.
+pub fn toggle_italic(app: &mut PhotocraftApp) {
+    let cur = defaults::target_text(app)
+        .and_then(|t| t.styles.first())
+        .map_or(false, |s| s.style.faux_italic);
+    if let Some(mut params) = defaults::formatting_params(app) {
+        params["fauxItalic"] = json!(!cur);
+        let _ = app.run("type.setStyle", params);
+    }
+}
+
 #[cfg(test)]
 pub(crate) use editing::{CharToggle, step_char_metric, toggle_char_style, toggle_hyphenate};
 pub use editing::{cancel, commit, commit_with, edit_active, edit_at, end_if_left};

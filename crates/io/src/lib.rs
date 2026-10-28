@@ -428,7 +428,7 @@ pub fn import_file_for_open_with(
     ctl.check().map_err(|_| IoError::Cancelled)?;
     let source = photocraft_psd::FileSource::open(path).map_err(read_failed)?;
     let mut magic = [0u8; 4];
-    let psd = !has_extension(name, photocraft_format::EXTENSION) && photocraft_psd::ReadAt::read_at(&source, 0, &mut magic).is_ok() && is_psd(&magic);
+    let psd = !has_extension(name, photocraft_format::EXTENSION) && !has_extension(name, "pcraft") && photocraft_psd::ReadAt::read_at(&source, 0, &mut magic).is_ok() && is_psd(&magic);
     if !psd {
         drop(source);
         let bytes = photocraft_format::read_file(path).map_err(read_failed)?;
@@ -457,7 +457,7 @@ pub fn import_file(name: &str, path: &std::path::Path, opts: &ImportOptions, ctl
 /// flag alongside the ordinary best-effort import result.
 fn import_stages(name: &str, bytes: &[u8], ctl: &photocraft_raster::Interrupt, opts: &ImportOptions, damaged: &mut bool) -> Result<ImportResult, IoError> {
     // A declared native extension must reach its loader so malformed bundles retain format errors.
-    if has_extension(name, photocraft_format::EXTENSION) || photocraft_format::is_pcraft(bytes) {
+    if has_extension(name, photocraft_format::EXTENSION) || has_extension(name, "pcraft") || has_extension(name, "angkorpix") || photocraft_format::is_pcraft(bytes) {
         let document = photocraft_format::load_from_bytes(bytes)?;
         return Ok(ImportResult { warnings: open_warnings(&document), document, source_read_only: false, preview_only: false });
     }
@@ -593,7 +593,7 @@ fn export_stages(doc: &Document, name_or_ext: &str, opts: &ExportOptions, ctl: &
     if ext == "pdf" {
         return pdf::export(doc);
     }
-    if ext == photocraft_format::EXTENSION {
+    if ext == photocraft_format::EXTENSION || ext == "pcraft" || ext == "angkorpix" {
         let doc = named_for_file(doc, name_or_ext);
         let thumbnail = Some(photocraft_compose::thumbnail(doc.as_ref(), 256));
         ctl.check().map_err(|_| IoError::Cancelled)?;

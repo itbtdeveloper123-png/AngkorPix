@@ -419,6 +419,19 @@ fn render_selection_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
         let _ = crate::menus::invoke(app, ui.ctx(), "layer.layerMask.revealSelection", json!({}));
     }
 
+    // Feather selection popup
+    let feather_btn = task_button(ui, None, Some(tl!("Feather…")), tl!("Feather Selection Edge"), t);
+    egui::Popup::menu(&feather_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        ui.set_min_width(120.0);
+        for px in [1, 2, 5, 10, 20, 30, 50] {
+            if ui.button(format!("{px} px")).clicked() {
+                let _ = crate::menus::invoke(app, ui.ctx(), "select.modify.feather", json!({"radius": px}));
+                ui.close();
+            }
+        }
+    });
+
     // Quick adjustment popup
     let adj_btn = task_button(ui, Some("sliders-horizontal"), Some(tl!("Adjust Colors")), tl!("Add Adjustment Layer"), t);
     egui::Popup::menu(&adj_btn).show(|ui| {
@@ -468,6 +481,31 @@ fn render_type_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
 
     separator(ui, t);
 
+    // Font size selector popup
+    let cur_size = app.ui.tool_options.type_size.round() as i32;
+    let size_label = format!("{cur_size} pt");
+    let size_btn = task_button(ui, None, Some(&size_label), tl!("Font Size"), t);
+    egui::Popup::menu(&size_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        ui.set_min_width(95.0);
+        for sz in [10, 12, 14, 18, 24, 30, 36, 48, 60, 72, 96] {
+            if ui.button(format!("{sz} pt")).clicked() {
+                crate::type_tool::set_size(app, sz as f32);
+                ui.close();
+            }
+        }
+    });
+
+    // Faux Bold & Italic quick buttons
+    if task_button(ui, None, Some("B"), tl!("Toggle Faux Bold"), t).clicked() {
+        crate::type_tool::toggle_bold(app);
+    }
+    if task_button(ui, None, Some("I"), tl!("Toggle Faux Italic"), t).clicked() {
+        crate::type_tool::toggle_italic(app);
+    }
+
+    separator(ui, t);
+
     if task_button(ui, Some("align-left"), None, tl!("Align Left"), t).clicked() {
         crate::type_tool::set_align(app, "left");
     }
@@ -476,6 +514,10 @@ fn render_type_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     }
     if task_button(ui, Some("align-right"), None, tl!("Align Right"), t).clicked() {
         crate::type_tool::set_align(app, "right");
+    }
+
+    if task_button(ui, None, Some(tl!("Warp…")), tl!("Warp Text (Arc, Wave, Flag)"), t).clicked() {
+        let _ = crate::menus::invoke(app, ui.ctx(), "layer.type.warp", json!({}));
     }
 
     separator(ui, t);
@@ -498,6 +540,51 @@ fn render_crop_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
 
     separator(ui, t);
 
+    // Aspect ratio preset popup
+    let ratio_str = match app.ui.tool_options.crop_ratio.as_str() {
+        "" => tl!("Ratio"),
+        "original" => tl!("Original"),
+        "1:1" => "1:1",
+        "4:5" => "4:5",
+        "16:9" => "16:9",
+        "4:3" => "4:3",
+        "9:16" => "9:16",
+        other => other,
+    };
+    let ratio_btn = task_button(ui, None, Some(ratio_str), tl!("Crop Aspect Ratio"), t);
+    egui::Popup::menu(&ratio_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        ui.set_min_width(140.0);
+        if ui.button(tl!("Unconstrained")).clicked() {
+            app.ui.tool_options.crop_ratio.clear();
+            ui.close();
+        }
+        if ui.button(tl!("Original Ratio")).clicked() {
+            app.ui.tool_options.crop_ratio = "original".into();
+            ui.close();
+        }
+        if ui.button("1:1 (Square)").clicked() {
+            app.ui.tool_options.crop_ratio = "1:1".into();
+            ui.close();
+        }
+        if ui.button("4:5 (8:10)").clicked() {
+            app.ui.tool_options.crop_ratio = "4:5".into();
+            ui.close();
+        }
+        if ui.button("16:9 (Landscape)").clicked() {
+            app.ui.tool_options.crop_ratio = "16:9".into();
+            ui.close();
+        }
+        if ui.button("9:16 (Story / Reel)").clicked() {
+            app.ui.tool_options.crop_ratio = "9:16".into();
+            ui.close();
+        }
+        if ui.button("4:3").clicked() {
+            app.ui.tool_options.crop_ratio = "4:3".into();
+            ui.close();
+        }
+    });
+
     if task_button(ui, Some("ruler"), Some(tl!("Straighten")), tl!("Straighten image"), t).clicked() {
         crate::crop_straighten::toggle(app);
     }
@@ -515,6 +602,38 @@ fn render_crop_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
 /// Context when Shape layer is active
 fn render_shape_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
     let _ = task_button(ui, Some("pentagon"), Some(tl!("Shape Layer")), "", t);
+
+    separator(ui, t);
+
+    // Stroke width popup
+    let stroke_btn = task_button(ui, None, Some(tl!("Stroke…")), tl!("Shape Stroke Width"), t);
+    egui::Popup::menu(&stroke_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        ui.set_min_width(110.0);
+        for w in [1, 2, 3, 5, 8, 12, 20] {
+            if ui.button(format!("{w} px")).clicked() {
+                let _ = crate::menus::invoke(app, ui.ctx(), "shape.edit", json!({"strokeWidth": w}));
+                ui.close();
+            }
+        }
+    });
+
+    // Corner radius popup
+    let radius_btn = task_button(ui, None, Some(tl!("Radius…")), tl!("Corner Radius (Rectangles/Polygons)"), t);
+    egui::Popup::menu(&radius_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        ui.set_min_width(110.0);
+        for r in [0, 4, 8, 12, 16, 24, 32, 48] {
+            if ui.button(format!("{r} px")).clicked() {
+                let _ = crate::menus::invoke(app, ui.ctx(), "shape.edit", json!({"cornerRadius": r}));
+                ui.close();
+            }
+        }
+    });
+
+    if task_button(ui, Some("sparkles"), Some(tl!("Fx…")), tl!("Open Layer Styles"), t).clicked() {
+        let _ = crate::menus::invoke(app, ui.ctx(), "layer.layerStyle", json!({}));
+    }
 
     separator(ui, t);
 

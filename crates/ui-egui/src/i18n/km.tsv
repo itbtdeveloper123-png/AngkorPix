@@ -4322,3 +4322,17 @@ navigator	Zoom	ការពង្រីក/បង្រួម (Zoom)
 	Very High	ខ្ពស់ខ្លាំង
 	Zoom Tool (Z)	ឧបករណ៍ពង្រីក/បង្រួម (Z)
 	…	…
+Refine Hair	កែសម្រួលគែមសក់
+Font Size	ទំហំពុម្ពអក្សរ
+Crop Aspect Ratio	សមាមាត្រកាត់តម្រឹម (Aspect Ratio)
+Unconstrained	មិនកំណត់សមាមាត្រ (សេរី)
+Shape Stroke Width	កម្រាស់បន្ទាត់គែមរាង (Stroke Width)
+Corner Radius (Rectangles/Polygons)	កាំកោងជ្រុងរាង (Corner Radius)
+Warp Text (Arc, Wave, Flag)	ពត់កោងអត្ថបទ (Arc, Wave, Flag)
+Toggle Faux Bold	បិទ/បើក អក្សរដិត (Faux Bold)
+Toggle Faux Italic	បិទ/បើក អក្សរទ្រេត (Faux Italic)
+Feather Selection Edge	ធ្វើឱ្យគែមនៃការជ្រើសរើសព្រិលទន់
+Automatically refine fine hair and fur edges along the selection boundary	កែសម្រួលគែមសក់ និងរោមសត្វដោយស្វ័យប្រវត្តិតាមព្រំដែននៃការជ្រើសរើស
+Open Layer Styles	បើកផ្ទាំងរចនាប័ទ្ម Layer (Layer Styles)
+Radius…	កាំកោង…
+Fx…	បែបផែន Fx…

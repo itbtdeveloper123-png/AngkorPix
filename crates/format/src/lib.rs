@@ -50,7 +50,10 @@ pub use read::read_file;
 pub use store::{ByteSource, DEFAULT_REVERIFY_BUDGET, PcraftWriter, SaveStats, read_entry};
 
 /// File extension of the native format.
-pub const EXTENSION: &str = "pcraft";
+/// File extension of the native format.
+pub const EXTENSION: &str = "angkorpix";
+/// Legacy file extension of the native format.
+pub const LEGACY_EXTENSION: &str = "pcraft";
 
 #[derive(Debug, thiserror::Error)]
 pub enum FormatError {
@@ -133,6 +136,11 @@ impl Default for LoadOptions {
 /// `true` when ZIP bytes contain a `manifest.json` entry.
 ///
 /// Bundles written here place the manifest first; re-zipped bundles may reorder entries.
+pub fn is_angkorpix(bytes: &[u8]) -> bool {
+    is_pcraft(bytes)
+}
+
+/// `true` when ZIP bytes contain a `manifest.json` entry.
 pub fn is_pcraft(bytes: &[u8]) -> bool {
     if !bytes.starts_with(b"PK\x03\x04") {
         return false;

@@ -242,9 +242,9 @@ fn adopt_locked(legacy: &Path, dir: &Path) -> PathBuf {
 fn move_entries(from: &Path, to: &Path) {
     let Ok(entries) = std::fs::read_dir(from) else { return };
     let names: Vec<String> = entries.flatten().filter_map(|e| e.file_name().to_str().map(str::to_owned)).collect();
-    let keys: std::collections::BTreeSet<&str> = names.iter().filter_map(|n| n.strip_suffix(".pcraft").or_else(|| n.strip_suffix(".json"))).collect();
+    let keys: std::collections::BTreeSet<&str> = names.iter().filter_map(|n| n.strip_suffix(".angkorpix").or_else(|| n.strip_suffix(".pcraft")).or_else(|| n.strip_suffix(".json"))).collect();
     for key in keys {
-        let parts = [format!("{key}.pcraft"), format!("{key}.json")];
+        let parts = [format!("{key}.angkorpix"), format!("{key}.pcraft"), format!("{key}.json")];
         if parts.iter().any(|p| std::fs::symlink_metadata(to.join(p)).is_ok()) {
             continue;
         }

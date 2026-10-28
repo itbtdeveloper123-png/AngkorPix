@@ -1300,9 +1300,9 @@ fn package(s: &mut Session, p: &Value) -> Result<Value> {
     // The native format keeps external links; our PSD writer has no `lnkE` (external linked
     // file) support yet, so a PSD package would embed or flatten them.
     let ext = match p.get("format").and_then(Value::as_str) {
-        Some(f @ ("psd" | "psb" | "pcraft")) => f.to_string(),
+        Some(f @ ("psd" | "psb" | "angkorpix" | "pcraft")) => f.to_string(),
         Some(f) => return Err(bad(cmd, format!("unknown package format `{f}` (pcraft|psd|psb)"))),
-        None => "pcraft".into(),
+        None => "angkorpix".into(),
     };
     let folder = join(&dir, &crate::file_cmds::sanitize(&name));
     let links_dir = join(&folder, "Links");
