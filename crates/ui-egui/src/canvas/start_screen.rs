@@ -1,3 +1,4 @@
+use super::tabs::open_on_double_click;
 use super::*;
 use egui::CornerRadius;
 

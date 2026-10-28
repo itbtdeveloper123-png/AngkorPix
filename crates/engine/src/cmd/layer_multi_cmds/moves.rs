@@ -1,4 +1,6 @@
-use super::damage::note_damage;
+use photocraft_geom::Rect;
+
+use super::damage::{layer_bounds, note_damage};
 use super::selection::{reselect, same_named_targets, selected, top_level};
 use super::structure::check_group_depth;
 use super::{Document, EngineError, Layer, LayerContent, LayerId, Result, Session, Value, bad, int_i32, json};

@@ -367,7 +367,7 @@ fn dialog_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, d: &Dialog, fields: &
             about_tab_body(app, ui, chosen);
         }
         DialogKind::Command => outcome = command_body(app, ui, d, fields, id, interactive),
-        DialogKind::LayerStyle => crate::layer_style::body(app, ui, fields),
+        DialogKind::LayerStyle => outcome = crate::layer_style::body(app, ui, fields, interactive),
         DialogKind::Error => {
             ui.label(fields.get("message").and_then(Value::as_str).unwrap_or("Error"));
         }
@@ -1013,103 +1013,8 @@ pub fn confirm(app: &mut PhotocraftApp, id: u64) -> Result<Value, String> {
             }
             r
         }
-<<<<<<< HEAD
-        DialogKind::Command if crate::open_prompt::owns_damage(&d.fields) => crate::open_prompt::answer_damage(app, true),
-        DialogKind::Command if crate::guide_layout_ui::owns(&d.fields) => crate::guide_layout_ui::confirm(app, &d.fields),
-        DialogKind::Command if crate::brush_preset_dialog::owns(&d.fields) => crate::brush_preset_dialog::confirm(app, &d.fields),
-        DialogKind::Command if crate::fill_ui::owns(&d.fields) => crate::fill_ui::confirm(app, &d.fields),
-        DialogKind::Command if crate::pattern_fill_ui::owns(&d.fields) => crate::pattern_fill_ui::confirm(app, &d.fields),
-        DialogKind::Command if crate::stroke_ui::owns(&d.fields) => crate::stroke_ui::confirm(app, &d.fields),
-        DialogKind::Command if crate::snapshot_dialog::owns(&d.fields) => crate::snapshot_dialog::confirm(app, &d.fields),
-        DialogKind::Command if crate::channel_options_ui::owns(&d.fields) => crate::channel_options_ui::confirm(app, &d.fields),
-        DialogKind::Command if crate::channel_options_ui::owns_new_spot(&d.fields) => crate::channel_options_ui::confirm_new_spot(app, &d.fields),
-        DialogKind::Command if crate::shape_dialog::owns(&d.fields) => crate::shape_dialog::confirm(app, &d.fields),
-        DialogKind::Command if crate::delete_layer_prompt::owns(&d.fields) => crate::delete_layer_prompt::confirm(app, &d.fields),
-        DialogKind::Command if crate::disk_change_prompt::owns(&d.fields) => crate::disk_change_prompt::confirm(app, &d.fields),
-        DialogKind::Command if crate::replace_prompt::owns(&d.fields) => crate::replace_prompt::confirm(app),
-        DialogKind::Command if crate::actions::owns_insert_stop(&d.fields) => crate::actions::insert_stop_confirm(app, &d.fields),
-        DialogKind::Command if crate::new_layer_ui::owns(&d.fields) => crate::new_layer_ui::confirm(app, &d.fields),
-        DialogKind::Command if crate::mask_trash_prompt::owns(&d.fields) => crate::mask_trash_prompt::confirm(app, &d.fields),
-        DialogKind::Command if crate::rasterize_prompt::owns(&d.fields) => crate::rasterize_prompt::confirm(app, &d.fields),
-        DialogKind::Command if crate::duplicate_layer_ui::owns(&d.fields) => crate::duplicate_layer_ui::confirm(app, &d.fields),
-        DialogKind::Command if crate::stack_dialog::owns(&d.fields) => crate::stack_dialog::confirm(app, &d.fields),
-        DialogKind::Command if crate::tool_reset::owns(&d.fields) => crate::tool_reset::confirm(app),
-        DialogKind::Command if crate::crop_presets::owns(&d.fields) => crate::crop_presets::confirm(app, &d.fields),
-        DialogKind::Command if crate::variables_ui::owns(&d.fields) => crate::variables_ui::confirm(app, &d.fields),
-        DialogKind::Command if crate::file_ui::owns(&d.fields) => crate::file_ui::confirm(app, &d.fields),
-        DialogKind::Command if crate::new_guide_ui::owns(&d.fields) => crate::new_guide_ui::confirm(app, &d.fields),
-        DialogKind::Command if crate::color_picker_ui::owns(&d.fields) => {
-            app.style_preview = None;
-            crate::color_picker_ui::confirm(app, &d.fields)
-        }
-        DialogKind::Command if crate::color_range_ui::owns(&d.fields) => crate::color_range_ui::confirm(app, &d.fields),
-        DialogKind::Command if crate::prefs_ui::owns(&d.fields) => crate::prefs_ui::confirm(app, &d.fields),
-        DialogKind::Command if d.fields.contains_key("__export") => crate::export_dialog::confirm(app, &d.fields),
-        DialogKind::Command => {
-            let Some(cmd) = d.fields.get("__command").and_then(Value::as_str).map(str::to_string) else {
-                app.filter_preview = None;
-                crate::actions::abandoned(app, &d.fields);
-                return Err("dialog has no command".into());
-            };
-            if crate::filter_dialog::needs_displace_map(&cmd, &crate::filter_dialog::params_of(&d.fields)) {
-                app.filter_preview = None;
-                let result = crate::filter_dialog::ask_displace_map(app, cmd, d.fields.clone());
-                if result.is_err() {
-                    crate::actions::abandoned(app, &d.fields);
-                } else {
-                    // Cancel and an unavailable picker finish before the Displace callback
-                    // runs. Observe the whole file-dialog result, including those exits.
-                    app.after_file_dialog(move |app, result| {
-                        if result.is_err() {
-                            crate::actions::abandoned(app, &d.fields);
-                        }
-                        result
-                    });
-                }
-                return result;
-            }
-            let (cmd, params) = match crate::smart_ui::confirm_command(app, &d.fields, cmd, crate::filter_dialog::params_of(&d.fields)) {
-                Ok(edit) => edit,
-                Err(e) => {
-                    app.filter_preview = None;
-                    return Err(e);
-                }
-            };
-            let result = app.run(&cmd, params.clone());
-            // A filter that runs as a background job keeps its preview on screen until the job
-            // lands (`canvas::committed_filter_preview`) instead of flashing the unfiltered image.
-            let running = app
-                .session
-                .active()
-                .is_some_and(|st| app.filter_preview.as_ref().is_some_and(|p| p.key.doc == st.doc.id) && app.session.job_on(st.doc.id).is_some());
-            match app.filter_preview.as_mut() {
-                Some(p) if result.is_ok() && running => p.committing = true,
-                _ => app.filter_preview = None,
-            }
-            if result.is_ok() && cmd == "view.newGuideLayout" {
-                app.ui.view.guide_layout = params;
-            }
-            if result.is_ok() {
-                if crate::adjust_dialog::owns(&d.fields) {
-                    crate::adjust_dialog::remember(app, &d.fields);
-                } else {
-                    crate::filter_dialog::remember(app, &cmd, &d.fields);
-                }
-                // A step dialog of a playing action: the action continues after it.
-                crate::actions::resume(app, &d.fields)?;
-            } else {
-                crate::actions::abandoned(app, &d.fields);
-            }
-            result
-        }
-        DialogKind::LayerStyle => {
-            app.style_preview = None;
-            crate::layer_style::confirm(app, &d.fields)
-        }
-=======
         DialogKind::Command => confirm_command(app, d),
         DialogKind::LayerStyle => crate::layer_style::confirm(app, &d.fields),
->>>>>>> upstream/main
         DialogKind::About | DialogKind::Error => Ok(Value::Null),
     }
 }
