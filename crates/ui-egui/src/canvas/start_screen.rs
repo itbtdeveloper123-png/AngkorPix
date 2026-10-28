@@ -1,4 +1,3 @@
-use super::tabs::{open_on_double_click, paint_dots};
 use super::*;
 use egui::CornerRadius;
 
