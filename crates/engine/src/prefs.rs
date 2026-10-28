@@ -326,7 +326,7 @@ impl Default for Interface {
             show_home_recent_files: true,
             canvas_border: CanvasBorder::DropShadow,
             ui_scale: UiScale::Auto,
-            language: "auto".into(),
+            language: "km".into(),
             ui_font_size: UiFontSize::Small,
             show_channels_in_color: false,
             dynamic_color_sliders: true,
