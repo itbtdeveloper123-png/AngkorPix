@@ -7,7 +7,7 @@
 //! - `effects`: `[{id, kind, on, params, fx?}]` in the layer's effect order.
 //!   `fx` is the effect snapshot the dialog loaded: the apply edits that
 //!   snapshot with `params` (engine-side overlay), so everything the dialog
-//!   doesn't model â€” gradient strokes, imported contours, PSD data â€” survives.
+//!   doesn't model — gradient strokes, imported contours, PSD data — survives.
 //!   An entry without `fx` is a new instance built from `params`.
 //! - `p:blendingOptions`: the parameters of `layer.layerStyle.blendingOptions` (blend mode,
 //!   opacity, fill opacity, channels, knockout, the Advanced Blending switches, Blend If) plus
@@ -37,7 +37,7 @@ enum P {
     GradientMethod,
     Check,
     Angle,
-    /// A pattern from the dialog's `patternList` field (`[[id, name], â€¦]`).
+    /// A pattern from the dialog's `patternList` field (`[[id, name], …]`).
     Pattern,
     /// A contour (thumbnail, preset picker, Contour Editor), with the key of its Anti-aliased
     /// checkbox when the effect has one.
@@ -63,7 +63,7 @@ pub const KINDS: &[(&str, &str)] = &[
     ("dropShadow", "Drop Shadow"),
 ];
 
-/// Effect kinds Photoshop offers several instances of (stored as `â€¦Multi` lists in the PSD).
+/// Effect kinds Photoshop offers several instances of (stored as `…Multi` lists in the PSD).
 const MULTI: &[&str] = &["stroke", "dropShadow", "innerShadow", "colorOverlay", "gradientOverlay"];
 
 fn multi(kind: &str) -> bool {
@@ -191,7 +191,7 @@ fn spec(kind: &str) -> &'static [(&'static str, &'static str, P)] {
             ("shadowBlend", "Shadow Mode", P::Blend),
             ("shadowColor", "Shadow Color", P::Color),
             ("shadowOpacity", "Shadow Opacity", P::Slider(0.0, 100.0, "%")),
-            // Bevel & Emboss â€º Contour element.
+            // Bevel & Emboss › Contour element.
             ("contour", "Contour", P::Check),
             ("contourName", "", P::Contour(Some("contourAntiAlias"))),
             ("contourRange", "Range", P::Slider(1.0, 100.0, "%")),
@@ -220,7 +220,7 @@ fn hex(c: &photocraft_doc::Color) -> String {
     format!("#{r:02x}{g:02x}{b:02x}")
 }
 
-/// Current values of an existing effect, in the command's parameter units â€”
+/// Current values of an existing effect, in the command's parameter units —
 /// only the keys this dialog models. Everything else (gradient strokes, multi-stop
 /// gradients, imported contours) is left out so the apply overlay can't clobber it.
 /// `light` is the document's global light angle: an effect that uses it shows that angle.
@@ -610,7 +610,7 @@ pub fn open_for_layer(app: &mut PhotocraftApp, layer: photocraft_doc::LayerId, s
     open(app, select)
 }
 
-/// `[[id, name], â€¦]` of the patterns a style can use (document's, then the library's).
+/// `[[id, name], …]` of the patterns a style can use (document's, then the library's).
 pub fn pattern_list(app: &PhotocraftApp) -> Value {
     let mut out: Vec<Value> = Vec::new();
     let mut seen = std::collections::HashSet::new();
@@ -878,7 +878,7 @@ fn group_box<R>(
 }
 
 fn inline_label(ui: &mut egui::Ui, label: &str, t: &Tokens) {
-    let width = 120.0;
+    let width = 145.0;
     let (rect, _) = ui.allocate_exact_size(vec2(width, 22.0), Sense::hover());
     let g = crate::tab_strip::elided(ui, tl!(label), egui::FontId::proportional(12.0), t.text_dim, width);
     let pos = pos2(rect.right() - g.size().x, rect.center().y - g.size().y / 2.0);
@@ -1395,13 +1395,13 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
 
         panel_frame.show(ui, |ui| {
             ui.vertical(|ui| {
-                ui.set_width(200.0);
+                ui.set_width(225.0);
                 ui.set_min_height(420.0);
 
                 // Styles & Blending Options rows
                 for (id, label) in [(STYLES_PAGE, "Styles"), (BLENDING, "Blending Options")] {
                     let is_sel = selected == id;
-                    let (rect, resp) = ui.allocate_exact_size(vec2(200.0, 24.0), Sense::click());
+                    let (rect, resp) = ui.allocate_exact_size(vec2(225.0, 24.0), Sense::click());
                     if is_sel {
                         ui.painter().rect_filled(rect, t.radius_sm, t.row_selected.gamma_multiply(if t.pro { 1.0 } else { 0.0 }).max_alpha(t.hover));
                     } else if resp.hovered() {
@@ -1425,7 +1425,7 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                         .filter_map(|e| e.get("id").and_then(Value::as_str).map(str::to_string))
                         .collect();
                     if ids.is_empty() {
-                        let (rect, resp) = ui.allocate_exact_size(vec2(200.0, 24.0), Sense::click());
+                        let (rect, resp) = ui.allocate_exact_size(vec2(225.0, 24.0), Sense::click());
                         if resp.hovered() {
                             ui.painter().rect_filled(rect, t.radius_sm, t.hover.gamma_multiply(0.5));
                         }
@@ -1444,7 +1444,7 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                         let kind_label = KINDS.iter().find(|k| k.0 == kind).map(|k| k.1).unwrap_or(label);
                         let mut on = e.get("on").and_then(Value::as_bool).unwrap_or(false);
                         let is_sel = id == &selected;
-                        let (rect, resp) = ui.allocate_exact_size(vec2(200.0, 24.0), Sense::click());
+                        let (rect, resp) = ui.allocate_exact_size(vec2(225.0, 24.0), Sense::click());
                         if is_sel {
                             ui.painter().rect_filled(rect, t.radius_sm, t.row_selected.gamma_multiply(if t.pro { 1.0 } else { 0.0 }).max_alpha(t.hover));
                         } else if resp.hovered() {
@@ -1514,7 +1514,7 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                     if up_resp.hovered() {
                         ui.painter().rect_filled(up_rect, 2.0, t.hover);
                     }
-                    ui.painter().text(up_rect.center(), egui::Align2::CENTER_CENTER, "â†‘", egui::FontId::proportional(13.0), t.text_dim);
+                    crate::icons::paint(ui, up_rect, "chevron-up", 12.0, if up_resp.hovered() { t.text } else { t.text_dim });
                     if up_resp.clicked()
                         && let Some(effects) = f.get_mut("effects").and_then(Value::as_array_mut)
                         && let Some(pos) = effects.iter().position(|e| e.get("id").and_then(Value::as_str) == Some(&selected))
@@ -1527,7 +1527,7 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                     if dn_resp.hovered() {
                         ui.painter().rect_filled(dn_rect, 2.0, t.hover);
                     }
-                    ui.painter().text(dn_rect.center(), egui::Align2::CENTER_CENTER, "â†“", egui::FontId::proportional(13.0), t.text_dim);
+                    crate::icons::paint(ui, dn_rect, "chevron-down", 12.0, if dn_resp.hovered() { t.text } else { t.text_dim });
                     if dn_resp.clicked()
                         && let Some(effects) = f.get_mut("effects").and_then(Value::as_array_mut)
                         && let Some(pos) = effects.iter().position(|e| e.get("id").and_then(Value::as_str) == Some(&selected))
@@ -1542,8 +1542,8 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                         if can_del && tr_resp.hovered() {
                             ui.painter().rect_filled(tr_rect, 2.0, t.hover);
                         }
-                        let trash_col = if can_del { t.text_dim } else { t.text_faint };
-                        ui.painter().text(tr_rect.center(), egui::Align2::CENTER_CENTER, "ðŸ—‘", egui::FontId::proportional(12.0), trash_col);
+                        let trash_col = if can_del { if tr_resp.hovered() { t.text } else { t.text_dim } } else { t.text_faint };
+                        crate::icons::paint(ui, tr_rect, "trash", 14.0, trash_col);
                         if can_del && tr_resp.clicked() {
                             remove_instance(f, &selected);
                         }
@@ -1658,19 +1658,20 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
         });
 
         // ==========================================
-        // COLUMN 3: Right - OK, Cancel, New Style, Preview (110px)
+        // COLUMN 3: Right - OK, Cancel, New Style, Preview
         // ==========================================
         ui.vertical(|ui| {
-            ui.set_width(110.0);
-            if crate::widgets::primary_button(ui, tl!("OK"), 110.0).clicked() {
+            let btn_w = crate::widgets::button_width(ui, &[tl!("OK"), tl!("Cancel"), tl!("New Style…")]).max(110.0);
+            ui.set_width(btn_w);
+            if crate::widgets::primary_button(ui, tl!("OK"), btn_w).clicked() {
                 outcome = Some(true);
             }
             ui.add_space(6.0);
-            if crate::widgets::secondary_button(ui, tl!("Cancel"), 110.0).clicked() {
+            if crate::widgets::secondary_button(ui, tl!("Cancel"), btn_w).clicked() {
                 outcome = Some(false);
             }
             ui.add_space(6.0);
-            if crate::widgets::secondary_button(ui, tl!("New Styleâ€¦"), 110.0).clicked() {
+            if crate::widgets::secondary_button(ui, tl!("New Style…"), btn_w).clicked() {
                 new_style = true;
             }
             ui.add_space(8.0);
