@@ -557,20 +557,22 @@ fn color_field(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     let mode_hash = mode.bytes().fold(0u64, |h, b| (h << 5).wrapping_add(b as u64));
     let cache_key = (fz.to_bits() as u64) | (mode_hash << 32) | if web_only { 1 << 63 } else { 0 };
     let cached = ui.ctx().data(|d| {
-        let k = d.get_temp::<u64>(ui.id().with("cp_field_key"));
-        let m = d.get_temp::<Mesh>(ui.id().with("cp_field_mesh"));
+        let k = d.get_temp::<u64>(ui.scope_id().with("cp_field_key"));
+        let m = d.get_temp::<Mesh>(ui.scope_id().with("cp_field_mesh"));
         if k == Some(cache_key) { m } else { None }
     });
-    let field_m = if let Some(m) = cached {
+    let mut field_m = if let Some(m) = cached {
         m
     } else {
-        let m = mesh(field, &|x, y| field_color(&mode, fz, x, y));
+        let local_field = Rect::from_min_size(pos2(0.0, 0.0), field.size());
+        let m = mesh(local_field, &|x, y| field_color(&mode, fz, x, y));
         ui.ctx().data_mut(|d| {
-            d.insert_temp(ui.id().with("cp_field_key"), cache_key);
-            d.insert_temp(ui.id().with("cp_field_mesh"), m.clone());
+            d.insert_temp(ui.scope_id().with("cp_field_key"), cache_key);
+            d.insert_temp(ui.scope_id().with("cp_field_mesh"), m.clone());
         });
         m
     };
+    field_m.translate(field.min.to_vec2());
     ui.painter().add(field_m);
     ui.painter().rect_stroke(field, 0.0, Stroke::new(1.0, t.field_border), StrokeKind::Outside);
 
@@ -582,18 +584,21 @@ fn color_field(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     ui.painter().circle_stroke(marker, 4.5, Stroke::new(1.5, inner_col));
 
     // Component slider mesh (hue runs 360° at the top to 0° at the bottom, like Photoshop).
-    let strip_mesh = if mode == "h" {
-        let cached_strip = ui.ctx().data(|d| d.get_temp::<Mesh>(ui.id().with("cp_strip_mesh_h")));
+    let mut strip_mesh = if mode == "h" {
+        let cached_strip = ui.ctx().data(|d| d.get_temp::<Mesh>(ui.scope_id().with("cp_strip_mesh_h")));
         if let Some(m) = cached_strip {
             m
         } else {
-            let m = vertical_strip_mesh(strip, 32, |y| slider_color(&mode, 1.0 - y, hsv, rgb, lab));
-            ui.ctx().data_mut(|d| d.insert_temp(ui.id().with("cp_strip_mesh_h"), m.clone()));
+            let local_strip = Rect::from_min_size(pos2(0.0, 0.0), strip.size());
+            let m = vertical_strip_mesh(local_strip, 32, |y| slider_color(&mode, 1.0 - y, hsv, rgb, lab));
+            ui.ctx().data_mut(|d| d.insert_temp(ui.scope_id().with("cp_strip_mesh_h"), m.clone()));
             m
         }
     } else {
-        vertical_strip_mesh(strip, 32, |y| slider_color(&mode, 1.0 - y, hsv, rgb, lab))
+        let local_strip = Rect::from_min_size(pos2(0.0, 0.0), strip.size());
+        vertical_strip_mesh(local_strip, 32, |y| slider_color(&mode, 1.0 - y, hsv, rgb, lab))
     };
+    strip_mesh.translate(strip.min.to_vec2());
     ui.painter().add(strip_mesh);
 
     let sy = strip.top() + (1.0 - fz) * strip.height();
