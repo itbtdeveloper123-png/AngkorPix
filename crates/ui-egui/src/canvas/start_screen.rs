@@ -216,13 +216,20 @@ pub(super) fn start_screen(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
     // -------------------------------------------------------------------------
     ui.scope_builder(egui::UiBuilder::new().max_rect(main_rect), |ui| {
         egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-            let pad_x = if main_rect.width() > 600.0 { 36.0 } else { 16.0 };
-            ui.add_space(28.0);
+            let avail_w = ui.available_width();
+            let box_w = (avail_w - 64.0).clamp(280.0, 1100.0);
+            let pad_x = ((avail_w - box_w) / 2.0).max(24.0);
+            let box_h = if recent.is_empty() { 230.0 } else { 180.0 };
+
+            if recent.is_empty() {
+                let avail_h = ui.available_height();
+                let top_pad = ((avail_h - box_h) * 0.32).clamp(36.0, 200.0);
+                ui.add_space(top_pad);
+            } else {
+                ui.add_space(28.0);
+            }
 
             // Dashed Drop Box
-            let box_w = (ui.available_width() - pad_x * 2.0).clamp(240.0, 880.0);
-            let box_h = if recent.is_empty() { 220.0 } else { 180.0 };
-
             ui.horizontal(|ui| {
                 ui.add_space(pad_x);
                 let (box_r, box_resp) = ui.allocate_exact_size(vec2(box_w, box_h), Sense::click());
@@ -348,7 +355,8 @@ fn home_recent(app: &mut PhotocraftApp, ui: &mut egui::Ui, recent: &[String], pa
             let right = if hovered { close.left() - 6.0 } else { row.right() - 14.0 };
 
             let x = row.left() + 40.0;
-            let name_g = crate::tab_strip::elided(ui, &name, egui::FontId::proportional(13.0), Color32::from_rgb(235, 235, 235), 260.0);
+            let name_max = (width * 0.42).clamp(260.0, 520.0);
+            let name_g = crate::tab_strip::elided(ui, &name, egui::FontId::proportional(13.0), Color32::from_rgb(235, 235, 235), name_max);
             let name_w = name_g.size().x;
             ui.painter().galley(pos2(x, row.center().y - name_g.size().y / 2.0), name_g, Color32::from_rgb(235, 235, 235));
 
