@@ -404,7 +404,7 @@ fn flat_grid_mesh(rect: Rect, n: usize, color: impl Fn(f32, f32) -> [f32; 3]) ->
 
 /// Room for both component columns, including units, without overflowing the title's width; with
 /// the frame and title the window fits Photoshop's (about 534 x 376 points).
-pub(crate) const CONTENT_WIDTH: f32 = 488.0;
+pub(crate) const CONTENT_WIDTH: f32 = 504.0;
 /// Side of the colour field (Photoshop's is about 256 points).
 const FIELD: f32 = 200.0;
 /// Width of the component fields.
@@ -444,18 +444,18 @@ pub fn body(ui: &mut egui::Ui, f: &mut Map<String, Value>) -> Option<bool> {
                     if widgets::primary_button(ui, tl!("OK"), button_width).clicked() {
                         outcome = Some(true);
                     }
-                    ui.add_space(4.0);
+                    ui.add_space(5.0);
                     if widgets::secondary_button(ui, tl!("Cancel"), button_width).clicked() {
                         outcome = Some(false);
                     }
-                    ui.add_space(4.0);
+                    ui.add_space(5.0);
                     // Handled by the dialog host, which has the app (`take_add_swatch`).
                     if widgets::secondary_button(ui, tl!("Add to Swatches"), button_width).clicked() {
                         f.insert("__addSwatch".into(), json!(true));
                     }
                 });
             });
-            ui.add_space(4.0);
+            ui.add_space(6.0);
             let mode = f.get("__mode").and_then(Value::as_str).unwrap_or("h").to_string();
             fields(ui, f, &mode, &current(f));
         });
@@ -612,17 +612,17 @@ fn swatches(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     let t = Tokens::get(ui.ctx());
     let rgb = current(f).rgb;
     let orig = f.get("__orig").and_then(Value::as_str).and_then(parse_hex).unwrap_or(rgb);
-    let (area, _) = ui.allocate_exact_size(vec2(56.0 + 24.0, 92.0), Sense::hover());
-    // new / current swatches, labelled above and below.
-    let sw = Rect::from_min_size(area.min + vec2(0.0, 16.0), vec2(56.0, 64.0));
+    let (area, _) = ui.allocate_exact_size(vec2(56.0 + 26.0, 96.0), Sense::hover());
+    // new / current swatches, labelled above and below with comfortable headroom for Khmer diacritics.
+    let sw = Rect::from_min_size(area.min + vec2(0.0, 18.0), vec2(56.0, 60.0));
     let p = ui.painter();
     let label = |text: &str, at: egui::Pos2, align: egui::Align2| {
         p.text(at, align, text, egui::FontId::proportional(11.0), t.text_dim);
     };
-    label(tl!("new"), pos2(sw.center().x, sw.top() - 3.0), egui::Align2::CENTER_BOTTOM);
-    label(tl!("current"), pos2(sw.center().x, sw.bottom() + 3.0), egui::Align2::CENTER_TOP);
-    p.rect_filled(Rect::from_min_size(sw.min, vec2(56.0, 32.0)), 0.0, c32(rgb));
-    let cur = Rect::from_min_size(sw.min + vec2(0.0, 32.0), vec2(56.0, 32.0));
+    label(tl!("new"), pos2(sw.center().x, sw.top() - 4.5), egui::Align2::CENTER_BOTTOM);
+    label(tl!("current"), pos2(sw.center().x, sw.bottom() + 4.5), egui::Align2::CENTER_TOP);
+    p.rect_filled(Rect::from_min_size(sw.min, vec2(56.0, 30.0)), 0.0, c32(rgb));
+    let cur = Rect::from_min_size(sw.min + vec2(0.0, 30.0), vec2(56.0, 30.0));
     p.rect_filled(cur, 0.0, c32(orig));
     p.rect_stroke(sw, 0.0, Stroke::new(1.0, t.field_border), StrokeKind::Outside);
     let click_cur = ui.interact(cur, ui.scope_id().with("cp-current"), Sense::click());
@@ -700,7 +700,7 @@ fn fields(ui: &mut egui::Ui, f: &mut Map<String, Value>, mode: &str, now: &Compo
     ui.horizontal_top(|ui| {
         ui.spacing_mut().item_spacing.x = 10.0;
         ui.vertical(|ui| {
-            egui::Grid::new("cp-hsb-rgb").min_row_height(0.0).num_columns(4).spacing([4.0, 2.0]).show(ui, |ui| {
+            egui::Grid::new("cp-hsb-rgb").min_row_height(0.0).num_columns(4).spacing([5.0, 3.5]).show(ui, |ui| {
                 let vals = [hsv[0], hsv[1] * 100.0, hsv[2] * 100.0, rgb[0] * 255.0, rgb[1] * 255.0, rgb[2] * 255.0];
                 let units = ["°", "%", "%", "", "", ""];
                 let ranges = [0.0..=360.0, 0.0..=100.0, 0.0..=100.0, 0.0..=255.0, 0.0..=255.0, 0.0..=255.0];
@@ -731,8 +731,10 @@ fn fields(ui: &mut egui::Ui, f: &mut Map<String, Value>, mode: &str, now: &Compo
                     }
                 }
             });
+            ui.add_space(4.0);
             ui.horizontal(|ui| {
                 ui.spacing_mut().item_spacing.x = 6.0;
+                ui.add_space(14.0);
                 ui.label(egui::RichText::new("#").color(t.text_dim));
                 // While the field has focus it shows what is being typed, not the colour: rebuilding it from
                 // the colour every frame would throw away every keystroke until six valid digits were in.
@@ -776,7 +778,7 @@ fn fields(ui: &mut egui::Ui, f: &mut Map<String, Value>, mode: &str, now: &Compo
                 }
             });
         });
-        egui::Grid::new("cp-lab-cmyk").min_row_height(0.0).num_columns(4).spacing([4.0, 2.0]).show(ui, |ui| {
+        egui::Grid::new("cp-lab-cmyk").min_row_height(0.0).num_columns(4).spacing([5.0, 3.5]).show(ui, |ui| {
             for (i, (v, range)) in [(lab[0], 0.0..=100.0), (lab[1], -128.0..=127.0), (lab[2], -128.0..=127.0)].into_iter().enumerate() {
                 let (key, label) = LAB_MODES[i];
                 if radio(ui, mode == key, label) {

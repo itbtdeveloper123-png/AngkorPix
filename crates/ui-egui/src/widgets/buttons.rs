@@ -171,13 +171,13 @@ fn button_impl_h(ui: &mut Ui, label: &str, min_width: f32, height: Option<f32>, 
     resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Button, ui.is_enabled(), label));
     if resp.has_focus() {
         // Keyboard focus (Tab); clicks don't focus egui buttons.
-        let r = if t.pro { h / 2.0 } else { t.radius_sm } + 2.0;
+        let r = (if t.pro { t.radius.min(h / 2.0) } else { t.radius_sm }) + 2.0;
         ui.painter().rect_stroke(rect.expand(2.0), r, Stroke::new(2.0, t.accent), StrokeKind::Outside);
     }
     if t.pro {
-        // Spectrum buttons: fully rounded; primary = filled accent, secondary = outline.
+        // Photoshop desktop buttons: rounded rectangle (4px radius); primary = accent fill, secondary = solid button surface.
         let down = resp.is_pointer_button_down_on();
-        let r = h / 2.0;
+        let r = t.radius.min(h / 2.0);
         if primary {
             let fill = if down {
                 bg.gamma_multiply(0.8)
@@ -188,10 +188,15 @@ fn button_impl_h(ui: &mut Ui, label: &str, min_width: f32, height: Option<f32>, 
             };
             ui.painter().rect_filled(rect, r, fill);
         } else {
-            if resp.hovered() || down {
-                ui.painter().rect_filled(rect, r, t.hover);
-            }
-            ui.painter().rect_stroke(rect, r, Stroke::new(1.5, if resp.hovered() { t.text } else { t.text_dim }), StrokeKind::Inside);
+            let fill = if down {
+                t.pressed
+            } else if resp.hovered() {
+                t.hover
+            } else {
+                t.field
+            };
+            ui.painter().rect_filled(rect, r, fill);
+            ui.painter().rect_stroke(rect, r, Stroke::new(1.0, t.field_border), StrokeKind::Inside);
         }
         ui.painter().galley(rect.center() - galley.size() / 2.0, galley, fg);
         return resp;
