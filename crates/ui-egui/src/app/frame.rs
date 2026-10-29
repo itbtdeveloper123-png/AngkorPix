@@ -256,6 +256,7 @@ impl PhotocraftApp {
         }
         if !is_home {
             brush_panel::window(self, &ctx);
+            crate::contextual_task_bar::window(self, &ctx);
             preset_panels::windows(self, &ctx);
             gradient_ui::editor_window(self, &ctx);
             type_panels_ui::windows(self, &ctx);
