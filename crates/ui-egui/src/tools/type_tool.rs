@@ -56,7 +56,7 @@ pub fn set_size(app: &mut PhotocraftApp, size: f32) {
 
 /// Toggle faux bold on active text edit or selected type layers.
 pub fn toggle_bold(app: &mut PhotocraftApp) {
-    let cur = options_bar::styles_at(app).map_or(false, |(c, _)| c.faux_bold);
+    let cur = options_bar::styles_at(app).is_some_and(|(c, _)| c.faux_bold);
     if let Some(mut params) = defaults::formatting_params(app) {
         params["fauxBold"] = json!(!cur);
         let _ = app.run("type.setStyle", params);
@@ -65,7 +65,7 @@ pub fn toggle_bold(app: &mut PhotocraftApp) {
 
 /// Toggle faux italic on active text edit or selected type layers.
 pub fn toggle_italic(app: &mut PhotocraftApp) {
-    let cur = options_bar::styles_at(app).map_or(false, |(c, _)| c.faux_italic);
+    let cur = options_bar::styles_at(app).is_some_and(|(c, _)| c.faux_italic);
     if let Some(mut params) = defaults::formatting_params(app) {
         params["fauxItalic"] = json!(!cur);
         let _ = app.run("type.setStyle", params);

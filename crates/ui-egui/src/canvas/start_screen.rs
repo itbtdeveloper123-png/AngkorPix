@@ -1,5 +1,5 @@
 use super::tabs::open_on_double_click;
-use super::*;
+use super::{Color32, PhotocraftApp, Pos2, Rect, Sense, Stroke, paint_dots, pos2, vec2};
 use egui::CornerRadius;
 
 /// Recent files listed on the Home screen.

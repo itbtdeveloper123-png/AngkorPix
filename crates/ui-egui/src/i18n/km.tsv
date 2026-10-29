@@ -807,7 +807,7 @@
 	Swaps height and width	ប្តូរកម្ពស់ និងទទឹង
 	Fit Screen	សមល្មមលើអេក្រង់ (Ctrl+0)
 	Fill Screen	ពេញអេក្រង់
-	Select Subject	ជ្រើសរើសតួអង្គ/ប្រធានបទ (Select Subject)
+	Select Subject	ជ្រើសប្រធានបទ
 	Frequency	ប្រេកង់ (Frequency)
 	Limits:	ដែនកំណត់៖
 	Sampling: Continuous	ការស្រង់គំរូ៖ បន្តបន្ទាប់
@@ -2500,7 +2500,7 @@ shape	Appearance	រូបរាង
 	PSD	PSD
 	Quick Actions	Quick Actions
 	Remove	ដកចេញ
-	Remove Background	លុបផ្ទៃខាងក្រោយ (Remove Background)
+	Remove Background	លុបផ្ទៃខាងក្រោយ
 	Remove Tool	ឧបករណ៍លុប (Remove Tool)
 	Keyboard shortcuts imported	Keyboard shortcuts imported
 	Your keyboard shortcut set {set} is in use here: {n} shortcuts differ from the defaults. Edit › Keyboard Shortcuts shows them; Reset All to Defaults undoes this.	Your keyboard shortcut set {set} is in use here: {n} shortcuts differ from the defaults. Edit › Keyboard Shortcuts shows them; Reset All to Defaults undoes this
@@ -3584,7 +3584,7 @@ curves	Smooth	រលូន (Smooth)
 	Open color-less EXR as ACEScg	បើក EXR គ្មានពណ៌ជា ACEScg
 	Edit Selected Guides	កែសម្រួល Selected Guides
 	Clear Selected Guides	សម្អាត Selected Guides
-	Adjust Colors	កែសម្រួលពណ៌ (Adjust Colors)
+	Adjust Colors	កែសម្រួលពណ៌
 	Adjust colors	កែសម្រួលពណ៌
 	Select subject	ជ្រើសរើសប្រធានបទ
 	Remove background	លុបផ្ទៃខាងក្រោយ

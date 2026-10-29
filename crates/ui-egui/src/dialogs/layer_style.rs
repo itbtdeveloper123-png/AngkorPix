@@ -1451,7 +1451,7 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                             ui.painter().rect_filled(rect, t.radius_sm, t.hover.gamma_multiply(0.5));
                         }
                         let cb = fx_checkbox_rect(rect);
-                        let cresp = ui.interact(cb, ui.id().with(("fxcb", kind, id)), Sense::click());
+                        let cresp = ui.interact(cb, ui.scope_id().with(("fxcb", kind, id)), Sense::click());
                         fx_checkbox(ui.painter(), cb, on, &t);
                         let btn_room = if multi(kind) { if count > 1 { 48.0 } else { 26.0 } } else { 0.0 };
                         let text_max_w = (rect.width() - 32.0 - btn_room).max(30.0);
@@ -1459,7 +1459,7 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                         ui.painter().galley(pos2(rect.left() + 28.0, rect.center().y - g.size().y / 2.0), g, fx_label_color(on, &t));
                         if multi(kind) {
                             let btn = |ui: &egui::Ui, r: egui::Rect, glyph: &str, tag: &str| {
-                                let hresp = ui.interact(r, ui.id().with(("fxbtn", tag, id)), Sense::click());
+                                let hresp = ui.interact(r, ui.scope_id().with(("fxbtn", tag, id)), Sense::click());
                                 let (stroke, fill) = if hresp.hovered() {
                                     (Stroke::new(1.0, t.accent), t.hover)
                                 } else {
@@ -1862,7 +1862,7 @@ fn blending_page(ui: &mut egui::Ui, p: &mut Value, names: &[String]) {
                 });
                 ui.horizontal(|ui| {
                     ui.add_space(88.0);
-                    if blend_if_bar(ui, ui.id().with(("blendIf", key)), &mut q)
+                    if blend_if_bar(ui, ui.scope_id().with(("blendIf", key)), &mut q)
                         && let Some(e) = p.get_mut("blendIf").and_then(|a| a.get_mut(sel))
                     {
                         e[key] = json!(q);
