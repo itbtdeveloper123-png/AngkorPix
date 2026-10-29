@@ -125,6 +125,19 @@ pub fn title_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                         app.ui.workspace = ws;
                         crate::menus::apply_workspace(app);
                     }
+                    if room >= 120.0 {
+                        let btn = egui::Button::new(
+                            egui::RichText::new("📐 AngkorVector")
+                                .size(11.0)
+                                .color(egui::Color32::from_rgb(220, 220, 225)),
+                        )
+                        .fill(egui::Color32::from_rgb(38, 42, 50))
+                        .corner_radius(egui::CornerRadius::same(4));
+
+                        if ui.add(btn).on_hover_text(tl!("Switch to AngkorVector (Adobe Illustrator Mode)")).clicked() {
+                            crate::suite_interop::launch_or_focus_angkorvector();
+                        }
+                    }
                     if icons_shown >= 1
                         && icons::button(ui, "search", 28.0, app.ui.palette_open, &crate::shortcuts::tip_label(app, "Search commands", "edit.search")).clicked()
                     {

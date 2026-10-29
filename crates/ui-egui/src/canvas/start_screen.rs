@@ -201,6 +201,24 @@ pub(super) fn start_screen(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
         let home_g = ui.painter().layout_no_wrap(home_text.to_string(), crate::theme::semibold(13.5), Color32::WHITE);
         ui.painter().galley(pos2(home_r.left() + 42.0, home_r.center().y - home_g.size().y / 2.0), home_g, Color32::WHITE);
 
+        ui.add_space(8.0);
+
+        // AngkorVector Suite Persona button in sidebar
+        let (vec_r, vec_resp) = ui.allocate_exact_size(vec2(sidebar_w, 34.0), Sense::click());
+        let vec_hover = vec_resp.hovered();
+        if vec_hover {
+            ui.painter().rect_filled(vec_r, CornerRadius::ZERO, Color32::from_white_alpha(16));
+        }
+        let vec_icon_r = Rect::from_center_size(pos2(vec_r.left() + 24.0, vec_r.center().y), vec2(16.0, 16.0));
+        crate::icons::paint(ui, vec_icon_r, "pen-tool", 14.0, Color32::from_rgb(255, 140, 20));
+        let vec_text = "AngkorVector";
+        let vec_col = if vec_hover { Color32::WHITE } else { Color32::from_rgb(220, 220, 225) };
+        let vec_g = ui.painter().layout_no_wrap(vec_text.to_string(), egui::FontId::proportional(13.0), vec_col);
+        ui.painter().galley(pos2(vec_r.left() + 42.0, vec_r.center().y - vec_g.size().y / 2.0), vec_g, vec_col);
+        if vec_resp.on_hover_cursor(egui::CursorIcon::PointingHand).on_hover_text(tl!("Open AngkorVector (Vector Graphics & Illustration Mode)")).clicked() {
+            crate::suite_interop::launch_or_focus_angkorvector();
+        }
+
         // Bottom footer links in sidebar
         let bottom_y = sidebar_rect.bottom() - 60.0;
         if ui.cursor().top() < bottom_y {

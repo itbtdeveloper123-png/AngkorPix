@@ -45,6 +45,7 @@ pub(crate) mod tool_memory;
 pub mod updates_ui;
 pub mod widgets;
 pub mod work_area;
+pub mod suite_interop;
 
 use std::collections::HashMap;
 use std::sync::mpsc::{Receiver, Sender};
