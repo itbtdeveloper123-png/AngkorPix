@@ -467,7 +467,6 @@ fn build() -> Vec<CommandSpec> {
                     *active = Some(id);
                     Ok(id)
                 })?;
-                crate::layer_multi_cmds::note_inert_insert(s, id);
                 Ok(json!({ "layer": id.0 }))
             }
         ),
@@ -609,9 +608,6 @@ fn build() -> Vec<CommandSpec> {
                     ["name"] => "Rename Layer",
                     _ => "Layer Properties",
                 };
-                let before = s.active().ok_or(EngineError::NoDocument)?.doc.clone();
-                // Clipping and channel changes reach the layers around it: recomposite everything.
-                let local = p.get("clipped").is_none() && p.get("channels").is_none();
                 // The eye: a history state only with History Options › Make Layer Visibility
                 // Changes Undoable.
                 let only_visibility = changed.as_slice() == ["visible"];
@@ -667,9 +663,6 @@ fn build() -> Vec<CommandSpec> {
                     }
                     Ok(())
                 })?;
-                if local {
-                    crate::layer_multi_cmds::note_damage(s, &before, &ids);
-                }
                 Ok(Value::Null)
             }
         ),

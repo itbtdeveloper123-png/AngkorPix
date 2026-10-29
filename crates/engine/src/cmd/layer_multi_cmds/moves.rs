@@ -1,6 +1,6 @@
 use photocraft_geom::Rect;
 
-use super::damage::{layer_bounds, note_damage};
+use super::damage::layer_bounds;
 use super::selection::{reselect, same_named_targets, selected, top_level};
 use super::structure::check_group_depth;
 use super::{Document, EngineError, Layer, LayerContent, LayerId, Result, Session, Value, bad, int_i32, json};
@@ -153,7 +153,7 @@ pub fn translate(s: &mut Session, p: &Value) -> Result<Value> {
     }
     let mask_target = p.get("target").and_then(Value::as_str) == Some("mask");
     let before = s.active().ok_or(EngineError::NoDocument)?.doc.clone();
-    let ids = s.edit("Move", |doc, _| {
+    s.edit("Move", |doc, _| {
         let (alone, rest): (Vec<LayerId>, Vec<LayerId>) = roots.iter().partition(|id| mask_target && doc.layer(**id).is_some_and(moves_mask_alone));
         let mut ids = move_targets(doc, &rest);
         if ids.is_empty() && alone.is_empty() {
@@ -211,7 +211,6 @@ pub fn translate(s: &mut Session, p: &Value) -> Result<Value> {
         }
         Ok(ids)
     })?;
-    note_damage(s, &before, &ids);
     Ok(Value::Null)
 }
 
