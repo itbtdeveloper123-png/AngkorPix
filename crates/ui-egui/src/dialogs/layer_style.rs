@@ -1,4 +1,4 @@
-﻿//! Photoshop-style Layer Style dialog: one row per effect instance on the left,
+//! Photoshop-style Layer Style dialog: one row per effect instance on the left,
 //! parameters on the right. State lives in the dialog's `fields` (JSON), so
 //! automation can drive it like any other dialog:
 //!
@@ -183,7 +183,7 @@ fn spec(kind: &str) -> &'static [(&'static str, &'static str, P)] {
             ("soften", "Soften", P::Slider(0.0, 16.0, "px")),
             ("angle", "Angle", P::Angle),
             ("useGlobalLight", "Use Global Light", P::Check),
-            ("altitude", "Altitude", P::Slider(0.0, 90.0, "Â°")),
+            ("altitude", "Altitude", P::Slider(0.0, 90.0, "°")),
             ("glossContour", "Gloss Contour", P::Contour(Some("glossAntiAlias"))),
             ("highlightBlend", "Highlight Mode", P::Blend),
             ("highlightColor", "Highlight Color", P::Color),
@@ -503,7 +503,7 @@ pub fn drags_shadow(f: &Map<String, Value>) -> bool {
 /// A drag on the image with a shadow page selected: `start` is true on the press (it records the
 /// shadow's angle and distance then), `total` the pointer's movement since in document pixels.
 /// The shadow's offset follows the pointer, kept as Photoshop's whole-degree angle and whole-pixel
-/// distance (offset = (âˆ’cos angle, sin angle) Ã— distance, the light opposite the shadow); with
+/// distance (offset = (-cos angle, sin angle) * distance, the light opposite the shadow); with
 /// Use Global Light the shared angle moves too ([`set_param`]).
 pub fn drag_shadow(f: &mut Map<String, Value>, start: bool, total: [f64; 2]) {
     const KEY: &str = "__shadowDrag";

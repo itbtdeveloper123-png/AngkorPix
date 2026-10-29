@@ -1,20 +1,20 @@
-﻿//! The macOS menu bar: the same menus as the in-window bar ([`crate::menus::menu_items`]), laid
+//! The macOS menu bar: the same menus as the in-window bar ([`crate::menus::menu_items`]), laid
 //! out the way a Mac app's are and handed to a platform [`Backend`] (the desktop app's muda one).
 //!
 //! Pure and platform-free, so it is tested everywhere and builds for the web; only the backend
 //! touches AppKit. What the layout does ([`mac_layout`]):
-//! - an **app menu** named PhotoCraft: About (from Help), Settings (Edit â€º Preferences), Language,
-//!   Appearance (Window â€º Theme), Services, Hide, Hide Others, Show All and Quit (File â€º Exit,
+//! - an **app menu** named PhotoCraft: About (from Help), Settings (Edit › Preferences), Language,
+//!   Appearance (Window › Theme), Services, Hide, Hide Others, Show All and Quit (File › Exit,
 //!   still the app's own `file.exit` so the unsaved-changes prompt runs). The other Craft apps
 //!   use the same app menu;
 //! - **Window** gets Minimize, Zoom and Bring All to Front, with the open documents after it
 //!   (where a Mac app lists its windows), and **Help** the system search field;
-//! - **clashes** with the system's keys (âŒ˜H, âŒ˜M, âŒ˜W, âŒ˜,) are resolved in PhotoCraft's favour, and
-//!   reported; Hide and Minimize move to âŒƒâŒ˜H and âŒƒâŒ˜M, as Photoshop does.
+//! - **clashes** with the system's keys (⌘H, ⌘M, ⌘W, ⌘,) are resolved in PhotoCraft's favour, and
+//!   reported; Hide and Minimize move to ⌃⌘H and ⌃⌘M, as Photoshop does.
 //!
 //! **Keys stay with egui.** AppKit runs a menu's key equivalents before the window sees the key,
-//! which would skip PhotoCraft's key rules (text fields keep âŒ˜C/âŒ˜V/âŒ˜Z, dialogs and Camera Raw are
-//! modal, Liquify has its own âŒ˜Z). So the backend reports a key equivalent as [`Event::Key`], and
+//! which would skip PhotoCraft's key rules (text fields keep ⌘C/⌘V/⌘Z, dialogs and Camera Raw are
+//! modal, Liquify has its own ⌘Z). So the backend reports a key equivalent as [`Event::Key`], and
 //! [`NativeMenu::raw_input`] feeds it to egui as the key press it was: the shortcut runs through
 //! [`crate::shortcuts::handle`] exactly as without a native menu. A click is [`Event::Click`] and
 //! runs the command like an in-window menu click.
@@ -61,7 +61,7 @@ pub enum Node {
         children: Vec<Node>,
         role: Option<ItemRole>,
     },
-    /// An item AppKit provides and runs itself (Services, Zoom, â€¦).
+    /// An item AppKit provides and runs itself (Services, Zoom, …).
     Standard(Standard),
 }
 
@@ -86,7 +86,7 @@ pub enum ItemRole {
     Quit,
     Hide,
     Minimize,
-    /// Window â€º Theme and Next Theme, which become the app menu's Appearance submenu.
+    /// Window › Theme and Next Theme, which become the app menu's Appearance submenu.
     Appearance,
     /// The app menu's Language submenu (its labels are final, never translated by id).
     Language,
@@ -103,9 +103,9 @@ pub enum Standard {
     CloseWindow,
 }
 
-/// Hide PhotoCraft: a custom item (the predefined one always takes âŒ˜H, which is View â€º Extras).
+/// Hide PhotoCraft: a custom item (the predefined one always takes ⌘H, which is View › Extras).
 pub const HIDE: &str = "app.hide";
-/// Minimize: a custom item (the predefined one always takes âŒ˜M, which is Curves).
+/// Minimize: a custom item (the predefined one always takes ⌘M, which is Curves).
 pub const MINIMIZE: &str = "window.minimize";
 
 impl Item {
@@ -267,7 +267,7 @@ pub fn window_key(bar: &MenuBar) -> u64 {
     h.finish()
 }
 
-/// Window â€º <document> (see [`crate::menus::DOCUMENT_ITEM`]).
+/// Window › <document> (see [`crate::menus::DOCUMENT_ITEM`]).
 fn is_document(n: &Node) -> bool {
     matches!(n, Node::Item(it) if it.id.starts_with(crate::menus::DOCUMENT_ITEM))
 }
@@ -289,8 +289,8 @@ fn hash_nodes(nodes: &[Node], h: &mut DefaultHasher) {
 
 // ----------------------------------------------------------------------------- shortcuts
 
-/// A shortcut as PhotoCraft writes it (`Cmd+Shift+Z`). `Cmd` is âŒ˜ and `Ctrl` the Control key,
-/// never folded together: âŒƒâŒ˜M and âŒ˜M are different shortcuts.
+/// A shortcut as PhotoCraft writes it (`Cmd+Shift+Z`). `Cmd` is ⌘ and `Ctrl` the Control key,
+/// never folded together: ⌃⌘M and ⌘M are different shortcuts.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Chord {
     pub cmd: bool,
@@ -335,8 +335,8 @@ impl Chord {
         self.key.strip_prefix('F').and_then(|n| n.parse::<u8>().ok()).is_some_and(|n| (1..=24).contains(&n))
     }
 
-    /// May the native menu show this as a key equivalent? Only with âŒ˜ or âŒƒ, or a function key.
-    /// Bare letters and âŒ¥/â‡§-only keys are tool keys: as key equivalents AppKit would take a `b`
+    /// May the native menu show this as a key equivalent? Only with ⌘ or ⌃, or a function key.
+    /// Bare letters and ⌥/⇧-only keys are tool keys: as key equivalents AppKit would take a `b`
     /// typed into a text field.
     pub fn native_ok(&self) -> bool {
         self.cmd || self.ctrl || self.is_function_key()
@@ -422,14 +422,14 @@ pub fn mac_layout(bar: &MenuBar, lang: Lang) -> Layout {
             if free {
                 hide.shortcut = Some("Ctrl+Cmd+H".into());
             }
-            let resolution = if free { "Hide moves to âŒƒâŒ˜H" } else { "Hide has no shortcut" };
+            let resolution = if free { "Hide moves to ⌃⌘H" } else { "Hide has no shortcut" };
             clashes.push(Clash { shortcut: "Cmd+H", system: "Hide", command, resolution });
         }
         None => hide.shortcut = Some("Cmd+H".into()),
     }
     menu.push(Node::Item(hide));
     if let Some(command) = taken("Cmd+Alt+H", None) {
-        clashes.push(Clash { shortcut: "Cmd+Alt+H", system: "Hide Others", command, resolution: "AppKit's Hide Others keeps âŒ¥âŒ˜H" });
+        clashes.push(Clash { shortcut: "Cmd+Alt+H", system: "Hide Others", command, resolution: "AppKit's Hide Others keeps ⌥⌘H" });
     }
     menu.extend([Node::Standard(Standard::HideOthers), Node::Standard(Standard::ShowAll), Node::Separator]);
     if let Some(Node::Item(mut quit)) = quit {
@@ -466,7 +466,7 @@ pub fn mac_layout(bar: &MenuBar, lang: Lang) -> Layout {
             if free {
                 it.shortcut = Some("Ctrl+Cmd+M".into());
             }
-            let resolution = if free { "Minimize moves to âŒƒâŒ˜M" } else { "Minimize has no shortcut" };
+            let resolution = if free { "Minimize moves to ⌃⌘M" } else { "Minimize has no shortcut" };
             clashes.push(Clash { shortcut: "Cmd+M", system: "Minimize", command, resolution });
             Node::Item(it)
         }
@@ -489,8 +489,8 @@ pub fn mac_layout(bar: &MenuBar, lang: Lang) -> Layout {
     Layout { bar, clashes }
 }
 
-/// Settings in the app menu: Edit â€º Preferences, a submenu of settings pages, becomes "Settings"
-/// with âŒ˜, on its first page unless PhotoCraft binds âŒ˜, elsewhere.
+/// Settings in the app menu: Edit › Preferences, a submenu of settings pages, becomes "Settings"
+/// with ⌘, on its first page unless PhotoCraft binds ⌘, elsewhere.
 fn settings_node(node: Node, comma_taken: Option<String>, lang: Lang, clashes: &mut Vec<Clash>) -> Node {
     if let Some(command) = &comma_taken {
         clashes.push(Clash { shortcut: "Cmd+,", system: "Settings", command: command.clone(), resolution: "Settings has no shortcut" });
@@ -502,7 +502,7 @@ fn settings_node(node: Node, comma_taken: Option<String>, lang: Lang, clashes: &
     };
     match node {
         Node::Item(mut it) => {
-            it.label = tr(lang, "Settingsâ€¦").into();
+            it.label = tr(lang, "Settings…").into();
             give(&mut it);
             Node::Item(it)
         }
@@ -516,7 +516,7 @@ fn settings_node(node: Node, comma_taken: Option<String>, lang: Lang, clashes: &
     }
 }
 
-/// Appearance in the app menu: the themes (Window â€º Theme, tagged [`ItemRole::Appearance`]), then
+/// Appearance in the app menu: the themes (Window › Theme, tagged [`ItemRole::Appearance`]), then
 /// Next Theme, both leaving the Window menu. None when there are no themes.
 fn appearance_node(bar: &mut MenuBar, lang: Lang) -> Option<Node> {
     let Some(Node::Submenu { mut children, .. }) = take(bar, |n| matches!(n, Node::Submenu { role, .. } if *role == Some(ItemRole::Appearance))) else {
@@ -639,7 +639,7 @@ pub trait Backend {
     /// Bring the menu in step with `bar`: update labels, enabled and checked in place, or
     /// rebuild when its structure changed.
     fn sync(&mut self, bar: &MenuBar);
-    /// Events since the last call. Platform items (Hide, Services, Zoom, â€¦) are handled by the
+    /// Events since the last call. Platform items (Hide, Services, Zoom, …) are handled by the
     /// backend and not reported.
     fn drain(&mut self) -> Vec<Event>;
 }
@@ -664,8 +664,8 @@ impl NativeMenu {
     /// and clicks wait for [`NativeMenu::run`].
     ///
     /// AppKit takes only the key-down: winit still delivers the key-up (it forwards key-ups while
-    /// âŒ˜ is held). So a key equivalent adds just its press, ahead of its key-up when that is
-    /// already queued. A second, made-up release made âŒ˜V paste three times (#1638): a âŒ˜V release
+    /// ⌘ is held). So a key equivalent adds just its press, ahead of its key-up when that is
+    /// already queued. A second, made-up release made ⌘V paste three times (#1638): a ⌘V release
     /// without a press is how an image paste reaches us (see [`crate::shortcuts::clipboard_keys`]).
     pub fn raw_input(&mut self, raw: &mut egui::RawInput) {
         for e in self.backend.drain() {

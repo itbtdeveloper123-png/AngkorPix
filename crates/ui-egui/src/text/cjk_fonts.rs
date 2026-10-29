@@ -1,4 +1,4 @@
-﻿//! Lazy CJK and other-script fallback fonts for the UI.
+//! Lazy CJK and other-script fallback fonts for the UI.
 //!
 //! The bundled Inter / JetBrains Mono have no Japanese, Chinese or Korean glyphs, and the OS
 //! fonts that do are large (Hiragino ~10 MB, Apple SD Gothic Neo 28 MB, PingFang 78 MB, Noto

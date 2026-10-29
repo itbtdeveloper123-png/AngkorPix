@@ -1,4 +1,4 @@
-﻿//! File â€º New: Photoshop's New Document dialog. Category tabs with blank-document presets on the
+//! File › New: Photoshop's New Document dialog. Category tabs with blank-document presets on the
 //! left, Preset Details on the right. Values live in the dialog fields (`width`/`height` in pixels,
 //! `resolution` in ppi, `mode`, `depth`, `background`, `name`), so `ui.dialog.set` drives it and
 //! Create runs `file.new` with them.
@@ -101,7 +101,7 @@ pub fn from_unit(v: f32, unit: &str, ppi: f32) -> f32 {
 }
 
 /// A typed size as the whole pixel count `file.new` takes (#254: a float like `512.0` isn't one, so
-/// the command fell back to its 1920 x 1080 default). Clamped to the command's 1â€“300000 range.
+/// the command fell back to its 1920 x 1080 default). Clamped to the command's 1–300000 range.
 pub fn px_value(px: f32) -> Value {
     json!(if px.is_finite() { px.round().clamp(1.0, 300_000.0) as u32 } else { 1 })
 }
@@ -109,7 +109,7 @@ pub fn px_value(px: f32) -> Value {
 /// Name of the preset that takes the clipboard image's size.
 pub const CLIPBOARD: &str = "Clipboard";
 
-/// Offer the Clipboard preset (`w` Ã— `h` px, at 72 ppi) first under the Recent presets, and
+/// Offer the Clipboard preset (`w` × `h` px, at 72 ppi) first under the Recent presets, and
 /// select it.
 pub fn set_clipboard(f: &mut Map<String, Value>, w: u32, h: u32) {
     if w == 0 || h == 0 {
@@ -200,7 +200,7 @@ fn preset_unit(p: &Preset, f: &Map<String, Value>) -> String {
     }
 }
 
-/// A built-in preset at Preferences â€º Units & Rulers â€º New Document Preset Resolutions, as in
+/// A built-in preset at Preferences › Units & Rulers › New Document Preset Resolutions, as in
 /// Photoshop: a print preset keeps its size in inches at the Print Resolution (Letter at 200 ppi is
 /// 1700 x 2200 px), a screen preset keeps its pixels at the Screen Resolution. The Clipboard preset
 /// is the copied pixels and keeps its own resolution. A resolution that isn't a positive finite
@@ -478,7 +478,7 @@ fn saved_presets(app: &mut crate::PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<
                     }
                 });
                 let s = &preset.settings;
-                small_label(ui, &format!("{} Ã— {} px @ {} ppi Â· {}/{}", s.width, s.height, s.resolution, s.mode.to_uppercase(), s.depth));
+                small_label(ui, &format!("{} × {} px @ {} ppi · {}/{}", s.width, s.height, s.resolution, s.mode.to_uppercase(), s.depth));
                 ui.add_space(8.0);
             });
         }
@@ -489,7 +489,7 @@ fn saved_presets(app: &mut crate::PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<
 fn save_preset(app: &mut crate::PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     ui.add_space(12.0);
     if f.get("__savingPreset").and_then(Value::as_bool) != Some(true) {
-        if widgets::secondary_button(ui, tl!("Save Presetâ€¦"), 240.0).clicked() {
+        if widgets::secondary_button(ui, tl!("Save Preset…"), 240.0).clicked() {
             f.insert("__savingPreset".into(), json!(true));
             f.remove("__presetError");
         }
@@ -626,7 +626,7 @@ pub fn body(app: &mut crate::PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<Strin
                                         "backgroundColor" => tl!("Background Color"),
                                         hex => hex,
                                     };
-                                    resp.on_hover_text(format!("{} Â· {size} Â· {}/{} Â· {background}", tl!(c.title()), s.mode.to_uppercase(), s.depth))
+                                    resp.on_hover_text(format!("{} · {size} · {}/{} · {background}", tl!(c.title()), s.mode.to_uppercase(), s.depth))
                                 }
                                 Card::Builtin(_) if elided => resp.on_hover_text(tl!(c.title())),
                                 Card::Builtin(_) => resp,
@@ -718,7 +718,7 @@ pub fn body(app: &mut crate::PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<Strin
                 ui.add_space(8.0);
                 let (w, h) = (get_f(f, "width", 1920.0), get_f(f, "height", 1080.0));
                 for (icon, portrait) in [("rectangle-vertical", true), ("rectangle-horizontal", false)] {
-                    // Tooltip strings are looked up via `icons::button` â†’ `tl!`; enum/state is aspect swap only.
+                    // Tooltip strings are looked up via `icons::button` → `tl!`; enum/state is aspect swap only.
                     if icons::button(ui, icon, 24.0, (h > w) == portrait, if portrait { "Portrait" } else { "Landscape" }).clicked() {
                         // The pick also turns the presets (`oriented`), even when the size already has it.
                         f.insert("__orientation".into(), json!(if portrait { "portrait" } else { "landscape" }));
@@ -799,7 +799,7 @@ pub fn body(app: &mut crate::PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<Strin
                 }
             });
             ui.add_space(4.0);
-            // Photoshop's Advanced Options â€º Color Profile (#321): the working space by default,
+            // Photoshop's Advanced Options › Color Profile (#321): the working space by default,
             // or another profile of the mode's colour space, built in or installed in the system.
             small_label(ui, tl!("Color Profile"));
             {
@@ -834,14 +834,14 @@ pub fn body(app: &mut crate::PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<Strin
                 ("black".to_string(), tl!("Black")),
                 ("backgroundColor".to_string(), tl!("Background Color")),
                 ("transparent".to_string(), tl!("Transparent")),
-                (CUSTOM.to_string(), tl!("Customâ€¦")),
+                (CUSTOM.to_string(), tl!("Custom…")),
             ];
             let shown = background_rgb(app, f);
             let mut pick = false;
             ui.horizontal(|ui| {
                 if widgets::dropdown(ui, "nd-bg", tl!("Background"), &mut bg, &opts, 240.0 - SWATCH - 6.0) {
                     if bg == CUSTOM {
-                        // Customâ€¦ opens the Color Picker on the colour shown so far.
+                        // Custom… opens the Color Picker on the colour shown so far.
                         pick = true;
                     } else {
                         f.insert("background".into(), json!(bg));
@@ -852,7 +852,7 @@ pub fn body(app: &mut crate::PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<Strin
                     f.remove("backgroundColor");
                 }
                 // Photoshop's swatch beside the menu: the colour the canvas starts with; a click
-                // opens the Color Picker, as Customâ€¦ does.
+                // opens the Color Picker, as Custom… does.
                 let (r, resp) = ui.allocate_exact_size(vec2(SWATCH, SWATCH), Sense::click());
                 match shown {
                     Some(c) => {

@@ -4323,17 +4323,107 @@ navigator	Zoom	ការពង្រីក/បង្រួម (Zoom)
 	Very High	ខ្ពស់ខ្លាំង
 	Zoom Tool (Z)	ឧបករណ៍ពង្រីក/បង្រួម (Z)
 	…	…
-Refine Hair	កែសម្រួលគែមសក់
-Font Size	ទំហំពុម្ពអក្សរ
-Crop Aspect Ratio	សមាមាត្រកាត់តម្រឹម (Aspect Ratio)
-Unconstrained	មិនកំណត់សមាមាត្រ (សេរី)
-Shape Stroke Width	កម្រាស់បន្ទាត់គែមរាង (Stroke Width)
-Corner Radius (Rectangles/Polygons)	កាំកោងជ្រុងរាង (Corner Radius)
-Warp Text (Arc, Wave, Flag)	ពត់កោងអត្ថបទ (Arc, Wave, Flag)
-Toggle Faux Bold	បិទ/បើក អក្សរដិត (Faux Bold)
-Toggle Faux Italic	បិទ/បើក អក្សរទ្រេត (Faux Italic)
-Feather Selection Edge	ធ្វើឱ្យគែមនៃការជ្រើសរើសព្រិលទន់
-Automatically refine fine hair and fur edges along the selection boundary	កែសម្រួលគែមសក់ និងរោមសត្វដោយស្វ័យប្រវត្តិតាមព្រំដែននៃការជ្រើសរើស
-Open Layer Styles	បើកផ្ទាំងរចនាប័ទ្ម Layer (Layer Styles)
-Radius…	កាំកោង…
-Fx…	បែបផែន Fx…
+	Refine Hair	កែសម្រួលគែមសក់
+	Font Size	ទំហំពុម្ពអក្សរ
+	Crop Aspect Ratio	សមាមាត្រកាត់តម្រឹម (Aspect Ratio)
+	Unconstrained	មិនកំណត់សមាមាត្រ (សេរី)
+	Shape Stroke Width	កម្រាស់បន្ទាត់គែមរាង (Stroke Width)
+	Corner Radius (Rectangles/Polygons)	កាំកោងជ្រុងរាង (Corner Radius)
+	Warp Text (Arc, Wave, Flag)	ពត់កោងអត្ថបទ (Arc, Wave, Flag)
+	Toggle Faux Bold	បិទ/បើក អក្សរដិត (Faux Bold)
+	Toggle Faux Italic	បិទ/បើក អក្សរទ្រេត (Faux Italic)
+	Feather Selection Edge	ធ្វើឱ្យគែមនៃការជ្រើសរើសព្រិលទន់
+	Automatically refine fine hair and fur edges along the selection boundary	កែសម្រួលគែមសក់ និងរោមសត្វដោយស្វ័យប្រវត្តិតាមព្រំដែននៃការជ្រើសរើស
+	Open Layer Styles	បើកផ្ទាំងរចនាប័ទ្ម Layer (Layer Styles)
+	Radius…	កាំកោង…
+	Fx…	បែបផែន Fx…
+	PhotoCraft Updates	កំណែថ្មី PhotoCraft
+	Installed version: {version}	កំណែដែលបានដំឡើង៖ {version}
+	Checking for updates…	កំពុងពិនិត្យមើលកំណែថ្មី…
+	PhotoCraft {version} is available.	កំណែ PhotoCraft {version} អាចទាញយកបានហើយ។
+	Update and Restart	ធ្វើបច្ចុប្បន្នភាព និងបើកឡើងវិញ
+	Release Notes	កំណត់សម្គាល់កំណែ
+	Open Download Page	បើកទំព័រទាញយក
+	PhotoCraft is up to date.	PhotoCraft គឺជាកំណែចុងក្រោយបំផុតហើយ។
+	Could not check for updates.	មិនអាចពិនិត្យមើលកំណែថ្មីបានទេ។
+	Updates have not been checked yet.	មិនទាន់បានពិនិត្យមើលកំណែថ្មីនៅឡើយទេ។
+	Check Again	ពិនិត្យម្តងទៀត
+	Calculating…	កំពុងគណនា…
+	Uncached Refresh	ផ្ទុកឡើងវិញដោយមិនប្រើសតិបណ្តោះអាសន្ន
+	Click to refresh histogram with uncached data	ចុចដើម្បីផ្ទុកអ៊ីស្តូក្រាមឡើងវិញជាមួយទិន្នន័យស្រស់
+	Level:	កម្រិត៖
+	Count:	ចំនួន៖
+	Percentile:	ភាគរយ៖
+	Show Statistics	បង្ហាញស្ថិតិ
+	Show Channels in Color	បង្ហាញ Channels ជាពណ៌
+	Sets the source for the history brush	កំណត់ប្រភពសម្រាប់ជក់ប្រវត្តិកែប្រែ (History Brush)
+	Thumbnail Size	ទំហំរូបតូច (Thumbnail)
+	Thumbnail Contents	មាតិការូបតូច
+	Layer Bounds	ព្រំដែនស្រទាប់ (Layer Bounds)
+	Entire Document	ឯកសារទាំងមូល
+	Use Default Masks on Fill Layers	ប្រើ Mask លំនាំដើមលើស្រទាប់ចាក់បំពេញ
+	Expand New Effects	ពន្លាតបែបផែនថ្មី
+	Add “copy” to Copied Layers and Groups	បន្ថែម “copy” លើស្រទាប់ និងក្រុមដែលបានចម្លង
+	Preview on canvas when reordering layers	មើលជាមុនលើផ្ទាំងការងារពេលរៀបលំដាប់ស្រទាប់
+	Show layer mask badges	បង្ហាញផ្លាកសញ្ញា Layer Mask
+	Layers Panel Options	ជម្រើសផ្ទាំងស្រទាប់ (Layers Panel Options)
+	Prevent Auto-Nesting	ការពារកុំឱ្យដាក់បញ្ចូលក្នុងក្រុមដោយស្វ័យប្រវត្តិ
+	Mask Options…	ជម្រើស Mask…
+	New Group…	ក្រុមថ្មី…
+	New Group from Layers…	ក្រុមថ្មីពីស្រទាប់ដែលបានជ្រើស…
+	Show Layers	បង្ហាញស្រទាប់
+	New Artboard…	Artboard ថ្មី…
+	Filter Options	ជម្រើស Filter
+	Animation Options	ជម្រើសជីវចល
+	Resize Windows to Fit	ប្តូរទំហំបង្អួចឱ្យសមល្មម
+	Import Styles…	នាំចូលរចនាប័ទ្ម…
+	Export Selected Styles…	នាំចេញរចនាប័ទ្មដែលបានជ្រើស…
+	Export Styles…	នាំចេញរចនាប័ទ្ម…
+	Copy Color as HTML	ចម្លងកូដពណ៌ជា HTML
+	Copy Color's Hex Code	ចម្លងកូដពណ៌ជា Hex
+	All Classes	គ្រប់ថ្នាក់ពុម្ពអក្សរ
+	Serif	Serif (មានជើង)
+	Slab Serif	Slab Serif (ជើងក្រាស់)
+	Sans Serif	Sans Serif (គ្មានជើង)
+	Script	Script (អក្សរឆ្លាក់/មូល)
+	Monospace	Monospace (ទទឹងស្មើ)
+	Handwritten	Handwritten (អក្សរសរសេរដៃ)
+	Blackletter	Blackletter (អក្សរបុរាណ)
+	Decorative	Decorative (អក្សរតុបតែង)
+	OpenType font	ពុម្ពអក្សរ OpenType
+	TrueType font	ពុម្ពអក្សរ TrueType
+	Variable font	ពុម្ពអក្សរ Variable
+	Show Font Classes	បង្ហាញប្រភេទពុម្ពអក្សរ
+	Hide Font Classes	លាក់ប្រភេទពុម្ពអក្សរ
+	Show Variable Fonts	បង្ហាញពុម្ពអក្សរ Variable
+	Show All Fonts	បង្ហាញពុម្ពអក្សរទាំងអស់
+	Show Favorite Fonts	បង្ហាញពុម្ពអក្សរដែលពេញចិត្ត
+	Show Similar Fonts	បង្ហាញពុម្ពអក្សរស្រដៀងគ្នា
+	Font preview:	មើលគំរូពុម្ពអក្សរ៖
+	Add to Favorites	បន្ថែមទៅបញ្ជីពេញចិត្ត
+	Remove from Favorites	ដកចេញពីបញ្ជីពេញចិត្ត
+	Hide Styles	លាក់រចនាប័ទ្ម
+	Show Styles	បង្ហាញរចនាប័ទ្ម
+	Create warped text	បង្កើតអត្ថបទពត់កោង
+	Automatic paragraph direction	ទិសដៅកថាខណ្ឌស្វ័យប្រវត្តិ
+	Left-to-right paragraph direction	ទិសដៅកថាខណ្ឌពីឆ្វេងទៅស្តាំ
+	Right-to-left paragraph direction	ទិសដៅកថាខណ្ឌពីស្តាំទៅឆ្វេង
+	Baseline Optimized	កែសម្រួលបន្ទាត់គោលឱ្យប្រសើរ (Baseline Optimized)
+	Behind	ខាងក្រោយ (Behind)
+	Bicubic Automatic	Bicubic ដោយស្វ័យប្រវត្តិ
+	Bicubic Sharper	Bicubic កាន់តែច្បាស់ (Bicubic Sharper)
+	Bicubic Smoother	Bicubic កាន់តែរលូន (Bicubic Smoother)
+	Clean Brush	សម្អាតជក់
+	Clean the brush after each stroke	សម្អាតជក់បន្ទាប់ពីគូសនីមួយៗ
+	Load the brush after each stroke	ផ្ទុកពណ៌ជក់ឡើងវិញបន្ទាប់ពីគូសនីមួយៗ
+	Confirm or cancel the open action step dialog first	សូមយល់ព្រម ឬបោះបង់ផ្ទាំងជំហានសកម្មភាពដែលកំពុងបើកសិន
+	Copyright Notice	សេចក្តីជូនដំណឹងអំពីកម្មសិទ្ធិបញ្ញា
+	Memory Usage	ការប្រើប្រាស់អង្គចងចាំ (RAM)
+	Per-document RAM limit (MB)	ដែនកំណត់ RAM ក្នុងមួយឯកសារ (MB)
+	Applies immediately when saved. Memory is not reserved in advance.	មានប្រសិទ្ធភាពភ្លាមៗពេលរក្សាទុក។ អង្គចងចាំមិនត្រូវបានកក់ទុកជាមុនឡើយ។
+	Use	ប្រើប្រាស់
+	Indicates	បង្ហាញ
+	Rotation Adaptation	ការបន្សាំរង្វិល
+	Output To	បញ្ចេញទៅកាន់
+	Current Brush Load	ការផ្ទុកជក់បច្ចុប្បន្ន
+	GPU adapter	កាតក្រាហ្វិក (GPU)
