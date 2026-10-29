@@ -538,17 +538,23 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
 
     // 2. Remove Background (clean icon + label)
     let current_method = app.session.prefs().tools.remove_background_method;
+    let is_api = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Api;
     let is_glass = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Glass;
     let is_ai = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Ai;
     let bg_btn = task_button(
         ui,
-        Some(if is_ai || is_glass { "wand-sparkles" } else { "eraser-background" }),
+        Some(if is_ai || is_glass || is_api { "wand-sparkles" } else { "eraser-background" }),
         Some(tl!("Remove Background")),
-        tl!("Automatically isolate subject and mask out background"),
+        if is_api {
+            tl!("Remove Background (remove.bg Cloud API with 3-key failover)")
+        } else {
+            tl!("Automatically isolate subject and mask out background")
+        },
         t,
     );
     if bg_btn.clicked() {
         let method_str = match current_method {
+            photocraft_engine::prefs::RemoveBackgroundMethod::Api => "api",
             photocraft_engine::prefs::RemoveBackgroundMethod::Glass => "glass",
             photocraft_engine::prefs::RemoveBackgroundMethod::Tree => "tree",
             photocraft_engine::prefs::RemoveBackgroundMethod::Cloud => "cloud",
@@ -635,13 +641,20 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
 }
 
 fn render_bg_engine_menu_content(app: &mut PhotocraftApp, ui: &mut Ui) {
-    ui.set_min_width(280.0);
+    ui.set_min_width(290.0);
     let current_method = app.session.prefs().tools.remove_background_method;
+    let is_api = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Api;
     let is_glass = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Glass;
     let is_tree = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Tree;
     let is_cloud = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Cloud;
     let is_plastic = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Plastic;
     let is_ai = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Ai;
+
+    if ui.selectable_label(is_api, tl!("🌐 Cloud HD (remove.bg 3-Key Pool)")).clicked() {
+        app.session.edit_prefs(|p| p.tools.remove_background_method = photocraft_engine::prefs::RemoveBackgroundMethod::Api);
+        let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "api" }));
+        ui.close();
+    }
 
     if ui.selectable_label(current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Heuristic, tl!("⚡ Standard (Fast & Built-in)")).clicked() {
         app.session.edit_prefs(|p| p.tools.remove_background_method = photocraft_engine::prefs::RemoveBackgroundMethod::Heuristic);
@@ -649,7 +662,7 @@ fn render_bg_engine_menu_content(app: &mut PhotocraftApp, ui: &mut Ui) {
         ui.close();
     }
 
-    if ui.selectable_label(is_ai, tl!("✨ AI Neural Model (Auto Detect)")).clicked() {
+    if ui.selectable_label(is_ai, tl!("✨ Local AI Model (Auto Detect)")).clicked() {
         app.session.edit_prefs(|p| p.tools.remove_background_method = photocraft_engine::prefs::RemoveBackgroundMethod::Ai);
         let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "ai" }));
         ui.close();
@@ -683,7 +696,7 @@ fn render_bg_engine_menu_content(app: &mut PhotocraftApp, ui: &mut Ui) {
     }
 
     ui.separator();
-    ui.label(egui::RichText::new(tl!("Model folder: models/rmbg_model.onnx")).weak().small());
+    ui.label(egui::RichText::new(tl!("Keys: 3 remove.bg active (Auto Failover)")).weak().small());
 }
 
 fn render_cutout_tips_content(app: &mut PhotocraftApp, ui: &mut Ui) {

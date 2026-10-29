@@ -38,18 +38,151 @@ def find_model(explicit_path=None):
             return c
     return None
 
+import tempfile
+import json
+import urllib.request
+import urllib.error
+import io
+
+API_KEYS = [
+    "i1cmRDff152isKk3okV2qQ2v",  # key 01
+    "1bHFjXYqWNtJzt7KkUmxoDuo",  # key 02
+    "cfZjHpfpWorht5P7W18FWhnL",  # key 03
+]
+
+STATE_FILE = os.path.join(tempfile.gettempdir(), "angkorpix_rmbg_api_state.json")
+
+def load_api_state():
+    try:
+        if os.path.exists(STATE_FILE):
+            with open(STATE_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {"current_index": 0, "exhausted": []}
+
+def save_api_state(state):
+    try:
+        with open(STATE_FILE, "w", encoding="utf-8") as f:
+            json.dump(state, f)
+    except Exception:
+        pass
+
+def try_remove_bg_api(input_path, output_path, explicit_key=None):
+    """
+    Calls remove.bg API to remove background with multi-key automatic failover.
+    Switches to the next key when current key runs out of quota/credits.
+    """
+    keys = [explicit_key] if explicit_key else list(API_KEYS)
+    state = load_api_state()
+    start_idx = state.get("current_index", 0) % len(keys)
+    exhausted = set(state.get("exhausted", []))
+
+    try:
+        orig_img = Image.open(input_path)
+        orig_w, orig_h = orig_img.size
+        buf = io.BytesIO()
+        orig_img.convert("RGBA").save(buf, format="PNG")
+        img_bytes = buf.getvalue()
+    except Exception as e:
+        sys.stderr.write(f"[remove.bg] Failed to read input image: {e}\n")
+        return False
+
+    boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW"
+    body = (
+        f"--{boundary}\r\n"
+        'Content-Disposition: form-data; name="size"\r\n\r\nauto\r\n'
+        f"--{boundary}\r\n"
+        'Content-Disposition: form-data; name="image_file"; filename="input.png"\r\n'
+        'Content-Type: image/png\r\n\r\n'
+    ).encode("utf-8") + img_bytes + f"\r\n--{boundary}--\r\n".encode("utf-8")
+
+    ordered_indices = [(start_idx + i) % len(keys) for i in range(len(keys))]
+
+    for idx in ordered_indices:
+        api_key = keys[idx]
+        sys.stderr.write(f"[remove.bg] Attempting background removal using API Key #{idx + 1} ({api_key[:6]}...{api_key[-4:]})...\n")
+
+        req = urllib.request.Request(
+            "https://api.remove.bg/v1.0/removebg",
+            data=body,
+            headers={
+                "X-Api-Key": api_key,
+                "Content-Type": f"multipart/form-data; boundary={boundary}",
+            },
+        )
+
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                res_data = resp.read()
+                out_img = Image.open(io.BytesIO(res_data))
+                if out_img.mode != "RGBA":
+                    out_img = out_img.convert("RGBA")
+
+                # Guarantee exact matching dimensions with original image
+                if out_img.size != (orig_w, orig_h):
+                    out_img = out_img.resize((orig_w, orig_h), Image.Resampling.LANCZOS)
+
+                out_img.save(output_path, format="PNG")
+                sys.stderr.write(f"[remove.bg] SUCCESS: Background removed using Key #{idx + 1}!\n")
+
+                state["current_index"] = idx
+                save_api_state(state)
+                return True
+
+        except urllib.error.HTTPError as e:
+            err_body = ""
+            try:
+                err_body = e.read().decode("utf-8", errors="ignore")
+            except Exception:
+                pass
+            sys.stderr.write(f"[remove.bg] Key #{idx + 1} returned HTTP {e.code}: {err_body}\n")
+
+            if e.code in (402, 403, 429) or "insufficient_credits" in err_body:
+                sys.stderr.write(f"[remove.bg] Key #{idx + 1} quota/credits exhausted! Switching to next key...\n")
+                exhausted.add(idx)
+                state["exhausted"] = list(exhausted)
+                state["current_index"] = (idx + 1) % len(keys)
+                save_api_state(state)
+                continue
+            else:
+                continue
+
+        except Exception as e:
+            sys.stderr.write(f"[remove.bg] Network/connection error on Key #{idx + 1}: {e}\n")
+            continue
+
+    sys.stderr.write("[remove.bg] All API keys in the pool were attempted and failed or exhausted.\n")
+    return False
+
 def main():
     parser = argparse.ArgumentParser(description="AngkorPix AI Background Removal")
     parser.add_argument("--input", required=True, help="Input RGBA or RGB image path")
     parser.add_argument("--output", required=True, help="Output single-channel grayscale mask path")
     parser.add_argument("--model", default=None, help="Explicit path to ONNX model")
-    parser.add_argument("--mode", default="auto", choices=["auto", "standard", "glass", "tree", "cloud", "plastic", "portrait", "hair"],
-                        help="Cutout mode: auto, standard (solid subjects), glass, tree, cloud, or plastic")
+    parser.add_argument("--mode", default="auto", choices=["auto", "standard", "glass", "tree", "cloud", "plastic", "portrait", "hair", "api"],
+                        help="Cutout mode: auto, standard (solid subjects), glass, tree, cloud, plastic, or api")
+    parser.add_argument("--api-key", default=None, help="Optional explicit remove.bg API key")
+    parser.add_argument("--use-api", action="store_true", help="Force use remove.bg API")
     args = parser.parse_args()
+
+    # If API mode requested, run via remove.bg multi-key pool
+    if args.mode == "api" or args.use_api:
+        sys.stderr.write("[AngkorPix] Using remove.bg Cloud API with multi-key failover...\n")
+        if try_remove_bg_api(args.input, args.output, explicit_key=args.api_key):
+            print("SUCCESS_API")
+            sys.exit(0)
+        else:
+            sys.stderr.write("[AngkorPix] remove.bg API failed or keys exhausted. Attempting local model fallback...\n")
 
     model_path = find_model(args.model)
     if not model_path:
-        sys.stderr.write("ERROR: No ONNX model found. Please place rmbg_model.onnx in the models/ directory.\n")
+        # If no local model is found, automatically attempt remove.bg Cloud API!
+        sys.stderr.write("[AngkorPix] Local ONNX model not found. Attempting remove.bg Cloud API with multi-key failover...\n")
+        if try_remove_bg_api(args.input, args.output, explicit_key=args.api_key):
+            print("SUCCESS_API")
+            sys.exit(0)
+        sys.stderr.write("ERROR: No ONNX model found and remove.bg API failed. Please place rmbg_model.onnx in the models/ directory or verify internet connection.\n")
         sys.exit(1)
 
     try:

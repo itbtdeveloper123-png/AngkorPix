@@ -471,6 +471,8 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
     let is_cloud = method == crate::prefs::RemoveBackgroundMethod::Cloud
         || method_param == Some("cloud")
         || method_param == Some("ai_cloud");
+    let is_api = method == crate::prefs::RemoveBackgroundMethod::Api
+        || method_param == Some("api");
     let is_plastic = method == crate::prefs::RemoveBackgroundMethod::Plastic
         || method_param == Some("plastic")
         || method_param == Some("ai_plastic");
@@ -479,7 +481,9 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
         || (is_specialized && explicit_ai)
         || method_param == Some("ai");
 
-    let mode_str = if is_glass {
+    let mode_str = if is_api {
+        "api"
+    } else if is_glass {
         "glass"
     } else if is_tree {
         "tree"
@@ -491,7 +495,9 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
         "auto"
     };
 
-    let job_label = if is_glass {
+    let job_label = if is_api {
+        "Remove Background (Cloud API)"
+    } else if is_glass {
         if explicit_ai { "Remove Background (AI Glass)" } else { "Remove Background (Photoshop Glass)" }
     } else if is_tree {
         if explicit_ai { "Remove Background (AI Tree)" } else { "Remove Background (Photoshop Tree)" }
@@ -531,10 +537,11 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                 };
                 region_opt = Some(res.region);
                 rgba_opt = res.rgba_pixels;
-            } else if is_ai || is_glass || is_plastic {
+            } else if is_ai || is_glass || is_plastic || is_api {
                 #[cfg(not(target_arch = "wasm32"))]
                 {
                     let progress_msg = match mode_str {
+                        "api" => "Removing background via remove.bg Cloud API…",
                         "glass" => "Detecting Glass Silhouette & Highlights…",
                         "plastic" => "Detecting Plastic Silhouette & Reflections…",
                         _ => "Running AI model (rmbg_model.onnx)",
@@ -711,7 +718,9 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                 }
                 let mask = crate::commands::mask_at_depth(LayerMask { surface: matting::region_surface(&region), ..LayerMask::reveal_all() }, doc.depth)?;
                 if let Some(l) = doc.layer_mut(id) {
-                    if is_glass {
+                    if is_api {
+                        l.name = "remove.bg Cutout (Cloud HD)".to_string();
+                    } else if is_glass {
                         l.name = "🍸 Glass Bottle (Transparent Matting)".to_string();
                     } else if is_plastic {
                         l.name = "🛍️ Plastic Wrap (Transparent Matting)".to_string();

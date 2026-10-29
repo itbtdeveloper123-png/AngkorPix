@@ -4427,3 +4427,7 @@ navigator	Zoom	ការពង្រីក/បង្រួម (Zoom)
 	Output To	បញ្ចេញទៅកាន់
 	Current Brush Load	ការផ្ទុកជក់បច្ចុប្បន្ន
 	GPU adapter	កាតក្រាហ្វិក (GPU)
+	🌐 Cloud HD (remove.bg 3-Key Pool)	🌐 Cloud HD (remove.bg គន្លឹះ ៣ ស្វ័យប្រវត្តិ)
+	✨ Local AI Model (Auto Detect)	✨ ម៉ូដែល AI លើកុំព្យូទ័រ (Auto Detect)
+	Keys: 3 remove.bg active (Auto Failover)	API Keys: 3 remove.bg កំពុងដំណើរការ (ប្តូរស្វ័យប្រវត្តពេលអស់)
+	Remove Background (remove.bg Cloud API with 3-key failover)	លុបផ្ទៃខាងក្រោយ (remove.bg Cloud API ជាមួយការប្តូរ Key ស្វ័យប្រវត្តិ)
