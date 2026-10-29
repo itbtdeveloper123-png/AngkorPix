@@ -12,3 +12,5 @@ target/
 *.log
 __pycache__/
 scratch/
+/launcher/
+/vectorcraft/
