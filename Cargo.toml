@@ -9,6 +9,9 @@ version = "0.17.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 rust-version = "1.95"
+authors = ["ArtPixels <itbtdeveloper.123@gmail.com>"]
+repository = "https://github.com/itbtdeveloper123-png/AngkorPix"
+homepage = "https://github.com/itbtdeveloper123-png/AngkorPix"
 
 [workspace.dependencies]
 craft-ui = { git = "https://github.com/storytold/craft-libs", rev = "92d392cff132eaf53e13afff77f38b5c11b73aa0", features = ["serde"] }

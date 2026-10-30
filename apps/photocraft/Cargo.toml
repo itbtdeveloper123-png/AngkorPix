@@ -5,6 +5,9 @@ edition.workspace = true
 license.workspace = true
 default-run = "angkorpix"
 description = "AngkorPix: an open-source, native image editor"
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
 build = "build.rs"
 
 [[bin]]

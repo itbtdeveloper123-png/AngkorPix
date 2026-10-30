@@ -24,7 +24,7 @@ if not exist "target\release\angkorpix.exe" (
 )
 
 :: 2. Create Portable Release Distribution Bundle
-set DIST_DIR=target\AngkorPix-v0.11.1-Windows-x64
+set DIST_DIR=target\AngkorPix-v0.17.0-Windows-x64
 echo.
 echo [INFO] Preparing portable distribution directory: %DIST_DIR%
 if exist "%DIST_DIR%" rmdir /s /q "%DIST_DIR%"
@@ -69,7 +69,7 @@ if defined ISCC_PATH (
         echo.
         echo ========================================================
         echo [SUCCESS] Windows Installer created successfully!
-        echo Location: target\installer\AngkorPix-Setup-v0.11.1.exe
+        echo Location: target\installer\AngkorPix-Setup-v0.17.0.exe
         echo ========================================================
         echo.
         pause

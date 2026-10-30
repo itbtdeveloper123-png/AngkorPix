@@ -119,7 +119,7 @@ pub(crate) fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
     let mut open = true;
     let status = app.session.updates.status.clone();
     let mut retry = false;
-    egui::Window::new(tl!("PhotoCraft Updates"))
+    egui::Window::new(tl!("AngkorPix Updates"))
         .id(egui::Id::unique("photocraft_updates"))
         .open(&mut open)
         .collapsible(false)
@@ -137,7 +137,7 @@ pub(crate) fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
                     });
                 }
                 Status::Available { release } => {
-                    ui.label(crate::i18n::fmt(crate::i18n::t("PhotoCraft {version} is available."), &[("version", &release.version)]));
+                    ui.label(crate::i18n::fmt(crate::i18n::t("AngkorPix {version} is available."), &[("version", &release.version)]));
                     #[cfg(not(target_arch = "wasm32"))]
                     {
                         if crate::widgets::primary_button(ui, tl!("Update and Restart"), 180.0).clicked() {
@@ -153,7 +153,7 @@ pub(crate) fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
                     }
                 }
                 Status::UpToDate => {
-                    ui.label(tl!("PhotoCraft is up to date."));
+                    ui.label(tl!("AngkorPix is up to date."));
                 }
                 Status::Failed { message } => {
                     ui.colored_label(t.warning, tl!("Could not check for updates."));

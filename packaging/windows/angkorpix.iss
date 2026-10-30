@@ -2,8 +2,8 @@
 ; Native Pro Image Editor & Photoshop Alternative
 
 #define MyAppName "AngkorPix"
-#define MyAppVersion "0.11.1"
-#define MyAppPublisher "IT BT Developer"
+#define MyAppVersion "0.17.0"
+#define MyAppPublisher "ArtPixels / IT BT"
 #define MyAppURL "https://github.com/itbtdeveloper123-png/AngkorPix"
 #define MyAppExeName "angkorpix.exe"
 

@@ -6,9 +6,9 @@ use serde_json::{Value, json};
 
 use crate::PhotocraftApp;
 
-pub const DISCORD: &str = "https://discord.gg/artcraft";
-pub const ARTCRAFT_WEBSITE: &str = "https://getartcraft.com";
-pub const APP_PAGE: &str = "https://getartcraft.com/apps/photocraft";
+pub const DISCORD: &str = "https://github.com/itbtdeveloper123-png";
+pub const ARTCRAFT_WEBSITE: &str = "https://github.com/itbtdeveloper123-png";
+pub const APP_PAGE: &str = "https://github.com/itbtdeveloper123-png/AngkorPix";
 pub const GITHUB: &str = "https://github.com/itbtdeveloper123-png/AngkorPix";
 pub const ISSUES: &str = "https://github.com/itbtdeveloper123-png/AngkorPix/issues";
 
@@ -34,9 +34,9 @@ pub fn open(app: &mut PhotocraftApp, ctx: &egui::Context, url: &str) -> Value {
 
 /// The prominent "Join us on Discord" button.
 pub fn discord_button(app: &mut PhotocraftApp, ui: &mut egui::Ui, min_width: f32) -> egui::Response {
-    let r = crate::widgets::primary_button(ui, tl!("Join us on Discord"), min_width).on_hover_text(DISCORD);
+    let r = crate::widgets::primary_button(ui, tl!("AngkorPix on GitHub"), min_width).on_hover_text(GITHUB);
     if r.clicked() {
-        open(app, ui.ctx(), DISCORD);
+        open(app, ui.ctx(), GITHUB);
     }
     r
 }
@@ -126,8 +126,8 @@ mod tests {
         let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Default::default());
         let ctx = egui::Context::default();
         for (id, url) in [
-            ("help.discord", "https://discord.gg/artcraft"),
-            ("help.website", "https://getartcraft.com/apps/photocraft"),
+            ("help.discord", DISCORD),
+            ("help.website", APP_PAGE),
             ("help.github", GITHUB),
         ] {
             let r = crate::menus::invoke(&mut app, &ctx, id, serde_json::json!({})).unwrap();
