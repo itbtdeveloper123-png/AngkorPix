@@ -5,6 +5,16 @@ use serde_json::Value;
 
 use crate::PhotocraftApp;
 
+pub const ANGKORPIX_APP: craft_update::App = craft_update::App {
+    id: "angkorpix",
+    name: "AngkorPix",
+    tagline: "Professional Image Editor",
+    repo: "itbtdeveloper123-png/AngkorPix",
+    former_ids: &["photocraft"],
+    former_names: &["PhotoCraft"],
+    icon_png: None,
+};
+
 pub(crate) struct Runtime {
     startup_checked: bool,
     notified_version: Option<String>,
@@ -19,7 +29,7 @@ impl Default for Runtime {
             startup_checked: false,
             notified_version: None,
             #[cfg(not(target_arch = "wasm32"))]
-            updater: craft_update::updater::Updater::new(&craft_update::suite::PHOTOCRAFT, photocraft_engine::build_info::VERSION),
+            updater: craft_update::updater::Updater::new(&ANGKORPIX_APP, photocraft_engine::build_info::VERSION),
         }
     }
 }
@@ -30,7 +40,7 @@ fn release_of(found: &photocraft_engine::updates_cmds::Release) -> craft_update:
     craft_update::Release {
         tag: format!("v{}", found.version),
         version: craft_update::parse_version(&found.version),
-        name: format!("PhotoCraft {}", found.version),
+        name: format!("AngkorPix {}", found.version),
         html_url: found.url.clone(),
         ..Default::default()
     }
@@ -90,8 +100,6 @@ pub(crate) fn show(app: &mut PhotocraftApp, ctx: &egui::Context) {
         match app.updates_rt.updater.show_if(ctx, clean) {
             craft_update::updater::Action::None => {}
             craft_update::updater::Action::OpenUrl(url) => download = Some(url),
-            // The guarded close path asks about unsaved work and waits for saves; the restart helper
-            // relaunches once the process exits.
             craft_update::updater::Action::Close => ctx.send_viewport_cmd(egui::ViewportCommand::Close),
         }
         if was_open && !app.updates_rt.updater.prompt_open() {

@@ -1,7 +1,16 @@
-//! Release checks through `craft-update`, the library every Craft App shares. Only public release
-//! metadata is requested.
+//! Release checks through `craft-update`. Only public release metadata is requested.
 
 use photocraft_engine::updates_cmds::{CheckFn, CheckResult, Release};
+
+pub const ANGKORPIX_APP: craft_update::App = craft_update::App {
+    id: "angkorpix",
+    name: "AngkorPix",
+    tagline: "Professional Image Editor",
+    repo: "itbtdeveloper123-png/AngkorPix",
+    former_ids: &["photocraft"],
+    former_names: &["PhotoCraft"],
+    icon_png: None,
+};
 
 pub fn service() -> CheckFn {
     Box::new(|| {
@@ -21,7 +30,7 @@ pub fn service() -> CheckFn {
 }
 
 fn check() -> CheckResult {
-    let http = craft_update::Http::new("PhotoCraft/Update")?;
-    let found = craft_update::check_for_update(&craft_update::suite::PHOTOCRAFT, &http, photocraft_engine::build_info::VERSION)?;
+    let http = craft_update::Http::new("AngkorPix/Update")?;
+    let found = craft_update::check_for_update(&ANGKORPIX_APP, &http, photocraft_engine::build_info::VERSION)?;
     Ok(found.map(|release| Release { version: release.tag.trim_start_matches(['v', 'V']).to_string(), url: release.html_url }))
 }
