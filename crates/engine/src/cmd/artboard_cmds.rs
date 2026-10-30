@@ -206,7 +206,10 @@ pub(crate) fn recorded_duplicate(s: &Session, mut p: Value) -> Value {
 pub(crate) fn fit_canvas(doc: &mut Document) {
     let max = i64::from(crate::document_preset_cmds::MAX_DIMENSION);
     let boards: Vec<Rect> = doc.artboards().iter().map(|b| b.2.rect).collect();
-    // The canvas and every board, per axis (`lo` ≤ 0 is the canvas origin or a board past it).
+    if boards.is_empty() {
+        return;
+    }
+    // The canvas and every board, per axis (`lo` <= 0 is the canvas origin or a board past it).
     let span = |edges: &dyn Fn(&Rect) -> (i32, i32), len: u32| {
         boards.iter().map(edges).fold((0, i64::from(len)), |(lo, hi), (a, b)| (lo.min(i64::from(a)), hi.max(i64::from(b))))
     };
@@ -223,6 +226,49 @@ pub(crate) fn fit_canvas(doc: &mut Document) {
         doc.size = size;
         // Shape pixels are cut at the canvas: a board moved past the old edge rendered its
         // shapes against it, leaving them missing or clipped (#2389).
+        crate::canvas_geom::refresh(doc, crate::canvas_geom::Refresh::Shapes);
+    }
+}
+
+/// Shrink the canvas to fit the remaining artboards and loose layers, e.g. after an artboard
+/// has been deleted or before exporting. Avoids leaving empty ghost space from deleted boards.
+pub(crate) fn shrink_to_artboards(doc: &mut Document) {
+    let max = i64::from(crate::document_preset_cmds::MAX_DIMENSION);
+    let mut boards: Vec<Rect> = doc.artboards().iter().map(|b| b.2.rect).collect();
+    if boards.is_empty() {
+        return;
+    }
+    if boards.len() == 1 && doc.layers.iter().all(|l| l.artboard().is_some()) {
+        let r = boards[0];
+        if r.x0 > 0 || r.y0 > 0 {
+            let (dx, dy) = (-r.x0.max(0), -r.y0.max(0));
+            if (dx, dy) != (0, 0) && crate::image_cmds::translate_doc(doc, "artboard", dx, dy).is_ok() {
+                boards = doc.artboards().iter().map(|b| b.2.rect).collect();
+            }
+        }
+    }
+    let mut boxes = boards;
+    for l in &doc.layers {
+        if l.artboard().is_none() {
+            let r = crate::slice_cmds::layer_bounds(l);
+            if !r.is_empty() {
+                boxes.push(r);
+            }
+        }
+    }
+    let x0 = boxes.iter().map(|r| i64::from(r.x0)).min().unwrap_or(0).min(0);
+    let y0 = boxes.iter().map(|r| i64::from(r.y0)).min().unwrap_or(0).min(0);
+    let x1 = boxes.iter().map(|r| i64::from(r.x1)).max().unwrap_or(0);
+    let y1 = boxes.iter().map(|r| i64::from(r.y1)).max().unwrap_or(0);
+
+    let shift = |lo: i64, hi: i64| if hi - lo <= max { i32::try_from(-lo).unwrap_or(0) } else { 0 };
+    let (mut sx, mut sy) = (shift(x0, x1), shift(y0, y1));
+    if (sx, sy) != (0, 0) && crate::image_cmds::translate_doc(doc, "artboard", sx, sy).is_err() {
+        (sx, sy) = (0, 0);
+    }
+    let size = Size::new((x1 + i64::from(sx)).clamp(1, max) as u32, (y1 + i64::from(sy)).clamp(1, max) as u32);
+    if size != doc.size {
+        doc.size = size;
         crate::canvas_geom::refresh(doc, crate::canvas_geom::Refresh::Shapes);
     }
 }

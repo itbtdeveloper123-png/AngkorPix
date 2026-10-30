@@ -128,6 +128,9 @@ pub fn open_bytes_as(s: &mut Session, name: &str, bytes: &[u8], as_ext: Option<&
             path
         }
     };
+    if doc.has_artboards() {
+        crate::artboard_cmds::shrink_to_artboards(&mut doc);
+    }
     // Color Settings policies (preserve / convert / discard the embedded profile).
     let (i, color) = s.open_document(doc, path.filter(|_| !r.source_read_only));
     if let Some(st) = s.active_mut() {

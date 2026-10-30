@@ -541,6 +541,9 @@ fn build() -> Vec<CommandSpec> {
                 if active.is_some_and(|current| doc.layer(current).is_none()) {
                     *active = neighbours.into_iter().find(|candidate| doc.layer(*candidate).is_some());
                 }
+                if doc.has_artboards() {
+                    crate::artboard_cmds::shrink_to_artboards(doc);
+                }
                 Ok(())
             })?;
             Ok(Value::Null)

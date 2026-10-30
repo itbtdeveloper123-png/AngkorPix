@@ -564,6 +564,9 @@ fn ungroup(s: &mut Session, p: &Value) -> Result<Value> {
             sib.insert(idx + k, l);
         }
         *active = top.or_else(|| doc.top_layer());
+        if doc.has_artboards() {
+            crate::artboard_cmds::shrink_to_artboards(doc);
+        }
         Ok(())
     })?;
     Ok(Value::Null)

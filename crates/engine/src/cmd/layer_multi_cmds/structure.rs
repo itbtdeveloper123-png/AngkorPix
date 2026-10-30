@@ -243,6 +243,9 @@ pub fn delete_selected(s: &mut Session) -> Result<Value> {
             return Err(EngineError::Other("a document must keep at least one layer".into()));
         }
         *active = neighbours.into_iter().find(|candidate| doc.layer(*candidate).is_some());
+        if doc.has_artboards() {
+            crate::artboard_cmds::shrink_to_artboards(doc);
+        }
         Ok(())
     })?;
     Ok(json!({"deleted": sel.len()}))

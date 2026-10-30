@@ -172,6 +172,14 @@ pub fn dds_param(p: &Value, cmd: &str) -> Result<Option<photocraft_io::DdsOption
 /// Encodes `doc` for `path`'s extension.
 pub(crate) fn encode(doc: &Document, path: &str, save: impl Into<SaveOpts>) -> Result<(Vec<u8>, Vec<String>)> {
     crate::allocation::checkpoint("saving document")?;
+    let mut fitted;
+    let doc = if doc.has_artboards() {
+        fitted = doc.clone();
+        crate::artboard_cmds::shrink_to_artboards(&mut fitted);
+        &fitted
+    } else {
+        doc
+    };
     let save = save.into();
     let mut opts = photocraft_io::ExportOptions {
         tiff_layers: save.tiff_layers,
