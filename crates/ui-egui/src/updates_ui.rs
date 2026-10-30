@@ -10,8 +10,8 @@ pub const ANGKORPIX_APP: craft_update::App = craft_update::App {
     name: "AngkorPix",
     tagline: "Professional Image Editor",
     repo: "itbtdeveloper123-png/AngkorPix",
-    former_ids: &["photocraft"],
-    former_names: &["PhotoCraft"],
+    former_ids: &[],
+    former_names: &[],
     icon_png: None,
 };
 
