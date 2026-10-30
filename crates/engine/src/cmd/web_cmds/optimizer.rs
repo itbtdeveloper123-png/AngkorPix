@@ -7,7 +7,11 @@ use super::{Dither, Document, EngineError, Forced, PaletteKind, Rect, Result, Se
 /// by `"width"`/`"height"`/`"percent"`, flattened. Returns the document and the scale factors.
 pub fn web_document(doc: &Document, p: &Value, st: &WebSettings) -> Result<(Document, f64, f64)> {
     let mut tmp = Session::new();
-    tmp.add_document(doc.clone(), None);
+    let mut doc_clone = doc.clone();
+    if doc_clone.has_artboards() {
+        crate::artboard_cmds::shrink_to_artboards(&mut doc_clone);
+    }
+    tmp.add_document(doc_clone, None);
     let mode = doc.mode;
     if mode != photocraft_color::ColorMode::Rgb {
         tmp.execute("image.mode.rgb", json!({}))?;

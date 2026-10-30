@@ -769,3 +769,22 @@ fn deleting_artboard_shrinks_document_canvas() {
     assert_eq!(doc(&s).size.width, 1080, "canvas must shrink back after deleting the second artboard");
     assert_eq!(doc(&s).size.height, 1350);
 }
+
+#[test]
+fn deleting_artboard_shrinks_even_with_loose_layer() {
+    let mut s = session(8);
+    let r1 = s.execute("layer.new.artboard", json!({"rect": [0, 0, 1080, 1350]})).unwrap();
+    let a1 = LayerId(r1["layer"].as_u64().unwrap());
+    let r2 = s.execute("layer.artboard.addBeside", json!({"layer": a1.0, "side": "right"})).unwrap();
+    let a2 = LayerId(r2["layer"].as_u64().unwrap());
+    assert_eq!(doc(&s).size.width, 2260);
+
+    // Add a loose layer (outside the artboard)
+    s.execute("layer.new.layer", json!({"name": "Rectangle 1"})).unwrap();
+
+    // Delete the second artboard: canvas must shrink back to 1080 x 1350!
+    s.execute("layer.delete", json!({"layer": a2.0})).unwrap();
+    assert_eq!(doc(&s).artboards().len(), 1);
+    assert_eq!(doc(&s).size.width, 1080, "canvas must shrink back to artboard even with loose layer");
+    assert_eq!(doc(&s).size.height, 1350);
+}

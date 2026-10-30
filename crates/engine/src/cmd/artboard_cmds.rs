@@ -238,28 +238,34 @@ pub(crate) fn shrink_to_artboards(doc: &mut Document) {
     if boards.is_empty() {
         return;
     }
-    if boards.len() == 1 && doc.layers.iter().all(|l| l.artboard().is_some()) {
+    // If there is only 1 artboard, normalize its top-left to (0, 0)
+    if boards.len() == 1 {
         let r = boards[0];
-        if r.x0 > 0 || r.y0 > 0 {
-            let (dx, dy) = (-r.x0.max(0), -r.y0.max(0));
+        if r.x0 != 0 || r.y0 != 0 {
+            let (dx, dy) = (-r.x0, -r.y0);
+            if (dx, dy) != (0, 0) && crate::image_cmds::translate_doc(doc, "artboard", dx, dy).is_ok() {
+                boards = doc.artboards().iter().map(|b| b.2.rect).collect();
+            }
+        }
+    } else {
+        // If multiple artboards, normalize so the top-left-most artboard edge starts at (0, 0)
+        let min_x = boards.iter().map(|r| r.x0).min().unwrap_or(0);
+        let min_y = boards.iter().map(|r| r.y0).min().unwrap_or(0);
+        if min_x > 0 || min_y > 0 {
+            let (dx, dy) = (-min_x.max(0), -min_y.max(0));
             if (dx, dy) != (0, 0) && crate::image_cmds::translate_doc(doc, "artboard", dx, dy).is_ok() {
                 boards = doc.artboards().iter().map(|b| b.2.rect).collect();
             }
         }
     }
-    let mut boxes = boards;
-    for l in &doc.layers {
-        if l.artboard().is_none() {
-            let r = crate::slice_cmds::layer_bounds(l);
-            if !r.is_empty() {
-                boxes.push(r);
-            }
-        }
-    }
-    let x0 = boxes.iter().map(|r| i64::from(r.x0)).min().unwrap_or(0).min(0);
-    let y0 = boxes.iter().map(|r| i64::from(r.y0)).min().unwrap_or(0).min(0);
-    let x1 = boxes.iter().map(|r| i64::from(r.x1)).max().unwrap_or(0);
-    let y1 = boxes.iter().map(|r| i64::from(r.y1)).max().unwrap_or(0);
+
+    // In Photoshop, the canvas of an artboard document is bounded by the artboards themselves.
+    // Artboards ARE the canvas. Layers floating outside artboards must not inflate the canvas
+    // or produce ghost white margins when an artboard is deleted or exported.
+    let x0 = boards.iter().map(|r| i64::from(r.x0)).min().unwrap_or(0).min(0);
+    let y0 = boards.iter().map(|r| i64::from(r.y0)).min().unwrap_or(0).min(0);
+    let x1 = boards.iter().map(|r| i64::from(r.x1)).max().unwrap_or(0);
+    let y1 = boards.iter().map(|r| i64::from(r.y1)).max().unwrap_or(0);
 
     let shift = |lo: i64, hi: i64| if hi - lo <= max { i32::try_from(-lo).unwrap_or(0) } else { 0 };
     let (mut sx, mut sy) = (shift(x0, x1), shift(y0, y1));
