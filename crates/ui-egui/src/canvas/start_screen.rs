@@ -219,14 +219,7 @@ pub(super) fn start_screen(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             crate::suite_interop::launch_or_focus_angkorvector();
         }
 
-        // Bottom footer links in sidebar
-        let bottom_y = sidebar_rect.bottom() - 60.0;
-        if ui.cursor().top() < bottom_y {
-            ui.add_space((bottom_y - ui.cursor().top()).max(0.0));
-            crate::links::discord_button(app, ui, btn_w);
-            ui.add_space(6.0);
-            crate::links::link_row(app, ui);
-        }
+
     });
 
     // -------------------------------------------------------------------------
