@@ -14,3 +14,9 @@ __pycache__/
 scratch/
 /launcher/
 /vectorcraft/
+
+# AI model weights
+models/*.onnx
+models/*.pth
+models/*.bin
+
