@@ -73,6 +73,25 @@ pub struct Perf {
     pub(crate) stage: crate::frame_stages::FrameStages,
 }
 
+/// Detected hardware performance tier for adaptive system performance tuning.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum HardwareTier {
+    High,
+    Balanced,
+    LowPower,
+}
+
+impl HardwareTier {
+    pub fn description(&self) -> &'static str {
+        match self {
+            Self::High => "Workstation / Dedicated GPU (High Performance)",
+            Self::Balanced => "Standard PC / Balanced",
+            Self::LowPower => "Laptop / Integrated GPU (Power & Responsiveness Optimized)",
+        }
+    }
+}
+
 /// What the app renders with and why (Help › System Info, Preferences › Performance, the `perf`
 /// control-channel output).
 #[derive(Clone, Debug, Default, PartialEq, serde::Serialize)]
@@ -136,10 +155,42 @@ impl GpuInfo {
         self.video_memory_mb = video_memory(info).map(|b| b >> 20);
     }
 
+    /// Detect the hardware performance tier based on CPU cores, GPU type, and vendor.
+    pub fn hardware_tier(&self) -> HardwareTier {
+        let cpus = std::thread::available_parallelism().map_or(4, |n| n.get());
+        let is_discrete = self.device_type == "discreteGpu";
+        let is_software = self.device_type == "cpu" || self.device_type == "virtualGpu";
+        let lower = self.adapter.to_ascii_lowercase();
+        let is_integrated = self.device_type == "integratedGpu"
+            || lower.contains("intel")
+            || lower.contains("uhd")
+            || lower.contains("iris")
+            || lower.contains("radeon(tm) graphics")
+            || lower.contains("basic render")
+            || is_software;
+
+        if is_discrete && cpus >= 8 {
+            HardwareTier::High
+        } else if !is_integrated && cpus >= 6 {
+            HardwareTier::Balanced
+        } else {
+            HardwareTier::LowPower
+        }
+    }
+
+    /// Whether this computer is on a power-constrained device (integrated GPU, software render, or <= 4 CPU cores).
+    pub fn is_low_power(&self) -> bool {
+        self.hardware_tier() == HardwareTier::LowPower
+    }
+
     /// Human-readable lines for Help › System Info.
     pub fn lines(&self) -> Vec<String> {
         let or = |s: &str, d: &str| if s.is_empty() || (s == "auto" && d == "auto") { tl!(d).to_string() } else { s.to_string() };
         let mut v = vec![
+            {
+                let template = "Performance profile: {tier}";
+                crate::i18n::fmt(tl!(template), &[("tier", self.hardware_tier().description())])
+            },
             {
                 let template = "Graphics adapter: {adapter}";
                 crate::i18n::fmt(tl!(template), &[("adapter", &or(&self.adapter, "unknown"))])

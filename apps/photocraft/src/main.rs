@@ -582,6 +582,18 @@ fn main() -> eframe::Result {
                     // Cap frame rate to 30 FPS (33.3ms) so the CPU doesn't spike to 100% and UI stays responsive.
                     app.min_frame_ms = Some(1000.0 / 30.0);
                 }
+
+                // Adaptive Hardware Performance Profile auto-tuning:
+                let tier = app.perf.gpu_info.hardware_tier();
+                log::info!("Hardware Performance Profile detected: {} (Device: {:?})", tier.description(), rs.adapter.get_info().device_type);
+                if tier == photocraft_ui_egui::HardwareTier::LowPower {
+                    app.session.edit_prefs(|p| {
+                        p.performance.low_resolution_previews = true;
+                        if p.performance.cache_levels < 4 {
+                            p.performance.cache_levels = 4;
+                        }
+                    });
+                }
                 if software_window && mode != photocraft_engine::prefs::RenderingMode::Cpu {
                     // Keep an earlier note, such as a requested adapter that couldn't be used.
                     let software = "No compatible hardware graphics adapter; using software graphics.";

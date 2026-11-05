@@ -102,7 +102,7 @@ choice!(
 );
 choice!(
     /// Background removal engine: Standard heuristic, AI neural model, or specialized presets (Glass, Tree, Cloud, Plastic).
-    RemoveBackgroundMethod { Heuristic = "heuristic", Ai = "ai", Glass = "glass", Tree = "tree", Cloud = "cloud", Plastic = "plastic", Api = "api" } default Heuristic
+    RemoveBackgroundMethod { Api = "api", Heuristic = "heuristic", Ai = "ai", Glass = "glass", Tree = "tree", Cloud = "cloud", Plastic = "plastic" } default Api
 );
 choice!(OtherCursor { Standard = "standard", Precise = "precise" } default Standard);
 choice!(CheckerSize { None = "none", Small = "small", Medium = "medium", Large = "large" } default Medium);
@@ -431,7 +431,7 @@ impl Default for Tools {
             pressure_curve: vec![[0.0, 0.0], [1.0, 1.0]],
             bundle_nudges: true,
             nudge_bundle_pause_ms: 1000,
-            remove_background_method: RemoveBackgroundMethod::Heuristic,
+            remove_background_method: RemoveBackgroundMethod::Api,
         }
     }
 }

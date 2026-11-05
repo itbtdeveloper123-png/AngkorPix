@@ -346,12 +346,19 @@ fn run_ai_cutout(doc: &Document, layer_id: LayerId, bounds: Rect, sample_all: bo
     // Find script path relative to current exe or workspace
     let mut script_candidates = vec![
         std::path::PathBuf::from("scripts/rmbg_infer.py"),
+        std::path::PathBuf::from("../../scripts/rmbg_infer.py"),
     ];
+    if let Ok(manifest_dir) = std::env::var("CARGO_MANIFEST_DIR") {
+        script_candidates.push(std::path::PathBuf::from(&manifest_dir).join("../../scripts/rmbg_infer.py"));
+        script_candidates.push(std::path::PathBuf::from(&manifest_dir).join("../scripts/rmbg_infer.py"));
+    }
     if let Ok(exe) = std::env::current_exe()
         && let Some(parent) = exe.parent()
     {
         script_candidates.push(parent.join("scripts/rmbg_infer.py"));
+        script_candidates.push(parent.join("../scripts/rmbg_infer.py"));
         script_candidates.push(parent.join("../../scripts/rmbg_infer.py"));
+        script_candidates.push(parent.join("../../../scripts/rmbg_infer.py"));
     }
     let script_path = script_candidates.into_iter().find(|p| p.exists())
         .ok_or_else(|| "scripts/rmbg_infer.py not found".to_string())?;

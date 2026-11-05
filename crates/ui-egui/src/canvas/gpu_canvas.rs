@@ -61,7 +61,7 @@ use callback::{filter_mode, map_doc_px, tile_screen_aabb};
 use doc_textures::init_buffer;
 #[cfg(test)]
 use doc_textures::{mip_count, mip_damage};
-pub use perf::{GpuInfo, Perf, backend_name, now_ms};
+pub use perf::{GpuInfo, HardwareTier, Perf, backend_name, now_ms};
 pub use resources::CanvasStyle;
 use resources::{DocTextures, Resources, identity_lut_bytes, lut_bind_group};
 #[cfg(test)]

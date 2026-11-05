@@ -491,6 +491,13 @@ pub(super) fn draw_drag_preview(app: &mut PhotocraftApp, painter: &egui::Painter
         let at = d.points.last().map_or(d.start, |p| [p[0], p[1]]);
         draw_value_readout(app, painter.ctx(), "move-readout", xf.to_screen(at[0] as f32, at[1] as f32), ["ΔX:", "ΔY:"], values);
     }
+    if d.tool == Tool::Move && !crate::move_ui::showing(app)
+        && let Some((dx, dy)) = crate::move_ui::drag_offset(app)
+        && let Some(bounds) = crate::move_ui::moving_bounds(app)
+    {
+        let screen_rect = xf.doc_rect(bounds.translate(dx, dy));
+        painter.rect_stroke(screen_rect, 0.0, Stroke::new(1.5, super::LAYER_EDGES), egui::StrokeKind::Outside);
+    }
     // Dragging the selection: its own ants follow the pointer (`selection_shown_offset`).
     if d.sel_move.is_some() {
         return;
@@ -603,12 +610,6 @@ pub(super) fn draw_drag_preview(app: &mut PhotocraftApp, painter: &egui::Painter
             let pts = [r.left_top(), r.right_top(), r.right_bottom(), r.left_bottom(), r.left_top()];
             painter.add(egui::Shape::line(pts.to_vec(), Stroke::new(1.0, Color32::WHITE)));
             painter.add(egui::Shape::dashed_line(&pts, Stroke::new(1.0, Color32::BLACK), 3.0, 3.0));
-        }
-        // The layers themselves follow the pointer (`move_ui`); the arrow only when they can't.
-        Tool::Move if !crate::move_ui::showing(app) => {
-            let from = xf.to_screen(d.start[0] as f32, d.start[1] as f32);
-            let off = xf.to_screen(last[0] as f32, last[1] as f32) - from;
-            painter.arrow(from, off, Stroke::new(2.0, crate::theme::Tokens::get(painter.ctx()).accent));
         }
         _ => {}
     }

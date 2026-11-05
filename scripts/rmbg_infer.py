@@ -44,6 +44,38 @@ import urllib.request
 import urllib.error
 import io
 
+POOF_BG_API_KEYS = [
+    "pk_736079a42dbc7df527d4861ec36b80a2",  # Key 01 (100 Free/month)
+    "pk_3988db4833c34b171e7fd0b375f6efe3",  # Key 02 (100 Free/month)
+    "pk_dd9ba90c177e38a5e22f666bca1a8ed3",  # Key 03 (100 Free/month)
+    "pk_dbc00b2fcab11997ff1aa037b56d98b2",  # Key 04 (100 Free/month)
+    "pk_5d370452e62b6e8bfcbaf326b772bf77",  # Key 05 (100 Free/month)
+    "pk_b8891cb2604d519b9ec74e947f5560e3",  # Key 06 (100 Free/month)
+    "pk_3e5fa135b7e4ca205003d5fc11ad4c14",  # Key 07 (100 Free/month)
+    "pk_3733372c4d38a41149ead0f2f3a5b566",  # Key 08 (100 Free/month)
+    "pk_1f8eee0ed9539248db24486c52a823c8",  # Key 09 (100 Free/month)
+    "pk_a73ec99dd6e0b4ec0f315df5ce754125",  # Key 10 (100 Free/month)
+    "pk_3d3bb83f01535212637bc25b5419ecaa",  # Key 11 (100 Free/month)
+]
+
+POOF_STATE_FILE = os.path.join(tempfile.gettempdir(), "angkorpix_poof_api_state.json")
+
+def load_poof_state():
+    try:
+        if os.path.exists(POOF_STATE_FILE):
+            with open(POOF_STATE_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {"current_index": 0, "exhausted": []}
+
+def save_poof_state(state):
+    try:
+        with open(POOF_STATE_FILE, "w", encoding="utf-8") as f:
+            json.dump(state, f)
+    except Exception:
+        pass
+
 API_KEYS = [
     "i1cmRDff152isKk3okV2qQ2v",  # key 01
     "1bHFjXYqWNtJzt7KkUmxoDuo",  # key 02
@@ -67,6 +99,123 @@ def save_api_state(state):
             json.dump(state, f)
     except Exception:
         pass
+
+def try_poof_bg_api(input_path, output_path, explicit_key=None):
+    """
+    Calls Poof.bg API (https://api.poof.bg/v1/remove) to remove background.
+    Pool of 11 API keys = 1,100 free HD images per month with automatic rotation and failover.
+    Zero watermarks, high-definition edge alpha matting.
+    """
+    keys = [explicit_key] if explicit_key else list(POOF_BG_API_KEYS)
+    if not keys or not keys[0]:
+        return False
+
+    state = load_poof_state()
+    start_idx = state.get("current_index", 0) % len(keys)
+    exhausted = set(state.get("exhausted", []))
+
+    try:
+        orig_img = Image.open(input_path)
+        orig_w, orig_h = orig_img.size
+        buf = io.BytesIO()
+        orig_img.convert("RGBA").save(buf, format="PNG")
+        img_bytes = buf.getvalue()
+    except Exception as e:
+        sys.stderr.write(f"[Poof.bg] Failed to read input image: {e}\n")
+        return False
+
+    boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW"
+    body = (
+        f"--{boundary}\r\n"
+        'Content-Disposition: form-data; name="file"; filename="input.png"\r\n'
+        'Content-Type: image/png\r\n\r\n'
+    ).encode("utf-8") + img_bytes + f"\r\n--{boundary}--\r\n".encode("utf-8")
+
+    ordered_indices = [(start_idx + i) % len(keys) for i in range(len(keys))]
+
+    for idx in ordered_indices:
+        api_key = keys[idx]
+        masked_key = f"{api_key[:10]}...{api_key[-4:]}" if len(api_key) > 14 else api_key
+        sys.stderr.write(f"[Poof.bg] Attempting background removal using Key #{idx + 1}/{len(keys)} ({masked_key})...\n")
+        req = urllib.request.Request(
+            "https://api.poof.bg/v1/remove",
+            data=body,
+            headers={
+                "x-api-key": api_key,
+                "Content-Type": f"multipart/form-data; boundary={boundary}",
+                "User-Agent": "Photocraft-dev",
+            },
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                res_data = resp.read()
+                out_img = Image.open(io.BytesIO(res_data))
+                if out_img.mode != "RGBA":
+                    out_img = out_img.convert("RGBA")
+
+                # Guarantee exact matching dimensions with original image
+                if out_img.size != (orig_w, orig_h):
+                    out_img = out_img.resize((orig_w, orig_h), Image.Resampling.LANCZOS)
+
+                out_img.save(output_path, format="PNG")
+                sys.stderr.write(f"[Poof.bg] SUCCESS: Clean transparent HD background removed via Key #{idx + 1}!\n")
+                state["current_index"] = idx
+                save_poof_state(state)
+                return True
+        except urllib.error.HTTPError as e:
+            err_body = ""
+            try:
+                err_body = e.read().decode("utf-8", errors="ignore")
+            except Exception:
+                pass
+            sys.stderr.write(f"[Poof.bg] Key #{idx + 1} returned HTTP {e.code}: {err_body}\n")
+            if e.code in (402, 403, 429) or "quota" in err_body.lower() or "limit" in err_body.lower():
+                sys.stderr.write(f"[Poof.bg] Key #{idx + 1} exhausted! Automatically switching to next key...\n")
+                exhausted.add(idx)
+                state["exhausted"] = list(exhausted)
+                state["current_index"] = (idx + 1) % len(keys)
+                save_poof_state(state)
+                continue
+            continue
+        except Exception as e:
+            sys.stderr.write(f"[Poof.bg] Network/connection error on Key #{idx + 1}: {e}\n")
+            continue
+
+    sys.stderr.write("[Poof.bg] All 11 Poof.bg API keys were attempted and failed or exhausted.\n")
+    return False
+
+def try_cloud_api(input_path, output_path, explicit_key=None, provider="auto"):
+    """
+    Unified Cloud AI Cutout with automatic failover:
+    1. Poof.bg HD API (Primary: 100 Free/month, Clean, No Watermark)
+    2. remove.bg Multi-Key Pool (Automatic fallback)
+    """
+    if explicit_key:
+        if explicit_key.startswith("pk_") or "poof" in provider:
+            sys.stderr.write("[AngkorPix Cloud] Detected Poof.bg API Key format.\n")
+            if try_poof_bg_api(input_path, output_path, explicit_key=explicit_key):
+                return True
+        else:
+            sys.stderr.write("[AngkorPix Cloud] Trying explicit key with Poof.bg / remove.bg...\n")
+            if try_poof_bg_api(input_path, output_path, explicit_key=explicit_key):
+                return True
+            if try_remove_bg_api(input_path, output_path, explicit_key=explicit_key):
+                return True
+
+    if provider in ("auto", "poof", "poofbg"):
+        sys.stderr.write("[AngkorPix Cloud] Trying primary Poof.bg HD API...\n")
+        explicit_poof = explicit_key if explicit_key and explicit_key.startswith("pk_") else None
+        if try_poof_bg_api(input_path, output_path, explicit_key=explicit_poof):
+            return True
+        sys.stderr.write("[AngkorPix Cloud] Poof.bg failed or exhausted, falling back to remove.bg pool...\n")
+
+    if provider in ("auto", "removebg"):
+        sys.stderr.write("[AngkorPix Cloud] Trying remove.bg API pool...\n")
+        explicit_rbg = explicit_key if explicit_key and not explicit_key.startswith("pk_") else None
+        if try_remove_bg_api(input_path, output_path, explicit_key=explicit_rbg):
+            return True
+
+    return False
 
 def try_remove_bg_api(input_path, output_path, explicit_key=None):
     """
@@ -162,27 +311,28 @@ def main():
     parser.add_argument("--model", default=None, help="Explicit path to ONNX model")
     parser.add_argument("--mode", default="auto", choices=["auto", "standard", "glass", "tree", "cloud", "plastic", "portrait", "hair", "api"],
                         help="Cutout mode: auto, standard (solid subjects), glass, tree, cloud, plastic, or api")
-    parser.add_argument("--api-key", default=None, help="Optional explicit remove.bg API key")
-    parser.add_argument("--use-api", action="store_true", help="Force use remove.bg API")
+    parser.add_argument("--api-key", default=None, help="Optional explicit Poof.bg or remove.bg API key")
+    parser.add_argument("--api-provider", default="auto", choices=["auto", "poof", "removebg"], help="Cloud API provider")
+    parser.add_argument("--use-api", action="store_true", help="Force use Cloud API (Poof.bg + remove.bg failover)")
     args = parser.parse_args()
 
-    # If API mode requested, run via remove.bg multi-key pool
+    # If API mode requested, run via Cloud API (Poof.bg + remove.bg pool)
     if args.mode == "api" or args.use_api:
-        sys.stderr.write("[AngkorPix] Using remove.bg Cloud API with multi-key failover...\n")
-        if try_remove_bg_api(args.input, args.output, explicit_key=args.api_key):
+        sys.stderr.write("[AngkorPix] Using Cloud API (Poof.bg HD with remove.bg failover)...\n")
+        if try_cloud_api(args.input, args.output, explicit_key=args.api_key, provider=args.api_provider):
             print("SUCCESS_API")
             sys.exit(0)
         else:
-            sys.stderr.write("[AngkorPix] remove.bg API failed or keys exhausted. Attempting local model fallback...\n")
+            sys.stderr.write("[AngkorPix] Cloud API failed or keys exhausted. Attempting local model fallback...\n")
 
     model_path = find_model(args.model)
     if not model_path:
-        # If no local model is found, automatically attempt remove.bg Cloud API!
-        sys.stderr.write("[AngkorPix] Local ONNX model not found. Attempting remove.bg Cloud API with multi-key failover...\n")
-        if try_remove_bg_api(args.input, args.output, explicit_key=args.api_key):
+        # If no local model is found, automatically attempt Cloud API!
+        sys.stderr.write("[AngkorPix] Local ONNX model not found. Attempting Cloud API (Poof.bg HD + remove.bg)...\n")
+        if try_cloud_api(args.input, args.output, explicit_key=args.api_key, provider=args.api_provider):
             print("SUCCESS_API")
             sys.exit(0)
-        sys.stderr.write("ERROR: No ONNX model found and remove.bg API failed. Please place rmbg_model.onnx in the models/ directory or verify internet connection.\n")
+        sys.stderr.write("ERROR: No ONNX model found and Cloud APIs failed. Please place rmbg_model.onnx in the models/ directory or verify internet connection.\n")
         sys.exit(1)
 
     try:

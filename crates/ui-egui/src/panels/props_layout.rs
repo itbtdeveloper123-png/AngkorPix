@@ -137,12 +137,20 @@ pub fn field_width(avail: f32, cols: usize, label_w: f32) -> f32 {
 pub fn quick_actions(content: &LayerContent) -> &'static [(&'static str, &'static str)] {
     match content {
         LayerContent::Raster(_) => &[
+            ("AI Inpaint (LaMa)", "quickAction.aiRemove"),
+            ("Auto Clean Watermark", "quickAction.autoCleanWatermark"),
+
             ("Auto Enhance", "quickAction.autoEnhance"),
             ("Remove Background", "layer.removeBackground"),
             ("Select Subject", "select.subject"),
+            ("Add Ground Shadow", "quickAction.addContactShadow"),
+            ("Smooth Skin", "quickAction.smoothSkin"),
+            ("Match Lighting", "quickAction.matchLighting"),
             ("Blur Background", "quickAction.blurBackground"),
             ("B&W Background", "quickAction.blackWhiteBackground"),
-            ("Studio Product White", "quickAction.studioProductWhite"),
+            ("Studio White", "quickAction.studioProductWhite"),
+            ("Auto Center & Fit", "quickAction.autoCenterFit"),
+            ("Sticker Outline", "quickAction.stickerOutline"),
         ],
         LayerContent::Text(_) => &[
             ("Convert to Shape", "type.convertToShape"),

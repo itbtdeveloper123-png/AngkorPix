@@ -99,7 +99,19 @@ if %ERRORLEVEL% NEQ 0 (
 echo [INFO] Packaging AngkorPix into zip...
 set "ZIP_PIX=%RELEASES_DIR%\angkorpix-0.17.0-windows-x64-portable.zip"
 if exist "%ZIP_PIX%" del /f /q "%ZIP_PIX%"
-tar -a -c -f "%ZIP_PIX%" -C "%PHOTOCRAFT_DIR%\target\release" "angkorpix.exe"
+
+set "STAGE_PIX=%PHOTOCRAFT_DIR%\target\stage_angkorpix"
+if exist "%STAGE_PIX%" rd /s /q "%STAGE_PIX%"
+mkdir "%STAGE_PIX%"
+
+copy /Y "%PHOTOCRAFT_DIR%\target\release\angkorpix.exe" "%STAGE_PIX%\" >nul
+if exist "%PHOTOCRAFT_DIR%\scripts" xcopy /E /I /Y "%PHOTOCRAFT_DIR%\scripts" "%STAGE_PIX%\scripts" >nul
+if exist "%PHOTOCRAFT_DIR%\models" xcopy /E /I /Y "%PHOTOCRAFT_DIR%\models" "%STAGE_PIX%\models" >nul
+if exist "%PHOTOCRAFT_DIR%\setup-ai-directml.cmd" copy /Y "%PHOTOCRAFT_DIR%\setup-ai-directml.cmd" "%STAGE_PIX%\" >nul
+if exist "%PHOTOCRAFT_DIR%\README.md" copy /Y "%PHOTOCRAFT_DIR%\README.md" "%STAGE_PIX%\" >nul
+
+tar -a -c -f "%ZIP_PIX%" -C "%STAGE_PIX%" *
+rd /s /q "%STAGE_PIX%"
 
 echo [SUCCESS] Created: %ZIP_PIX%
 if "%RUN_ALL%"=="1" goto AFTER_PIX

@@ -58,7 +58,7 @@ pub fn window(app: &mut PhotocraftApp, ctx: &egui::Context) {
     let t = Tokens::get(ctx);
     // Modern floating island frame: dark charcoal background, subtle dual-tone border, soft ambient shadow
     let bar_bg = if t.dark() { Color32::from_rgb(34, 34, 36) } else { Color32::from_rgb(246, 246, 248) };
-    let bar_border = if t.dark() { Color32::from_rgba_premultiplied(255, 255, 255, 28) } else { Color32::from_rgb(212, 212, 216) };
+    let bar_border = if t.dark() { Color32::from_rgb(58, 58, 62) } else { Color32::from_rgb(212, 212, 216) };
     let frame = egui::Frame::NONE
         .fill(bar_bg)
         .stroke(Stroke::new(1.0, bar_border))
@@ -284,6 +284,30 @@ fn render_selection_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
 
     if task_button(ui, Some("paint-bucket"), Some(tl!("Fill…")), tl!("Fill Selection (Shift+F5)"), t).clicked() {
         let _ = crate::menus::invoke(app, ui.ctx(), "edit.fill", json!({}));
+    }
+
+    // Delete & Fill (1-Click Watermark / Object Inpainting)
+    if task_button(ui, Some("wand-sparkles"), Some(tl!("🪄 Delete & Fill")), tl!("Automatically remove watermark or object using Content-Aware Inpainting (Shift+Delete)"), t).clicked() {
+        let _ = crate::menus::invoke(app, ui.ctx(), "edit.deleteAndFillSelection", json!({}));
+        let _ = crate::menus::invoke(app, ui.ctx(), "select.deselect", json!({}));
+    }
+
+    // AI Inpaint (Cloudflare Workers AI / LaMa Generative Model)
+    let inpaint_sel_btn = task_button(ui, Some("sparkles"), Some(tl!("🧠 AI Inpaint")), tl!("Photorealistic AI object & watermark removal (Cloudflare / LaMa)"), t);
+    egui::Popup::menu(&inpaint_sel_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        ui.set_min_width(220.0);
+        if ui.button(tl!("☁ Cloudflare Workers AI (Free)")).clicked() {
+            let _ = crate::menus::invoke(app, ui.ctx(), "quickAction.aiRemove", json!({"engine": "cloudflare"}));
+            ui.close();
+        }
+        if ui.button(tl!("⚡ Local LaMa AI (Offline)")).clicked() {
+            let _ = crate::menus::invoke(app, ui.ctx(), "quickAction.aiRemove", json!({"engine": "lama"}));
+            ui.close();
+        }
+    });
+    if inpaint_sel_btn.clicked() {
+        let _ = crate::menus::invoke(app, ui.ctx(), "quickAction.aiRemove", json!({"engine": "lama"}));
     }
 
     if task_button(ui, Some("layer-mask"), Some(tl!("Mask")), tl!("Create Layer Mask from Selection"), t).clicked() {
@@ -536,7 +560,7 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
         let _ = crate::menus::invoke(app, ui.ctx(), "select.subject", json!({}));
     }
 
-    // 2. Remove Background (clean icon + label)
+    // 2. Remove Background (clean icon + label with engine popup)
     let current_method = app.session.prefs().tools.remove_background_method;
     let is_api = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Api;
     let is_glass = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Glass;
@@ -545,13 +569,13 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
         ui,
         Some(if is_ai || is_glass || is_api { "wand-sparkles" } else { "eraser-background" }),
         Some(tl!("Remove Background")),
-        if is_api {
-            tl!("Remove Background (remove.bg Cloud API with 3-key failover)")
-        } else {
-            tl!("Automatically isolate subject and mask out background")
-        },
+        tl!("Remove Background (Poof.bg Cloud HD API with 11-key failover)"),
         t,
     );
+    egui::Popup::menu(&bg_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        render_bg_engine_menu_content(app, ui);
+    });
     if bg_btn.clicked() {
         let method_str = match current_method {
             photocraft_engine::prefs::RemoveBackgroundMethod::Api => "api",
@@ -563,6 +587,36 @@ fn render_default_context(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
             photocraft_engine::prefs::RemoveBackgroundMethod::Heuristic => "heuristic",
         };
         let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": method_str, "glass": is_glass }));
+    }
+
+    // 2b. Quick Pro Actions (sparkles icon + label) - 1-Click powerhouse popup!
+    let quick_btn = task_button(ui, Some("sparkles"), Some(tl!("⚡ Quick Actions")), tl!("1-Click Pro Actions: Shadow, Skin Retouch, Lighting & More"), t);
+    egui::Popup::menu(&quick_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        render_one_click_tools_popup_content(app, ui, t);
+    });
+
+    // 2c. 1-Click AI Inpaint / Dewatermark (Cloudflare Workers AI / LaMa)
+    let inpaint_btn = task_button(ui, Some("sparkles"), Some(tl!("🧠 AI Inpaint")), tl!("1-Click AI Inpaint: Auto-detect & erase watermarks, text & stamps with Cloudflare / LaMa AI"), t);
+    egui::Popup::menu(&inpaint_btn).show(|ui| {
+        crate::widgets::style_spectrum_popup_menu(ui);
+        ui.set_min_width(220.0);
+        if ui.button(tl!("☁ Cloudflare Workers AI (Free)")).clicked() {
+            let _ = crate::menus::invoke(app, ui.ctx(), "quickAction.aiRemove", json!({"engine": "cloudflare"}));
+            ui.close();
+        }
+        if ui.button(tl!("⚡ Local LaMa AI (Offline)")).clicked() {
+            let _ = crate::menus::invoke(app, ui.ctx(), "quickAction.aiRemove", json!({"engine": "lama"}));
+            ui.close();
+        }
+    });
+    if inpaint_btn.clicked() {
+        let _ = crate::menus::invoke(app, ui.ctx(), "quickAction.aiRemove", json!({"engine": "lama"}));
+    }
+
+    // 2d. Auto Clean Watermark (1-click automatic text and watermark detection & removal)
+    if task_button(ui, Some("eraser"), Some(tl!("🤖 Clean Watermark")), tl!("Auto detect & remove watermarks, text and logos in 1-click"), t).clicked() {
+        let _ = crate::menus::invoke(app, ui.ctx(), "quickAction.autoCleanWatermark", json!({}));
     }
 
     // 3. Adjust Colors (sliders-horizontal icon + label)
@@ -650,7 +704,7 @@ fn render_bg_engine_menu_content(app: &mut PhotocraftApp, ui: &mut Ui) {
     let is_plastic = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Plastic;
     let is_ai = current_method == photocraft_engine::prefs::RemoveBackgroundMethod::Ai;
 
-    if ui.selectable_label(is_api, tl!("🌐 Cloud HD (remove.bg 3-Key Pool)")).clicked() {
+    if ui.selectable_label(is_api, tl!("🌐 Cloud HD (Poof.bg - 11 Keys Auto Rotation)")).clicked() {
         app.session.edit_prefs(|p| p.tools.remove_background_method = photocraft_engine::prefs::RemoveBackgroundMethod::Api);
         let _ = crate::menus::invoke(app, ui.ctx(), "layer.removeBackground", json!({ "method": "api" }));
         ui.close();
@@ -696,7 +750,7 @@ fn render_bg_engine_menu_content(app: &mut PhotocraftApp, ui: &mut Ui) {
     }
 
     ui.separator();
-    ui.label(egui::RichText::new(tl!("Keys: 3 remove.bg active (Auto Failover)")).weak().small());
+    ui.label(egui::RichText::new(tl!("PhotoRoom HD Active (Auto Failover to remove.bg)")).weak().small());
 }
 
 fn render_cutout_tips_content(app: &mut PhotocraftApp, ui: &mut Ui) {
@@ -795,19 +849,19 @@ fn render_poster_composer_content(app: &mut PhotocraftApp, ui: &mut Ui, t: &Toke
             let hovered = card_resp.hovered();
 
             let bg = if is_selected {
-                color.gamma_multiply(0.18)
+                color.gamma_multiply(0.22)
             } else if hovered {
-                Color32::from_rgba_premultiplied(255, 255, 255, 15)
+                if t.dark() { Color32::from_rgb(50, 50, 56) } else { Color32::from_rgb(235, 235, 240) }
             } else {
-                Color32::from_rgba_premultiplied(255, 255, 255, 8)
+                if t.dark() { Color32::from_rgb(38, 38, 42) } else { Color32::from_rgb(244, 244, 248) }
             };
 
             let stroke_col = if is_selected {
                 color
             } else if hovered {
-                Color32::from_rgba_premultiplied(255, 255, 255, 60)
+                if t.dark() { Color32::from_rgb(90, 90, 98) } else { Color32::from_rgb(180, 180, 190) }
             } else {
-                Color32::from_rgba_premultiplied(255, 255, 255, 20)
+                if t.dark() { Color32::from_rgb(56, 56, 62) } else { Color32::from_rgb(218, 218, 224) }
             };
 
             let painter = ui.painter();
@@ -819,8 +873,9 @@ fn render_poster_composer_content(app: &mut PhotocraftApp, ui: &mut Ui, t: &Toke
             painter.rect_filled(bar, CornerRadius::same(2), color);
 
             // Title
-            let title_galley = painter.layout_no_wrap(label.to_string(), theme::medium(12.0), if is_selected { Color32::WHITE } else { t.text });
-            painter.galley(pos2(card_r.left() + 12.0, card_r.top() + 6.0), title_galley, Color32::WHITE);
+            let title_col = if is_selected || hovered { Color32::WHITE } else if t.dark() { Color32::from_rgb(240, 240, 245) } else { Color32::from_rgb(24, 24, 28) };
+            let title_galley = painter.layout_no_wrap(label.to_string(), theme::medium(12.0), title_col);
+            painter.galley(pos2(card_r.left() + 12.0, card_r.top() + 6.0), title_galley, title_col);
 
             // Tag badge
             let tag_galley = painter.layout_no_wrap(tag.to_string(), egui::FontId::proportional(10.0), color);
@@ -900,9 +955,17 @@ fn render_one_click_tools_popup_content(app: &mut PhotocraftApp, ui: &mut Ui, t:
     ui.label(egui::RichText::new(tl!("ឧបករណ៍ជំនាញ ចុចមួយភ្លែតបានផលភ្លាមៗ ដោយមិនបាច់សារ៉េអីច្រើន")).small().weak());
     ui.separator();
 
-    let actions: [(&str, &str, &str, &str, Color32); 8] = [
+    let actions: [(&str, &str, &str, &str, Color32); 16] = [
+        ("quickAction.aiRemove", "🧠 AI Inpaint / Remove", "លុប Watermark និងវត្ថុដោយ AI (LaMa)", "Photorealistic AI Generative Inpainting", Color32::from_rgb(168, 85, 247)),
+        ("quickAction.autoCleanWatermark", "🤖 Auto Clean Watermark", "លុប Watermark និងអក្សរស្វ័យប្រវត្តិ (1-Click)", "Detect & erase watermarks, text & stamps", Color32::from_rgb(239, 68, 68)),
         ("quickAction.autoEnhance", "⚡ Auto Enhance", "កែពន្លឺ ពណ៌ និង Contrast ស្វ័យប្រវត្តិ", "Auto Tone + Contrast + Color", Color32::from_rgb(59, 130, 246)),
         ("layer.removeBackground", "✂️ Remove Background", "កាត់ផ្ទៃក្រោយភ្លាមៗ (< 0.1s)", "Auto subject detection & mask", Color32::from_rgb(16, 185, 129)),
+        ("quickAction.addContactShadow", "🌑 Add Ground Shadow", "ដាក់ស្រមោលជាន់ដីស្វ័យប្រវត្តិ (Floor Contact)", "Realistic ground contact & cast shadow", Color32::from_rgb(107, 114, 128)),
+        ("quickAction.smoothSkin", "✨ Smooth Skin Retouch", "ធ្វើឱ្យស្បែករលោងម៉ដ្ឋបែបធម្មជាតិ", "Frequency separation portrait retouch", Color32::from_rgb(244, 114, 182)),
+        ("quickAction.matchLighting", "💡 Match Lighting & Tone", "តម្រឹមពន្លឺ foreground & background ឱ្យស៊ីគ្នា", "Harmonize color temperature & lighting", Color32::from_rgb(251, 191, 36)),
+        ("quickAction.brightenEyesTeeth", "🦷 Teeth & Eyes Brighten", "ធ្វើឱ្យធ្មេញ និងភ្នែកភ្លឺថ្លាស្អាត", "Clean highlight pop & anti-yellowing", Color32::from_rgb(56, 189, 248)),
+        ("quickAction.autoCenterFit", "📐 Auto Center & Fit", "តម្រឹមរូបឱ្យនៅចំកណ្តាលផ្ទាំង Canvas", "Automatic centering & harmonious alignment", Color32::from_rgb(168, 85, 247)),
+        ("quickAction.stickerOutline", "🏷️ Sticker White Outline", "គែមសព័ទ្ធជុំវិញសម្រាប់កាត់ស្ទីគ័រ", "Die-cut sticker contour outline & shadow", Color32::from_rgb(20, 184, 166)),
         ("quickAction.blurBackground", "🌫️ Blur Background", "ព្រិលផ្ទៃក្រោយ Portrait Depth / Bokeh", "Sharp subject + creamy bokeh blur", Color32::from_rgb(139, 92, 246)),
         ("quickAction.blackWhiteBackground", "🎭 B&W Background", "ផ្ទៃក្រោយ ស-ខ្មៅ រំលេចមនុស្ស (Color Splash)", "Vivid subject + dramatic B&W backdrop", Color32::from_rgb(236, 72, 153)),
         ("quickAction.goldenHour", "🌅 Golden Hour Glow", "ពន្លឺថ្ងៃលិច ស្រទន់កក់ក្តៅ", "Warm amber glow & sunlight grade", Color32::from_rgb(245, 158, 11)),
@@ -914,19 +977,23 @@ fn render_one_click_tools_popup_content(app: &mut PhotocraftApp, ui: &mut Ui, t:
     egui::ScrollArea::vertical().max_height(460.0).show(ui, |ui| {
         ui.spacing_mut().item_spacing = vec2(4.0, 5.0);
         for (cmd, title, khmer_desc, en_desc, accent) in actions {
-            let (card_r, card_resp) = ui.allocate_exact_size(vec2(ui.available_width(), 46.0), Sense::click());
+            let (card_r, card_resp) = ui.allocate_exact_size(vec2(ui.available_width(), 48.0), Sense::click());
             let hovered = card_resp.hovered();
 
             let bg = if hovered {
-                accent.gamma_multiply(0.18)
+                accent.gamma_multiply(0.22)
+            } else if t.dark() {
+                Color32::from_rgb(38, 38, 42)
             } else {
-                Color32::from_rgba_premultiplied(255, 255, 255, if t.dark() { 8 } else { 200 })
+                Color32::from_rgb(244, 244, 248)
             };
 
             let stroke_col = if hovered {
                 accent
+            } else if t.dark() {
+                Color32::from_rgb(56, 56, 62)
             } else {
-                Color32::from_rgba_premultiplied(255, 255, 255, if t.dark() { 24 } else { 180 })
+                Color32::from_rgb(218, 218, 224)
             };
 
             let painter = ui.painter();
@@ -938,13 +1005,27 @@ fn render_one_click_tools_popup_content(app: &mut PhotocraftApp, ui: &mut Ui, t:
             painter.rect_filled(bar, CornerRadius::same(2), accent);
 
             // Title
-            let title_galley = painter.layout_no_wrap(title.to_string(), theme::medium(12.5), if hovered { Color32::WHITE } else { t.text });
-            painter.galley(pos2(card_r.left() + 14.0, card_r.top() + 6.0), title_galley, Color32::WHITE);
+            let title_col = if hovered {
+                Color32::WHITE
+            } else if t.dark() {
+                Color32::from_rgb(240, 240, 245)
+            } else {
+                Color32::from_rgb(24, 24, 28)
+            };
+            let title_galley = painter.layout_no_wrap(title.to_string(), theme::medium(12.5), title_col);
+            painter.galley(pos2(card_r.left() + 14.0, card_r.top() + 6.0), title_galley, title_col);
 
             // Description (Khmer + English)
+            let desc_col = if hovered {
+                accent
+            } else if t.dark() {
+                Color32::from_rgb(175, 175, 185)
+            } else {
+                Color32::from_rgb(90, 90, 100)
+            };
             let desc_text = format!("{} • {}", khmer_desc, en_desc);
-            let desc_galley = painter.layout_no_wrap(desc_text, egui::FontId::proportional(10.5), if hovered { accent } else { t.text_dim });
-            painter.galley(pos2(card_r.left() + 14.0, card_r.top() + 24.0), desc_galley, t.text_dim);
+            let desc_galley = painter.layout_no_wrap(desc_text, egui::FontId::proportional(10.5), desc_col);
+            painter.galley(pos2(card_r.left() + 14.0, card_r.top() + 25.0), desc_galley, desc_col);
 
             if card_resp.on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
                 let _ = crate::menus::invoke(app, ui.ctx(), cmd, json!({}));

@@ -71,6 +71,10 @@ pub(crate) struct MovePreview {
     shown: Option<Arc<Document>>,
     /// Shows a floating selection (`select.float`): offsets are the piece's, from where it was cut.
     floating: bool,
+    /// Adaptive bounding box mode: switched on automatically if preview computation is slow or on low-power hardware with large layers.
+    pub(crate) adaptive_box: bool,
+    /// Timestamp of last preview update in ms (for throttling high-frequency mouse moves).
+    last_update_ms: f64,
 }
 
 impl MovePreview {
@@ -91,7 +95,11 @@ impl MovePreview {
 }
 
 /// The whole-pixel offset of the current Move drag on document `idx`, if one is under way.
-fn drag_offset(app: &PhotocraftApp) -> Option<(i32, i32)> {
+pub(crate) fn moving_bounds(app: &PhotocraftApp) -> Option<Rect> {
+    app.move_preview.as_ref().and_then(|p| p.bounds)
+}
+
+pub(crate) fn drag_offset(app: &PhotocraftApp) -> Option<(i32, i32)> {
     let d = app.drag.as_ref().filter(|d| d.tool == Tool::Move)?;
     let end = d.points.last().map_or(d.start, |p| [p[0], p[1]]);
     let dx = (end[0] - d.start[0]).round().clamp(-1e7, 1e7) as i32;
@@ -140,20 +148,45 @@ pub(crate) fn display_doc(app: &mut PhotocraftApp, idx: usize) -> Option<(Arc<Do
         let canvas = doc.bounds();
         let moving = with_descendants(&doc, &ids);
         let bounds = bounds.map(|b| moving.iter().filter_map(|id| shape_reach(doc.layer(*id)?, canvas)).fold(b, |acc, r| acc.union(&r)));
-        app.move_preview = Some(MovePreview { doc: doc_id, revision, ids, moving, bounds, canvas, offsets: Vec::new(), shown: None, floating: false });
+        app.move_preview = Some(MovePreview {
+            doc: doc_id,
+            revision,
+            ids,
+            moving,
+            bounds,
+            canvas,
+            offsets: Vec::new(),
+            shown: None,
+            floating: false,
+            adaptive_box: false,
+            last_update_ms: 0.0,
+        });
     }
     let p = app.move_preview.as_mut()?;
+    if p.adaptive_box {
+        return None;
+    }
     if offset == (0, 0) && p.offsets.is_empty() {
         return None;
     }
     if p.offsets.last() != Some(&offset) {
         let t0 = crate::gpu_canvas::now_ms();
+        if t0 - p.last_update_ms < 16.0 && p.shown.is_some() {
+            return Some((p.shown.clone()?, p.key()));
+        }
         match photocraft_engine::layer_multi_cmds::moved_target(&doc, &p.ids, offset.0, offset.1, mask_target) {
             Ok(d) => {
+                let elapsed = crate::gpu_canvas::now_ms() - t0;
+                if elapsed > 40.0 {
+                    p.adaptive_box = true;
+                    p.shown = None;
+                    return None;
+                }
                 // Duotone documents display through their inks.
                 let d = photocraft_engine::mode_cmds::display_document(&d).unwrap_or(d);
                 p.shown = Some(Arc::new(d));
                 p.offsets.push(offset);
+                p.last_update_ms = crate::gpu_canvas::now_ms();
             }
             Err(_) => {
                 p.shown = None;
@@ -223,6 +256,8 @@ fn floating_doc(app: &mut PhotocraftApp, idx: usize) -> Option<(Arc<Document>, u
             offsets: Vec::new(),
             shown: None,
             floating: true,
+            adaptive_box: false,
+            last_update_ms: 0.0,
         });
     }
     if offset == (0, 0) && app.move_preview.as_ref().is_none_or(|p| p.offsets.is_empty()) {

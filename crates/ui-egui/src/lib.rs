@@ -80,6 +80,7 @@ use canvas::canvas_popup;
 pub use canvas::canvas_tool_menu;
 pub use canvas::channel_view;
 pub use canvas::gpu_canvas;
+pub use canvas::gpu_canvas::HardwareTier;
 pub use canvas::guide_select;
 pub use canvas::layer_pick_ui;
 pub use canvas::move_ui;
