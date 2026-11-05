@@ -13,7 +13,7 @@
 //!   opacity, fill opacity, channels, knockout, the Advanced Blending switches, Blend If) plus
 //!   the page-only `blendIfChannel`; `channelNames`: the document's colour channels.
 
-use egui::{Align2, Color32, CornerRadius, RichText, Sense, Stroke, StrokeKind, pos2, vec2};
+use egui::{Color32, RichText, Sense, Stroke, StrokeKind, vec2};
 use photocraft_doc::effects::{FxPaint, GlowSource, GlowTechnique, StrokePosition};
 use photocraft_doc::{Effect, Layer};
 use serde_json::{Map, Value, json};
@@ -25,6 +25,7 @@ use crate::{PhotocraftApp, widgets};
 mod bevel_modes_tests;
 pub(crate) mod color_picker;
 mod contour;
+mod gradient_field;
 #[cfg(test)]
 mod gradient_method_tests;
 
@@ -35,6 +36,7 @@ enum P {
     Blend,
     Choice(&'static [(&'static str, &'static str)]),
     GradientMethod,
+    Gradient,
     Check,
     Angle,
     /// A pattern from the dialog's `patternList` field (`[[id, name], …]`).
@@ -66,6 +68,9 @@ pub const KINDS: &[(&str, &str)] = &[
 /// Effect kinds Photoshop offers several instances of (stored as `…Multi` lists in the PSD).
 const MULTI: &[&str] = &["stroke", "dropShadow", "innerShadow", "colorOverlay", "gradientOverlay"];
 
+/// Field holding the user defaults (Make Default) that new instances start from.
+const USER_DEFAULTS: &str = "userDefaults";
+
 fn multi(kind: &str) -> bool {
     MULTI.contains(&kind)
 }
@@ -75,12 +80,22 @@ fn kind_of(e: &Effect) -> &'static str {
 }
 
 fn defaults(kind: &str) -> Value {
-    photocraft_engine::layer_style::effect_defaults(kind)
+    let mut p = photocraft_engine::layer_style::effect_defaults(kind);
+    if kind == "gradientOverlay" {
+        gradient_field::from_to_to_stops(&mut p);
+    }
+    p
 }
 
-/// Factory params for a new instance, with the shared light angle filled in.
-fn fresh_params(kind: &str, light: f32) -> Value {
+/// Params for a new instance: the user default saved by Make Default over the factory
+/// defaults (#9477), with the shared light angle filled in.
+fn fresh_params(kind: &str, light: f32, user: Option<&Value>) -> Value {
     let mut p = defaults(kind);
+    if let (Some(o), Some(u)) = (p.as_object_mut(), user.and_then(Value::as_object)) {
+        for (k, v) in u {
+            o.insert(k.clone(), v.clone());
+        }
+    }
     if p.get("useGlobalLight").and_then(Value::as_bool) == Some(true) {
         p["angle"] = json!(light);
     }
@@ -158,8 +173,7 @@ fn spec(kind: &str) -> &'static [(&'static str, &'static str, P)] {
         "gradientOverlay" => &[
             ("blend", "Blend Mode", P::Blend),
             ("opacity", "Opacity", P::Slider(0.0, 100.0, "%")),
-            ("from", "From", P::Color),
-            ("to", "To", P::Color),
+            ("stops", "Gradient", P::Gradient),
             ("reverse", "Reverse", P::Check),
             ("style", "Style", P::Choice(GSTYLE)),
             ("angle", "Angle", P::Angle),
@@ -307,14 +321,8 @@ fn values_of(e: &Effect, light: f32) -> Value {
                 set(&mut v, "method", json!(source.method));
                 set(&mut v, "smoothness", json!(source.smoothness));
             }
-            // Endpoint colours and geometry always load into the dialog. Recorded
-            // interpolation exposes the original source ends; a baked curve without a
-            // record (PSD import) keeps its interior stops in `fx`, and an edit only
-            // retints its ends until a method is chosen.
-            if let (Some(first), Some(last)) = (stops.first(), stops.last()) {
-                set(&mut v, "from", json!(hex(&first.1)));
-                set(&mut v, "to", json!(hex(&last.1)));
-            }
+            set(&mut v, gradient_field::KEY, gradient_field::stops_json(stops));
+            set(&mut v, gradient_field::OPACITY_KEY, gradient_field::opacity_json(&g.opacity_stops));
             set(&mut v, "reverse", json!(g.reverse));
             set(
                 &mut v,
@@ -463,7 +471,8 @@ fn next_id(f: &Map<String, Value>) -> String {
 fn add_instance(f: &mut Map<String, Value>, kind: &str) {
     let light = f.get("pendingGlobalLight").or_else(|| f.get("globalLight")).and_then(Value::as_f64).unwrap_or(120.0) as f32;
     let id = next_id(f);
-    let new = json!({"id": id, "kind": kind, "on": true, "params": fresh_params(kind, light)});
+    let user = f.get(USER_DEFAULTS).and_then(|d| d.get(kind));
+    let new = json!({"id": id, "kind": kind, "on": true, "params": fresh_params(kind, light, user)});
     if let Some(a) = f.get_mut("effects").and_then(Value::as_array_mut) {
         let pos = a.iter().rposition(|e| e.get("kind").and_then(Value::as_str) == Some(kind)).map_or(a.len(), |i| i + 1);
         a.insert(pos, new);
@@ -503,7 +512,7 @@ pub fn drags_shadow(f: &Map<String, Value>) -> bool {
 /// A drag on the image with a shadow page selected: `start` is true on the press (it records the
 /// shadow's angle and distance then), `total` the pointer's movement since in document pixels.
 /// The shadow's offset follows the pointer, kept as Photoshop's whole-degree angle and whole-pixel
-/// distance (offset = (-cos angle, sin angle) * distance, the light opposite the shadow); with
+/// distance (offset = (−cos angle, sin angle) × distance, the light opposite the shadow); with
 /// Use Global Light the shared angle moves too ([`set_param`]).
 pub fn drag_shadow(f: &mut Map<String, Value>, start: bool, total: [f64; 2]) {
     const KEY: &str = "__shadowDrag";
@@ -527,9 +536,14 @@ pub fn drag_shadow(f: &mut Map<String, Value>, start: bool, total: [f64; 2]) {
 }
 
 pub fn initial_fields(layer: &Layer, select: Option<&str>, light: f32) -> Map<String, Value> {
+    initial_fields_with(layer, select, light, Map::new())
+}
+
+/// The dialog's fields, with the user defaults (`kind` → params) new instances start from.
+pub fn initial_fields_with(layer: &Layer, select: Option<&str>, light: f32, user_defaults: Map<String, Value>) -> Map<String, Value> {
     let mut f = Map::new();
+    f.insert(USER_DEFAULTS.into(), Value::Object(user_defaults));
     f.insert("layer".into(), json!(layer.id.0));
-    f.insert("layerName".into(), json!(layer.name.clone()));
     f.insert("globalLight".into(), json!(light));
     f.insert("preview".into(), json!(true));
     set_blending_fields(&mut f, layer, photocraft_color::ColorMode::Rgb);
@@ -584,17 +598,10 @@ pub fn open(app: &mut PhotocraftApp, select: Option<&str>) -> Option<u64> {
     let layer = st.doc.layer(st.active_layer?)?.clone();
     let light = st.doc.global_light.angle;
     let mode = st.doc.mode;
-    let mut committed = initial_fields(&layer, None, light);
-    set_blending_fields(&mut committed, &layer, mode);
-    let committed_hash = preview_hash(&committed);
-    let mut f = if select.is_none() {
-        committed
-    } else {
-        let mut f = initial_fields(&layer, select, light);
-        set_blending_fields(&mut f, &layer, mode);
-        f
-    };
-    f.insert("__committedHash".into(), json!(committed_hash));
+    let user = app.session.presets.layer_defaults.iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+    let mut f = initial_fields_with(&layer, select, light, user);
+    // Channels and Blend If list the document's own colour channels.
+    set_blending_fields(&mut f, &layer, mode);
     f.insert("__document".into(), json!(st.doc.id));
     f.insert("patternList".into(), pattern_list(app));
     Some(app.ui.open_dialog(crate::state::DialogKind::LayerStyle, f))
@@ -743,30 +750,17 @@ pub fn preview_hash(f: &Map<String, Value>) -> u64 {
         .fold(0xcbf2_9ce4_8422_2325, |h, b| (h ^ b as u64).wrapping_mul(0x100_0000_01b3))
 }
 
-thread_local! {
-    static PREVIEW_SESSION: std::cell::RefCell<photocraft_engine::Session> = std::cell::RefCell::new(photocraft_engine::Session::new());
-}
-
-/// `doc` with the dialog's style applied, run on a cached scratch session (no history) for the live preview.
+/// `doc` with the dialog's style applied, run on a scratch session (no history) for the live preview.
 pub fn preview_document(
     doc: &photocraft_doc::Document,
     patterns: &photocraft_engine::pattern_cmds::PatternLibrary,
     f: &Map<String, Value>,
 ) -> Result<photocraft_doc::Document, String> {
-    PREVIEW_SESSION.with(|cell| {
-        let mut s = cell.borrow_mut();
-        s.patterns = patterns.clone();
-        s.add_document(doc.clone(), None);
-        let res = apply(f, |id, p| s.execute(id, p).map_err(|e| e.to_string()));
-        let out = match res {
-            Ok(_) => s.active().map(|d| (*d.doc).clone()).ok_or_else(|| "no preview document".into()),
-            Err(e) => Err(e),
-        };
-        while !s.documents().is_empty() {
-            s.close(0);
-        }
-        out
-    })
+    let mut s = photocraft_engine::Session::new();
+    s.patterns = patterns.clone();
+    s.add_document(doc.clone(), None);
+    apply(f, |id, p| s.execute(id, p).map_err(|e| e.to_string()))?;
+    s.active().map(|d| (*d.doc).clone()).ok_or_else(|| "no preview document".into())
 }
 
 /// Applies a style preset to the dialog fields in-place without touching the document.
@@ -833,857 +827,58 @@ fn fx_label_color(enabled: bool, t: &Tokens) -> Color32 {
     if enabled { t.text } else { t.text_dim }
 }
 
-fn group_box<R>(
-    ui: &mut egui::Ui,
-    title: &str,
-    t: &Tokens,
-    add_contents: impl FnOnce(&mut egui::Ui) -> R,
-) -> R {
-    let font = crate::theme::semibold(12.0);
-    let title_text = tl!(title);
-    let galley = ui.painter().layout_no_wrap(title_text.to_string(), font.clone(), t.text_dim);
-    let text_w = galley.size().x;
-
-    ui.add_space(6.0);
-    let width = ui.available_width().max(200.0);
-
-    let inner_frame = egui::Frame::NONE
-        .stroke(Stroke::new(1.0, t.card_border.gamma_multiply(0.8)))
-        .corner_radius(CornerRadius::same(3))
-        .inner_margin(egui::Margin { left: 10, right: 10, top: 12, bottom: 8 });
-
-    let response = inner_frame.show(ui, |ui| {
-        ui.set_width(width - 20.0);
-        add_contents(ui)
-    });
-
-    let rect = response.response.rect;
-
-    let title_rect = egui::Rect::from_min_size(
-        egui::pos2(rect.left() + 10.0, rect.top() - 7.0),
-        vec2(text_w + 8.0, 14.0),
-    );
-    let bg = if t.card.a() > 0 { t.card } else { ui.visuals().window_fill() };
-    ui.painter().rect_filled(title_rect, 0.0, bg);
-    ui.painter().text(
-        title_rect.center(),
-        Align2::CENTER_CENTER,
-        title_text,
-        font,
-        t.text_dim,
-    );
-
-    ui.add_space(4.0);
-    response.inner
-}
-
-fn inline_label(ui: &mut egui::Ui, label: &str, t: &Tokens) {
-    let width = 145.0;
-    let (rect, _) = ui.allocate_exact_size(vec2(width, 22.0), Sense::hover());
-    let g = crate::tab_strip::elided(ui, tl!(label), egui::FontId::proportional(12.0), t.text_dim, width);
-    let pos = pos2(rect.right() - g.size().x, rect.center().y - g.size().y / 2.0);
-    ui.painter().galley(pos, g, t.text_dim);
-}
-
-fn inline_slider_row(
-    ui: &mut egui::Ui,
-    label: &str,
-    value: &mut f32,
-    range: std::ops::RangeInclusive<f32>,
-    suffix: &str,
-    t: &Tokens,
-) -> bool {
-    let mut changed = false;
-    ui.horizontal(|ui| {
-        ui.spacing_mut().item_spacing.x = 8.0;
-        inline_label(ui, label, t);
-        ui.allocate_ui_with_layout(
-            vec2(120.0, 22.0),
-            egui::Layout::left_to_right(egui::Align::Center),
-            |ui| {
-                let s = widgets::slider(ui, value, range.clone(), None);
-                if s.changed() {
-                    changed = true;
-                }
-            },
-        );
-        let vf = widgets::value_field(ui, value, range, suffix, 54.0);
-        if vf.changed() {
-            changed = true;
-        }
-    });
-    changed
-}
-
-fn inline_dropdown_row<T: PartialEq + Clone>(
-    ui: &mut egui::Ui,
-    label: &str,
-    id_salt: &str,
-    current: &mut T,
-    options: &[(T, &str)],
-    width: f32,
-    t: &Tokens,
-) -> bool {
-    let mut changed = false;
-    ui.horizontal(|ui| {
-        ui.spacing_mut().item_spacing.x = 8.0;
-        inline_label(ui, label, t);
-        changed = widgets::dropdown(ui, id_salt, label, current, options, width);
-    });
-    changed
-}
-
-fn inline_color_row(
-    ui: &mut egui::Ui,
-    label: &str,
-    color_hex: &str,
-    t: &Tokens,
-) -> egui::Response {
-    let mut resp = None;
-    ui.horizontal(|ui| {
-        ui.spacing_mut().item_spacing.x = 8.0;
-        inline_label(ui, label, t);
-        let r = widgets::color_swatch(ui, parse_hex(color_hex)).on_hover_text(tl!("Color Picker (Layer Style Color)"));
-        resp = Some(r);
-    });
-    resp.unwrap_or_else(|| ui.label(""))
-}
-
-fn inline_angle_row(
-    ui: &mut egui::Ui,
-    label: &str,
-    angle: &mut f32,
-    global_light: Option<&mut bool>,
-    t: &Tokens,
-) -> (bool, bool) {
-    let mut angle_changed = false;
-    let mut light_changed = false;
-    ui.horizontal(|ui| {
-        ui.spacing_mut().item_spacing.x = 8.0;
-        inline_label(ui, label, t);
-        let dial = widgets::angle_dial_row(ui, "", angle, -180.0..=180.0);
-        if dial.changed() {
-            angle_changed = true;
-        }
-        if let Some(gl) = global_light {
-            ui.add_space(8.0);
-            if widgets::checkbox(ui, gl, tl!("Use Global Light")).changed() {
-                light_changed = true;
-            }
-        }
-    });
-    (angle_changed, light_changed)
-}
-
-fn inline_check_row(
-    ui: &mut egui::Ui,
-    b: &mut bool,
-    label: &str,
-    _t: &Tokens,
-) -> bool {
-    let mut changed = false;
-    ui.horizontal(|ui| {
-        ui.add_space(88.0);
-        if widgets::checkbox(ui, b, tl!(label)).changed() {
-            changed = true;
-        }
-    });
-    changed
-}
-
-fn preview_swatch_box(ui: &mut egui::Ui, f: &Map<String, Value>, t: &Tokens) {
-    let box_size = vec2(105.0, 105.0);
-    let (rect, _) = ui.allocate_exact_size(box_size, Sense::hover());
-    let p = ui.painter();
-
-    p.rect_filled(rect, 2.0, Color32::from_gray(30));
-    p.rect_stroke(rect, 2.0, Stroke::new(1.0, t.card_border), StrokeKind::Inside);
-
-    let swatch_size = vec2(56.0, 56.0);
-    let swatch_rect = egui::Rect::from_center_size(rect.center(), swatch_size);
-
-    let effects = effects_of(f);
-
-    // 1. Drop shadow: if enabled, draw soft offset shadow
-    for e in effects {
-        if e.get("kind").and_then(Value::as_str) == Some("dropShadow")
-            && e.get("on").and_then(Value::as_bool) == Some(true)
-        {
-            let params = e.get("params");
-            let angle = params.and_then(|p| p.get("angle")).and_then(Value::as_f64).unwrap_or(120.0) as f32;
-            let dist = (params.and_then(|p| p.get("distance")).and_then(Value::as_f64).unwrap_or(5.0) as f32 * 0.4).clamp(1.0, 12.0);
-            let rad = angle.to_radians();
-            let offset = vec2(-rad.cos() * dist, rad.sin() * dist);
-            let shadow_rect = swatch_rect.translate(offset);
-            let color = params.and_then(|p| p.get("color")).and_then(Value::as_str).map(parse_hex).unwrap_or(Color32::BLACK);
-            let opacity = params.and_then(|p| p.get("opacity")).and_then(Value::as_f64).unwrap_or(75.0) as f32 / 100.0;
-            p.rect_filled(shadow_rect, 2.0, color.gamma_multiply(opacity * 0.6));
-        }
-    }
-
-    // 2. Base fill: medium gray
-    let mut base_color = Color32::from_gray(85);
-
-    // 3. Color overlay: tint base fill
-    for e in effects {
-        if e.get("kind").and_then(Value::as_str) == Some("colorOverlay")
-            && e.get("on").and_then(Value::as_bool) == Some(true)
-        {
-            let params = e.get("params");
-            let color = params.and_then(|p| p.get("color")).and_then(Value::as_str).map(parse_hex).unwrap_or(Color32::RED);
-            let opacity = params.and_then(|p| p.get("opacity")).and_then(Value::as_f64).unwrap_or(100.0) as f32 / 100.0;
-            base_color = Color32::from_rgb(
-                ((1.0 - opacity) * f32::from(base_color.r()) + opacity * f32::from(color.r())).round() as u8,
-                ((1.0 - opacity) * f32::from(base_color.g()) + opacity * f32::from(color.g())).round() as u8,
-                ((1.0 - opacity) * f32::from(base_color.b()) + opacity * f32::from(color.b())).round() as u8,
-            );
-        }
-    }
-    p.rect_filled(swatch_rect, 2.0, base_color);
-
-    // 4. Stroke: if enabled, draw border around swatch
-    for e in effects {
-        if e.get("kind").and_then(Value::as_str) == Some("stroke")
-            && e.get("on").and_then(Value::as_bool) == Some(true)
-        {
-            let params = e.get("params");
-            let stroke_size = (params.and_then(|p| p.get("size")).and_then(Value::as_f64).unwrap_or(1.0) as f32 * 0.4).clamp(1.0, 8.0);
-            let stroke_color = params.and_then(|p| p.get("color")).and_then(Value::as_str).map(parse_hex).unwrap_or(Color32::BLACK);
-            let stroke_pos = params.and_then(|p| p.get("position")).and_then(Value::as_str).unwrap_or("outside");
-            let kind = match stroke_pos {
-                "inside" => StrokeKind::Inside,
-                "center" => StrokeKind::Middle,
-                _ => StrokeKind::Outside,
-            };
-            p.rect_stroke(swatch_rect, 2.0, Stroke::new(stroke_size, stroke_color), kind);
-        }
-    }
-}
-
-#[allow(clippy::too_many_arguments)]
-fn render_spec_item(
-    app: &mut PhotocraftApp,
-    ui: &mut egui::Ui,
-    f: &mut Map<String, Value>,
-    selected: &str,
-    sel_kind: &str,
-    key: &str,
-    label: &str,
-    kind_p: P,
-    disp: &mut Value,
-    t: &Tokens,
-) {
-    match kind_p {
-        P::Angle => {
-            let mut v = disp.get(key).and_then(Value::as_f64).unwrap_or(0.0) as f32;
-            let mut use_gl = disp.get("useGlobalLight").and_then(Value::as_bool);
-            let has_gl = use_gl.is_some();
-            let (angle_ch, gl_ch) = inline_angle_row(ui, label, &mut v, use_gl.as_mut(), t);
-            if angle_ch {
-                let val = json!(v);
-                disp[key] = val.clone();
-                set_param(f, selected, key, val);
-            }
-            if gl_ch && has_gl
-                && let Some(b) = use_gl {
-                    let val = json!(b);
-                    disp["useGlobalLight"] = val.clone();
-                    set_param(f, selected, "useGlobalLight", val);
-                }
-        }
-        P::Slider(min, max, unit) => {
-            let mut v = disp.get(key).and_then(Value::as_f64).unwrap_or(min as f64) as f32;
-            if inline_slider_row(ui, label, &mut v, min..=max, unit, t) {
-                let val = json!(v.round());
-                disp[key] = val.clone();
-                set_param(f, selected, key, val);
-            }
-        }
-        P::Color => {
-            let color = disp.get(key).and_then(Value::as_str).unwrap_or("#000000");
-            if inline_color_row(ui, label, color, t).clicked() {
-                f.insert(color_picker::REQUEST.into(), json!({"effect": selected, "field": key}));
-            }
-        }
-        P::Blend => {
-            let mut cur = disp.get(key).and_then(Value::as_str).unwrap_or("Normal").to_string();
-            let opts: Vec<(String, &str)> = photocraft_color::BlendMode::LAYER_MODES.iter().map(|m| (m.label().to_string(), m.label())).collect();
-            if inline_dropdown_row(ui, label, &format!("fx-blend-{sel_kind}"), &mut cur, &opts, 130.0, t) {
-                let val = json!(cur);
-                disp[key] = val.clone();
-                set_param(f, selected, key, val);
-            }
-        }
-        P::Choice(options) => {
-            let mut cur = disp.get(key).and_then(Value::as_str).unwrap_or(options[0].0).to_string();
-            let opts: Vec<(String, &str)> = options.iter().map(|(v, l)| (v.to_string(), *l)).collect();
-            if inline_dropdown_row(ui, label, &format!("fx-{sel_kind}-{key}"), &mut cur, &opts, 130.0, t) {
-                let val = json!(cur);
-                disp[key] = val.clone();
-                set_param(f, selected, key, val);
-            }
-        }
-        P::GradientMethod => {
-            let mut current = disp.get(key).and_then(Value::as_str).unwrap_or("custom").to_string();
-            let mut options = vec![
-                ("smooth".to_string(), "Smooth"),
-                ("perceptual".to_string(), "Perceptual"),
-                ("linear".to_string(), "Linear"),
-                ("classic".to_string(), "Classic"),
-            ];
-            if photocraft_io::GradientMethod::from_name(&current).is_none() {
-                current = "custom".into();
-                options.insert(0, ("custom".into(), "Custom"));
-            }
-            if inline_dropdown_row(ui, label, &format!("fx-{sel_kind}-{key}"), &mut current, &options, 150.0, t) {
-                let snapshot = entry(f, selected).and_then(|e| e.get("fx")).cloned();
-                if let Some(Effect::GradientOverlay { gradient, interpolation, .. }) =
-                    snapshot.and_then(|v| serde_json::from_value::<Effect>(v).ok())
-                {
-                    let stops = interpolation.as_ref().map_or(&gradient.stops, |source| &source.stops);
-                    for (k, stop) in [("from", stops.first()), ("to", stops.last())] {
-                        if entry(f, selected).and_then(|e| e.get("params")).and_then(|p| p.get(k)).is_none()
-                            && let Some(stop) = stop
-                        {
-                            set_param(f, selected, k, json!(hex(&stop.1)));
-                        }
-                    }
-                }
-                let val = json!(current);
-                disp[key] = val.clone();
-                set_param(f, selected, key, val);
-            }
-        }
-        P::Pattern => {
-            let list: Vec<(String, String)> = f
-                .get("patternList")
-                .and_then(Value::as_array)
-                .map(|a| a.iter().filter_map(|e| Some((e.get(0)?.as_str()?.to_string(), e.get(1)?.as_str()?.to_string()))).collect())
-                .unwrap_or_default();
-            let mut cur = disp
-                .get(key)
-                .and_then(Value::as_str)
-                .filter(|c| !c.is_empty())
-                .map(str::to_string)
-                .or_else(|| list.first().map(|l| l.0.clone()))
-                .unwrap_or_default();
-            let opts: Vec<(String, &str)> = list.iter().map(|(id, n)| (id.clone(), n.as_str())).collect();
-            if inline_dropdown_row(ui, label, &format!("fx-{sel_kind}-{key}"), &mut cur, &opts, 160.0, t)
-                || disp.get(key).and_then(Value::as_str).is_none_or(str::is_empty)
-            {
-                let val = json!(cur);
-                disp[key] = val.clone();
-                set_param(f, selected, key, val);
-            }
-        }
-        P::Contour(aa) => {
-            ui.horizontal(|ui| {
-                ui.add_space(88.0);
-                contour::row(app, ui, f, selected, key, label, aa, disp);
-            });
-        }
-        P::Check => {
-            if key == "useGlobalLight" {
-                return;
-            }
-            let mut b = disp.get(key).and_then(Value::as_bool).unwrap_or(false);
-            if inline_check_row(ui, &mut b, label, t) {
-                let val = json!(b);
-                disp[key] = val.clone();
-                set_param(f, selected, key, val);
-            }
-        }
-    }
-    ui.add_space(2.0);
-}
-
-fn render_effect_groups(
-    app: &mut PhotocraftApp,
-    ui: &mut egui::Ui,
-    f: &mut Map<String, Value>,
-    selected: &str,
-    sel_kind: &str,
-    disp: &mut Value,
-    t: &Tokens,
-) {
-    let items = spec(sel_kind);
-    match sel_kind {
-        "stroke" => {
-            group_box(ui, "Structure", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "size" | "position" | "blend" | "opacity") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-            group_box(ui, "Fill Type", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if key == "color" {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-        }
-        "dropShadow" | "innerShadow" => {
-            group_box(ui, "Structure", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "blend" | "color" | "opacity" | "angle" | "useGlobalLight" | "distance" | "spread" | "choke" | "size") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-            group_box(ui, "Quality", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "contour" | "noise" | "knocksOut") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-        }
-        "outerGlow" | "innerGlow" => {
-            group_box(ui, "Structure", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "blend" | "opacity" | "noise" | "color") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-            group_box(ui, "Elements", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "source" | "spread" | "choke" | "size") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-            group_box(ui, "Quality", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "contour" | "range") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-        }
-        "bevelEmboss" => {
-            group_box(ui, "Structure", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "style" | "technique" | "depth" | "direction" | "size" | "soften") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-            group_box(ui, "Shading", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "angle" | "useGlobalLight" | "altitude" | "glossContour") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-            group_box(ui, "Contour", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "contour" | "contourName" | "contourRange") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-        }
-        "satin" => {
-            group_box(ui, "Structure", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "blend" | "color" | "opacity") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-            group_box(ui, "Elements", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "angle" | "distance" | "size" | "contour" | "invert") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-        }
-        "gradientOverlay" => {
-            group_box(ui, "Structure", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "blend" | "opacity") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-            group_box(ui, "Gradient", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "method" | "from" | "to" | "reverse" | "style" | "angle" | "scale") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-        }
-        "patternOverlay" => {
-            group_box(ui, "Structure", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "blend" | "opacity") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-            group_box(ui, "Pattern", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    if matches!(key, "pattern" | "scale" | "angle" | "link") {
-                        render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                    }
-                }
-            });
-        }
-        _ => {
-            group_box(ui, "Structure", t, |ui| {
-                for &(key, label, kind_p) in items {
-                    render_spec_item(app, ui, f, selected, sel_kind, key, label, kind_p, disp, t);
-                }
-            });
-        }
-    }
-}
-
+/// The enable checkbox of an effect row.
 fn fx_checkbox_rect(row: egui::Rect) -> egui::Rect {
-    let size = 14.0;
-    let y = (row.center().y - size / 2.0).round();
-    egui::Rect::from_min_size(egui::pos2(row.left() + 8.0, y), vec2(size, size))
+    egui::Rect::from_min_size(row.min + vec2(6.0, 6.0), vec2(14.0, 14.0))
 }
 
-fn fx_checkbox(painter: &egui::Painter, rect: egui::Rect, on: bool, t: &Tokens) {
-    let bg = if on { t.accent } else { t.field };
-    let border = if on { t.accent } else { t.field_border };
-    painter.rect(rect, 2.0, bg, Stroke::new(1.0, border), egui::StrokeKind::Inside);
+/// An effect row's checkbox: an accent box with a tick when on, an outline when off.
+fn fx_checkbox(p: &egui::Painter, cb: egui::Rect, on: bool, t: &Tokens) {
     if on {
-        let pts = [
-            egui::pos2(rect.left() + 3.0, rect.center().y),
-            egui::pos2(rect.left() + 5.5, rect.bottom() - 3.5),
-            egui::pos2(rect.right() - 3.0, rect.top() + 3.5),
-        ];
-        painter.line_segment([pts[0], pts[1]], Stroke::new(1.8, Color32::WHITE));
-        painter.line_segment([pts[1], pts[2]], Stroke::new(1.8, Color32::WHITE));
+        p.rect_filled(cb, 2.0, t.accent);
+        p.line_segment([cb.left_center() + vec2(3.0, 0.5), cb.center_bottom() + vec2(-1.0, -3.5)], Stroke::new(1.8, Color32::WHITE));
+        p.line_segment([cb.center_bottom() + vec2(-1.0, -3.5), cb.right_top() + vec2(-3.0, 3.5)], Stroke::new(1.8, Color32::WHITE));
+    } else {
+        p.rect_stroke(cb, 2.0, Stroke::new(1.5, t.text_faint), StrokeKind::Inside);
     }
 }
 
-pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Value>, interactive: bool) -> Option<bool> {
-    let t = Tokens::get(ui.ctx());
+pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) {
+    let _ = body_with_response(app, ui, f, true);
+}
+
+/// Layer Style's body, laid out like Photoshop's: the effect list over its fx / move / delete
+/// bar, the selected page, and a column with OK, Cancel, New Style…, Preview and the preview
+/// swatch. Returns OK (true) or Cancel (false) once chosen; Enter is OK.
+pub fn body_with_response(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Value>, interactive: bool) -> Option<bool> {
     let selected = f.get("selected").and_then(Value::as_str).unwrap_or("dropShadow").to_string();
     let mut style_click: Option<String> = None;
     let mut new_style = false;
-    let mut outcome: Option<bool> = None;
+    let mut outcome = None;
     let invalid = validate_params(f).err();
-
-    let layer_name = f.get("layerName").and_then(Value::as_str).unwrap_or("Layer 0");
-    ui.horizontal(|ui| {
-        ui.label(RichText::new(tl!("Name:")).font(crate::theme::semibold(12.0)).color(t.text_dim));
-        let mut name_buf = layer_name.to_string();
-        ui.add_enabled(false, egui::TextEdit::singleline(&mut name_buf).desired_width(180.0));
-    });
-    ui.add_space(8.0);
-
+    // One size on every page (`dialogs::sizing_of`): the list and the page fill its height and
+    // scroll when they are taller.
+    let height = ui.available_height().max(160.0);
     ui.horizontal_top(|ui| {
-        ui.spacing_mut().item_spacing.x = 12.0;
-
-        // ==========================================
-        // COLUMN 1: Styles & Effects List (Left, 200px)
-        // ==========================================
-        let panel_frame = egui::Frame::NONE
-            .fill(t.card)
-            .stroke(Stroke::new(1.0, t.card_border))
-            .corner_radius(CornerRadius::same(3))
-            .inner_margin(egui::Margin::same(4));
-
-        panel_frame.show(ui, |ui| {
-            ui.vertical(|ui| {
-                ui.set_width(225.0);
-                ui.set_min_height(420.0);
-
-                // Styles & Blending Options rows
-                for (id, label) in [(STYLES_PAGE, "Styles"), (BLENDING, "Blending Options")] {
-                    let is_sel = selected == id;
-                    let (rect, resp) = ui.allocate_exact_size(vec2(225.0, 24.0), Sense::click());
-                    if is_sel {
-                        ui.painter().rect_filled(rect, t.radius_sm, t.row_selected.gamma_multiply(if t.pro { 1.0 } else { 0.0 }).max_alpha(t.hover));
-                    } else if resp.hovered() {
-                        ui.painter().rect_filled(rect, t.radius_sm, t.hover.gamma_multiply(0.5));
-                    }
-                    let text_max_w = rect.width() - 20.0;
-                    let g = crate::tab_strip::elided(ui, tl!(label), egui::FontId::proportional(12.5), if is_sel { t.text } else { t.text_dim }, text_max_w);
-                    ui.painter().galley(pos2(rect.left() + 10.0, rect.center().y - g.size().y / 2.0), g, if is_sel { t.text } else { t.text_dim });
-                    if resp.clicked() {
-                        f.insert("selected".into(), json!(id));
-                    }
-                }
-                ui.add_space(3.0);
-                crate::widgets::hairline(ui);
-                ui.add_space(3.0);
-
-                for &(kind, label) in KINDS {
-                    let ids: Vec<String> = effects_of(f)
-                        .iter()
-                        .filter(|e| e.get("kind").and_then(Value::as_str) == Some(kind))
-                        .filter_map(|e| e.get("id").and_then(Value::as_str).map(str::to_string))
-                        .collect();
-                    if ids.is_empty() {
-                        let (rect, resp) = ui.allocate_exact_size(vec2(225.0, 24.0), Sense::click());
-                        if resp.hovered() {
-                            ui.painter().rect_filled(rect, t.radius_sm, t.hover.gamma_multiply(0.5));
-                        }
-                        fx_checkbox(ui.painter(), fx_checkbox_rect(rect), false, &t);
-                        let text_max_w = rect.width() - 36.0;
-                        let g = crate::tab_strip::elided(ui, tl!(label), egui::FontId::proportional(12.5), t.text_faint, text_max_w);
-                        ui.painter().galley(pos2(rect.left() + 28.0, rect.center().y - g.size().y / 2.0), g, t.text_faint);
-                        if resp.clicked() {
-                            add_instance(f, kind);
-                        }
-                        continue;
-                    }
-                    let count = ids.len();
-                    for id in &ids {
-                        let Some(e) = entry(f, id) else { continue };
-                        let kind_label = KINDS.iter().find(|k| k.0 == kind).map(|k| k.1).unwrap_or(label);
-                        let mut on = e.get("on").and_then(Value::as_bool).unwrap_or(false);
-                        let is_sel = id == &selected;
-                        let (rect, resp) = ui.allocate_exact_size(vec2(225.0, 24.0), Sense::click());
-                        if is_sel {
-                            ui.painter().rect_filled(rect, t.radius_sm, t.row_selected.gamma_multiply(if t.pro { 1.0 } else { 0.0 }).max_alpha(t.hover));
-                        } else if resp.hovered() {
-                            ui.painter().rect_filled(rect, t.radius_sm, t.hover.gamma_multiply(0.5));
-                        }
-                        let cb = fx_checkbox_rect(rect);
-                        let cresp = ui.interact(cb, ui.scope_id().with(("fxcb", kind, id)), Sense::click());
-                        fx_checkbox(ui.painter(), cb, on, &t);
-                        let btn_room = if multi(kind) { if count > 1 { 48.0 } else { 26.0 } } else { 0.0 };
-                        let text_max_w = (rect.width() - 32.0 - btn_room).max(30.0);
-                        let g = crate::tab_strip::elided(ui, tl!(kind_label), egui::FontId::proportional(12.5), fx_label_color(on, &t), text_max_w);
-                        ui.painter().galley(pos2(rect.left() + 28.0, rect.center().y - g.size().y / 2.0), g, fx_label_color(on, &t));
-                        if multi(kind) {
-                            let btn = |ui: &egui::Ui, r: egui::Rect, glyph: &str, tag: &str| {
-                                let hresp = ui.interact(r, ui.scope_id().with(("fxbtn", tag, id)), Sense::click());
-                                let (stroke, fill) = if hresp.hovered() {
-                                    (Stroke::new(1.0, t.accent), t.hover)
-                                } else {
-                                    (Stroke::new(1.0, t.card_border), Color32::TRANSPARENT)
-                                };
-                                ui.painter().rect(r, 2.0, fill, stroke, egui::StrokeKind::Inside);
-                                ui.painter().text(
-                                    r.center(),
-                                    egui::Align2::CENTER_CENTER,
-                                    glyph,
-                                    egui::FontId::proportional(12.0),
-                                    if hresp.hovered() { t.accent } else { t.text_dim },
-                                );
-                                hresp.clicked()
-                            };
-                            if count > 1 {
-                                let minus_rect = egui::Rect::from_center_size(rect.right_center() - vec2(28.0, 0.0), vec2(16.0, 16.0));
-                                if btn(ui, minus_rect, "\u{2212}", "minus") {
-                                    remove_instance(f, id);
-                                    continue;
-                                }
-                            }
-                            let plus_rect = egui::Rect::from_center_size(rect.right_center() - vec2(10.0, 0.0), vec2(16.0, 16.0));
-                            if btn(ui, plus_rect, "+", "plus") {
-                                add_instance(f, kind);
-                            }
-                        }
-                        if cresp.clicked() {
-                            on = !on;
-                            if let Some(e) = entry_mut(f, id) {
-                                e["on"] = json!(on);
-                            }
-                            f.insert("selected".into(), json!(id));
-                        } else if resp.clicked() {
-                            f.insert("selected".into(), json!(id));
-                        }
-                    }
-                }
-
-                ui.add_space(8.0);
-                crate::widgets::hairline(ui);
-                ui.add_space(4.0);
-                ui.horizontal(|ui| {
-                    ui.spacing_mut().item_spacing.x = 4.0;
-                    let (fx_rect, fx_resp) = ui.allocate_exact_size(vec2(26.0, 22.0), Sense::click());
-                    if fx_resp.hovered() {
-                        ui.painter().rect_filled(fx_rect, 2.0, t.hover);
-                    }
-                    ui.painter().text(fx_rect.center(), egui::Align2::CENTER_CENTER, "fx", egui::FontId::proportional(13.0), t.text_dim);
-
-                    let (up_rect, up_resp) = ui.allocate_exact_size(vec2(22.0, 22.0), Sense::click());
-                    if up_resp.hovered() {
-                        ui.painter().rect_filled(up_rect, 2.0, t.hover);
-                    }
-                    crate::icons::paint(ui, up_rect, "chevron-up", 12.0, if up_resp.hovered() { t.text } else { t.text_dim });
-                    if up_resp.clicked()
-                        && let Some(effects) = f.get_mut("effects").and_then(Value::as_array_mut)
-                        && let Some(pos) = effects.iter().position(|e| e.get("id").and_then(Value::as_str) == Some(&selected))
-                        && pos > 0
-                    {
-                        effects.swap(pos, pos - 1);
-                    }
-
-                    let (dn_rect, dn_resp) = ui.allocate_exact_size(vec2(22.0, 22.0), Sense::click());
-                    if dn_resp.hovered() {
-                        ui.painter().rect_filled(dn_rect, 2.0, t.hover);
-                    }
-                    crate::icons::paint(ui, dn_rect, "chevron-down", 12.0, if dn_resp.hovered() { t.text } else { t.text_dim });
-                    if dn_resp.clicked()
-                        && let Some(effects) = f.get_mut("effects").and_then(Value::as_array_mut)
-                        && let Some(pos) = effects.iter().position(|e| e.get("id").and_then(Value::as_str) == Some(&selected))
-                        && pos + 1 < effects.len()
-                    {
-                        effects.swap(pos, pos + 1);
-                    }
-
-                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        let can_del = entry(f, &selected).is_some();
-                        let (tr_rect, tr_resp) = ui.allocate_exact_size(vec2(22.0, 22.0), Sense::click());
-                        if can_del && tr_resp.hovered() {
-                            ui.painter().rect_filled(tr_rect, 2.0, t.hover);
-                        }
-                        let trash_col = if can_del { if tr_resp.hovered() { t.text } else { t.text_dim } } else { t.text_faint };
-                        crate::icons::paint(ui, tr_rect, "trash", 14.0, trash_col);
-                        if can_del && tr_resp.clicked() {
-                            remove_instance(f, &selected);
-                        }
-                    });
-                });
-            });
+        boxed(ui, LIST_W, height, |ui, h| {
+            egui::ScrollArea::vertical().id_salt("layer-style-effects").max_height(h - BAR_H).auto_shrink(false).show(ui, |ui| effect_list(ui, f, &selected));
+            list_bar(ui, f, &selected);
         });
-
-        // ==========================================
-        // COLUMN 2: Parameters (Center, 430px)
-        // ==========================================
-        ui.vertical(|ui| {
-            ui.set_width(430.0);
-            if selected == STYLES_PAGE {
-                ui.label(RichText::new(tl!("Styles")).font(crate::theme::semibold(14.0)).color(t.text));
-                ui.add_space(8.0);
-                let ctx = ui.ctx().clone();
-                egui::ScrollArea::vertical().max_height(340.0).id_salt("layer-style-presets-main").show(ui, |ui| {
-                    for group in &app.session.presets.styles {
-                        ui.label(RichText::new(&group.name).size(12.0).color(t.text_dim));
-                        ui.add_space(3.0);
-                        ui.horizontal_wrapped(|ui| {
-                            ui.spacing_mut().item_spacing = vec2(4.0, 4.0);
-                            for st in &group.items {
-                                let tex = crate::preset_panels::style_texture(app, &ctx, st);
-                                let (rect, resp) = ui.allocate_exact_size(vec2(32.0, 32.0), Sense::click());
-                                ui.painter().image(tex.id(), rect, egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)), Color32::WHITE);
-                                let (stroke, kind) = if resp.hovered() {
-                                    (Stroke::new(1.5, t.accent), egui::StrokeKind::Outside)
-                                } else {
-                                    (Stroke::new(1.0, t.card_border), egui::StrokeKind::Inside)
-                                };
-                                ui.painter().rect_stroke(rect, 2.0, stroke, kind);
-                                if resp.on_hover_text(&st.name).clicked() {
-                                    style_click = Some(st.name.clone());
-                                }
-                            }
-                        });
-                        ui.add_space(10.0);
-                    }
-                });
-                return;
-            }
-
-            let sel_kind: String = if selected == BLENDING {
-                BLENDING.to_string()
-            } else {
-                entry(f, &selected).and_then(|e| e.get("kind").and_then(Value::as_str)).unwrap_or("").to_string()
-            };
-            let label = KINDS.iter().find(|k| k.0 == sel_kind).map(|k| k.1).unwrap_or(if selected == BLENDING { "Blending Options" } else { "" });
-
-            ui.horizontal(|ui| {
-                ui.label(RichText::new(tl!(&label)).font(crate::theme::semibold(13.5)).color(t.text));
-                let line_y = ui.cursor().center().y;
-                let right_x = ui.cursor().min.x + ui.available_width();
-                let left_x = ui.cursor().min.x + 8.0;
-                if right_x > left_x {
-                    ui.painter().line_segment([egui::pos2(left_x, line_y), egui::pos2(right_x, line_y)], Stroke::new(1.0, t.separator));
-                }
-            });
-            ui.add_space(6.0);
-
-            if let Some(error) = &invalid {
-                ui.colored_label(t.danger, error);
-                return;
-            }
-
-            if selected == BLENDING {
-                let names = channel_names_of(f);
-                let key = format!("p:{BLENDING}");
-                let Some(mut p) = f.get(&key).filter(|v| v.is_object()).cloned() else { return };
-                blending_page(ui, &mut p, &names);
-                f.insert(key, p);
-                return;
-            }
-
-            let disp = if selected == BLENDING {
-                f.get("p:blendingOptions").cloned().unwrap_or_else(|| json!({}))
-            } else {
-                entry(f, &selected).and_then(|e| e.get("params").cloned()).unwrap_or_else(|| json!({}))
-            };
-            let Some(mut disp) = disp.as_object().map(|o| Value::Object(o.clone())) else { return };
-            if selected != BLENDING {
-                let base = defaults(&sel_kind);
-                if let (Some(o), Some(b)) = (disp.as_object_mut(), base.as_object()) {
-                    for (k, v) in b {
-                        o.entry(k.clone()).or_insert_with(|| v.clone());
-                    }
-                }
-            }
-            render_effect_groups(app, ui, f, &selected, &sel_kind, &mut disp, &t);
-
-            // Make Default stores this page as the user default; Reset to Default
-            // restores it (or the factory defaults before the first Make).
-            let page_kind = sel_kind != BLENDING && entry(f, &selected).is_some();
-            ui.add_space(10.0);
-            ui.horizontal(|ui| {
-                ui.add_space(20.0);
-                ui.add_enabled_ui(page_kind, |ui| {
-                    if crate::widgets::secondary_button(ui, tl!("Make Default"), 120.0).clicked() {
-                        let _ = app.run("layer.layerStyle.makeDefault", json!({"kind": sel_kind, "params": disp}));
-                    }
-                    ui.add_space(8.0);
-                    if crate::widgets::secondary_button(ui, tl!("Reset to Default"), 135.0).clicked()
-                        && let Ok(v) = app.run("layer.layerStyle.defaultFor", json!({"kind": sel_kind}))
-                        && let Some(e) = entry_mut(f, &selected)
-                    {
-                        e["params"] = v["params"].clone();
-                    }
-                });
-            });
+        let page_w = ui.available_width() - SIDE_W - ui.spacing().item_spacing.x;
+        boxed(ui, page_w, height, |ui, h| {
+            egui::ScrollArea::vertical()
+                .id_salt("layer-style-page")
+                .max_height(h)
+                .auto_shrink(false)
+                .show(ui, |ui| page(app, ui, f, &selected, invalid.as_deref(), &mut style_click));
         });
-
-        // ==========================================
-        // COLUMN 3: Right - OK, Cancel, New Style, Preview
-        // ==========================================
         ui.vertical(|ui| {
-            let btn_w = crate::widgets::button_width(ui, &[tl!("OK"), tl!("Cancel"), tl!("New Style…")]).max(110.0);
-            ui.set_width(btn_w);
-            if crate::widgets::primary_button(ui, tl!("OK"), btn_w).clicked() {
-                outcome = Some(true);
-            }
-            ui.add_space(6.0);
-            if crate::widgets::secondary_button(ui, tl!("Cancel"), btn_w).clicked() {
-                outcome = Some(false);
-            }
-            ui.add_space(6.0);
-            if crate::widgets::secondary_button(ui, tl!("New Style…"), btn_w).clicked() {
-                new_style = true;
-            }
-            ui.add_space(8.0);
-            let mut preview = f.get("preview").and_then(Value::as_bool).unwrap_or(true);
-            if widgets::checkbox(ui, &mut preview, tl!("Preview")).changed() {
-                f.insert("preview".into(), json!(preview));
-            }
-            ui.add_space(16.0);
-            preview_swatch_box(ui, f, &t);
+            ui.set_width(SIDE_W);
+            outcome = side_column(app, ui, f, &mut new_style);
         });
     });
-
+    // Style swatch clicks apply to the layer (Photoshop does this immediately);
+    // New Style… saves the dialog's pending state as a preset.
     if let Some(name) = style_click {
         apply_style_preset(app, f, &name);
     }
@@ -1691,11 +886,9 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
         save_new_style(app, f);
     }
     contour::editor(app, ui, f);
-
-    if outcome.is_none() && interactive && invalid.is_none() && ui.input(|i| i.key_pressed(egui::Key::Enter)) {
+    if outcome.is_none() && interactive && ui.input(|i| i.key_pressed(egui::Key::Enter)) {
         outcome = Some(true);
     }
-
     outcome
 }
 
@@ -1768,109 +961,100 @@ fn channel_names_of(f: &Map<String, Value>) -> Vec<String> {
 fn blending_page(ui: &mut egui::Ui, p: &mut Value, names: &[String]) {
     let t = Tokens::get(ui.ctx());
     let num = |p: &Value, k: &str, d: f64| p.get(k).and_then(Value::as_f64).unwrap_or(d) as f32;
-
-    group_box(ui, "General Blending", &t, |ui| {
+    widgets::section_label(ui, "General Blending");
+    ui.horizontal(|ui| {
+        widgets::row_label(ui, "Blend Mode", LABEL_W);
         let mut cur = p.get("blend").and_then(Value::as_str).unwrap_or("Normal").to_string();
+        // Photoshop's modes, plus the layer's own Paint.NET mode when it has one (an imported .pdn).
         let own = photocraft_color::BlendMode::PAINT_NET_MODES.into_iter().find(|m| m.label() == cur);
         let opts: Vec<(String, &str)> = photocraft_color::BlendMode::LAYER_MODES.into_iter().chain(own).map(|m| (m.label().to_string(), m.label())).collect();
-        if inline_dropdown_row(ui, "Blend Mode", "fx-blend-blendingOptions", &mut cur, &opts, 150.0, &t) {
+        if widgets::dropdown(ui, "fx-blend-blendingOptions", tl!("Blend Mode"), &mut cur, &opts, 150.0) {
             p["blend"] = json!(cur);
         }
-        ui.add_space(3.0);
-        let mut v = num(p, "opacity", 100.0);
-        if inline_slider_row(ui, "Opacity", &mut v, 0.0..=100.0, "%", &t) {
-            p["opacity"] = json!(v.round());
+    });
+    let mut v = num(p, "opacity", 100.0);
+    if widgets::slider_line(ui, "Opacity", LABEL_W, &mut v, 0.0..=100.0, "%").changed() {
+        p["opacity"] = json!(v.round());
+    }
+    widgets::hairline(ui);
+    widgets::section_label(ui, "Advanced Blending");
+    let mut v = num(p, "fillOpacity", 100.0);
+    if widgets::slider_line(ui, "Fill Opacity", LABEL_W, &mut v, 0.0..=100.0, "%").changed() {
+        p["fillOpacity"] = json!(v.round());
+    }
+    // Channels: one check box per colour channel (checked = blends).
+    ui.horizontal(|ui| {
+        widgets::row_label(ui, "Channels:", LABEL_W);
+        let mut ch: Vec<bool> =
+            p.get("channels").and_then(Value::as_array).map(|a| a.iter().map(|v| v.as_bool().unwrap_or(true)).collect()).unwrap_or_default();
+        ch.resize(names.len(), true);
+        let mut changed = false;
+        for (i, name) in names.iter().enumerate() {
+            if let Some(c) = ch.get_mut(i) {
+                changed |= widgets::checkbox(ui, c, name).changed();
+            }
+        }
+        if changed {
+            p["channels"] = json!(ch);
         }
     });
-
-    group_box(ui, "Advanced Blending", &t, |ui| {
-        let mut v = num(p, "fillOpacity", 100.0);
-        if inline_slider_row(ui, "Fill Opacity", &mut v, 0.0..=100.0, "%", &t) {
-            p["fillOpacity"] = json!(v.round());
-        }
-        ui.add_space(3.0);
-        ui.horizontal(|ui| {
-            ui.spacing_mut().item_spacing.x = 8.0;
-            ui.allocate_ui_with_layout(
-                vec2(80.0, 22.0),
-                egui::Layout::right_to_left(egui::Align::Center),
-                |ui| {
-                    ui.label(RichText::new(tl!("Channels:")).font(egui::FontId::proportional(12.0)).color(t.text_dim));
-                },
-            );
-            let mut ch: Vec<bool> =
-                p.get("channels").and_then(Value::as_array).map(|a| a.iter().map(|v| v.as_bool().unwrap_or(true)).collect()).unwrap_or_default();
-            ch.resize(names.len(), true);
-            let mut changed = false;
-            for (i, name) in names.iter().enumerate() {
-                if let Some(c) = ch.get_mut(i) {
-                    changed |= widgets::checkbox(ui, c, name).changed();
-                }
-            }
-            if changed {
-                p["channels"] = json!(ch);
-            }
-        });
-        ui.add_space(3.0);
+    ui.horizontal(|ui| {
+        widgets::row_label(ui, "Knockout", LABEL_W);
         let mut cur = p.get("knockout").and_then(Value::as_str).unwrap_or("none").to_string();
         let opts: Vec<(String, &str)> = KNOCKOUT.iter().map(|(v, l)| (v.to_string(), *l)).collect();
-        if inline_dropdown_row(ui, "Knockout", "fx-blendingOptions-knockout", &mut cur, &opts, 150.0, &t) {
+        if widgets::dropdown(ui, "fx-blendingOptions-knockout", tl!("Knockout"), &mut cur, &opts, 150.0) {
             p["knockout"] = json!(cur);
         }
-        ui.add_space(3.0);
-        for &(key, label) in ADVANCED_CHECKS {
-            let default = matches!(key, "blendClippedLayersAsGroup" | "transparencyShapesLayer");
-            let mut b = p.get(key).and_then(Value::as_bool).unwrap_or(default);
-            if inline_check_row(ui, &mut b, label, &t) {
-                p[key] = json!(b);
+    });
+    for &(key, label) in ADVANCED_CHECKS {
+        let default = matches!(key, "blendClippedLayersAsGroup" | "transparencyShapesLayer");
+        let mut b = p.get(key).and_then(Value::as_bool).unwrap_or(default);
+        if checkbox_line(ui, &mut b, label) {
+            p[key] = json!(b);
+        }
+    }
+    widgets::hairline(ui);
+    // Blend If: the channel, then Current Layer / Underlying Layer split sliders (Alt-drag splits).
+    let entries = p.get("blendIf").and_then(Value::as_array).map_or(0, Vec::len);
+    if entries == 0 {
+        return;
+    }
+    let sel = p.get("blendIfChannel").and_then(Value::as_u64).map_or(0, |v| v as usize).min(entries - 1);
+    ui.horizontal(|ui| {
+        widgets::row_label(ui, "Blend If:", LABEL_W);
+        // A colour document lists Gray first; a one-channel document only its channel (Gray).
+        let label = |i: usize| -> String {
+            if entries == names.len() {
+                names.get(i).cloned().unwrap_or_default()
+            } else if i == 0 {
+                "Gray".to_string()
+            } else {
+                names.get(i - 1).cloned().unwrap_or_default()
             }
+        };
+        let labels: Vec<String> = (0..entries).map(label).collect();
+        let opts: Vec<(usize, &str)> = labels.iter().enumerate().map(|(i, l)| (i, l.as_str())).collect();
+        let mut cur = sel;
+        if widgets::dropdown(ui, "fx-blendingOptions-blendIf", tl!("Blend If:"), &mut cur, &opts, 110.0) {
+            p["blendIfChannel"] = json!(cur);
         }
     });
-
-    let entries = p.get("blendIf").and_then(Value::as_array).map_or(0, Vec::len);
-    if entries > 0 {
-        group_box(ui, "Blend If", &t, |ui| {
-            let sel = p.get("blendIfChannel").and_then(Value::as_u64).map_or(0, |v| v as usize).min(entries - 1);
-            let label_fn = |i: usize| -> String {
-                if entries == names.len() {
-                    names.get(i).cloned().unwrap_or_default()
-                } else if i == 0 {
-                    "Gray".to_string()
-                } else {
-                    names.get(i - 1).cloned().unwrap_or_default()
-                }
-            };
-            let labels: Vec<String> = (0..entries).map(label_fn).collect();
-            let opts: Vec<(usize, &str)> = labels.iter().enumerate().map(|(i, l)| (i, l.as_str())).collect();
-            let mut cur = sel;
-            if inline_dropdown_row(ui, "Blend If:", "fx-blendingOptions-blendIf", &mut cur, &opts, 110.0, &t) {
-                p["blendIfChannel"] = json!(cur);
-            }
-            ui.add_space(4.0);
-            for (key, label) in [("thisLayer", "This Layer:"), ("underlying", "Underlying Layer:")] {
-                let mut q = blend_quad(p.get("blendIf").and_then(|a| a.get(sel)).and_then(|e| e.get(key)));
-                ui.horizontal(|ui| {
-                    ui.allocate_ui_with_layout(
-                        vec2(80.0, 22.0),
-                        egui::Layout::right_to_left(egui::Align::Center),
-                        |ui| {
-                            ui.label(RichText::new(tl!(label)).font(egui::FontId::proportional(12.0)).color(t.text_dim));
-                        },
-                    );
-                    let side = |lo: u8, hi: u8| if lo == hi { lo.to_string() } else { format!("{lo} / {hi}") };
-                    ui.label(RichText::new(format!("{}    {}", side(q[0], q[1]), side(q[2], q[3]))).color(t.text));
-                });
-                ui.horizontal(|ui| {
-                    ui.add_space(88.0);
-                    if blend_if_bar(ui, ui.scope_id().with(("blendIf", key)), &mut q)
-                        && let Some(e) = p.get_mut("blendIf").and_then(|a| a.get_mut(sel))
-                    {
-                        e[key] = json!(q);
-                    }
-                });
-                ui.add_space(4.0);
-            }
+    // Photoshop 2026 calls the first bar Current Layer (it was This Layer).
+    for (key, label) in [("thisLayer", "Current Layer:"), ("underlying", "Underlying Layer:")] {
+        let mut q = blend_quad(p.get("blendIf").and_then(|a| a.get(sel)).and_then(|e| e.get(key)));
+        ui.horizontal(|ui| {
+            ui.label(RichText::new(tl!(label)).color(t.text_dim));
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                let side = |lo: u8, hi: u8| if lo == hi { lo.to_string() } else { format!("{lo} / {hi}") };
+                ui.label(RichText::new(format!("{}    {}", side(q[0], q[1]), side(q[2], q[3]))).color(t.text));
+            });
         });
+        if blend_if_bar(ui, ui.scope_id().with(("blendIf", key)), &mut q)
+            && let Some(e) = p.get_mut("blendIf").and_then(|a| a.get_mut(sel))
+        {
+            e[key] = json!(q);
+        }
+        ui.add_space(4.0);
     }
 }
 
@@ -1887,6 +1071,107 @@ fn blend_quad(v: Option<&Value>) -> [u8; 4] {
         q[i] = q[i].max(q[i - 1]);
     }
     q
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum BlendDrag {
+    Pair { pair: usize, origin_v: u8 },
+    Split { handle: usize, origin: u8 },
+    Single(usize),
+}
+
+pub(crate) fn step_blend_drag(mode: &mut BlendDrag, q: &[u8; 4], target: u8, alt: bool) -> [u8; 4] {
+    let mut n = *q;
+    match *mode {
+        BlendDrag::Pair { pair, origin_v } => {
+            if alt {
+                if pair == 0 {
+                    if target >= origin_v {
+                        *mode = BlendDrag::Split { handle: 1, origin: origin_v };
+                        n[0] = origin_v;
+                        n[1] = target.clamp(origin_v, q[2]);
+                    } else {
+                        *mode = BlendDrag::Split { handle: 0, origin: origin_v };
+                        n[1] = origin_v;
+                        n[0] = target.clamp(0, origin_v);
+                    }
+                } else if target <= origin_v {
+                    *mode = BlendDrag::Split { handle: 2, origin: origin_v };
+                    n[3] = origin_v;
+                    n[2] = target.clamp(q[1], origin_v);
+                } else {
+                    *mode = BlendDrag::Split { handle: 3, origin: origin_v };
+                    n[2] = origin_v;
+                    n[3] = target.clamp(origin_v, 255);
+                }
+            } else {
+                let delta = i16::from(target) - i16::from(origin_v);
+                if pair == 0 {
+                    let v = (i16::from(origin_v) + delta).clamp(0, q[2] as i16) as u8;
+                    n[0] = v;
+                    n[1] = v;
+                } else {
+                    let v = (i16::from(origin_v) + delta).clamp(q[1] as i16, 255) as u8;
+                    n[2] = v;
+                    n[3] = v;
+                }
+            }
+        }
+        BlendDrag::Split { handle, origin } => match handle {
+            1 => {
+                if target >= origin {
+                    n[0] = origin;
+                    n[1] = target.clamp(origin, q[2]);
+                } else {
+                    *mode = BlendDrag::Split { handle: 0, origin };
+                    n[1] = origin;
+                    n[0] = target.clamp(0, origin);
+                }
+            }
+            0 => {
+                if target <= origin {
+                    n[1] = origin;
+                    n[0] = target.clamp(0, origin);
+                } else {
+                    *mode = BlendDrag::Split { handle: 1, origin };
+                    n[0] = origin;
+                    n[1] = target.clamp(origin, q[2]);
+                }
+            }
+            2 => {
+                if target <= origin {
+                    n[3] = origin;
+                    n[2] = target.clamp(q[1], origin);
+                } else {
+                    *mode = BlendDrag::Split { handle: 3, origin };
+                    n[2] = origin;
+                    n[3] = target.clamp(origin, 255);
+                }
+            }
+            3 => {
+                if target >= origin {
+                    n[2] = origin;
+                    n[3] = target.clamp(origin, 255);
+                } else {
+                    *mode = BlendDrag::Split { handle: 2, origin };
+                    n[3] = origin;
+                    n[2] = target.clamp(q[1], origin);
+                }
+            }
+            _ => {}
+        },
+        BlendDrag::Single(h) => match h {
+            0 => n[0] = target.clamp(0, n[1]),
+            1 => n[1] = target.clamp(n[0], n[2]),
+            2 => n[2] = target.clamp(n[1], n[3]),
+            3 => n[3] = target.clamp(n[2], 255),
+            _ => {}
+        },
+    }
+    for i in 1..4 {
+        n[i] = n[i].max(n[i - 1]);
+    }
+    n
 }
 
 /// A Blend If slider: a black-to-white ramp with a black and a white handle, each split in two
@@ -1909,47 +1194,44 @@ fn blend_if_bar(ui: &mut egui::Ui, id: egui::Id, q: &mut [u8; 4]) -> bool {
     ui.painter().rect_stroke(ramp, 0.0, Stroke::new(1.0, t.field_border), StrokeKind::Outside);
     // Handles: triangles under the ramp; a split handle shows two half triangles.
     let mut changed = false;
-    let drag_key = id.with("handle");
+    let drag_key = id.with("blend_drag");
+    let alt = ui.input(|i| i.modifiers.alt);
     if resp.drag_started()
         && let Some(pos) = resp.interact_pointer_pos()
     {
-        let near = (0..4).min_by(|a, b| (x_of(q[*a]) - pos.x).abs().total_cmp(&(x_of(q[*b]) - pos.x).abs())).unwrap_or(0);
-        // Between two coinciding halves, pick by the side of the pointer.
-        let near = match near {
-            0 | 1 if q[0] == q[1] => usize::from(pos.x > x_of(q[0])),
-            2 | 3 if q[2] == q[3] => 2 + usize::from(pos.x > x_of(q[2])),
-            n => n,
+        let d_black = if q[0] == q[1] { (pos.x - x_of(q[0])).abs() } else { (pos.x - (x_of(q[0]) - 2.5)).abs().min((pos.x - (x_of(q[1]) + 2.5)).abs()) };
+        let d_white = if q[2] == q[3] { (pos.x - x_of(q[2])).abs() } else { (pos.x - (x_of(q[2]) - 2.5)).abs().min((pos.x - (x_of(q[3]) + 2.5)).abs()) };
+        let mode = if d_black <= d_white {
+            if q[0] == q[1] {
+                if alt {
+                    let h = if pos.x >= x_of(q[0]) { 1 } else { 0 };
+                    BlendDrag::Split { handle: h, origin: q[0] }
+                } else {
+                    BlendDrag::Pair { pair: 0, origin_v: q[0] }
+                }
+            } else {
+                let h = if (pos.x - x_of(q[0])).abs() <= (pos.x - x_of(q[1])).abs() { 0 } else { 1 };
+                BlendDrag::Single(h)
+            }
+        } else if q[2] == q[3] {
+            if alt {
+                let h = if pos.x <= x_of(q[2]) { 2 } else { 3 };
+                BlendDrag::Split { handle: h, origin: q[2] }
+            } else {
+                BlendDrag::Pair { pair: 2, origin_v: q[2] }
+            }
+        } else {
+            let h = if (pos.x - x_of(q[2])).abs() <= (pos.x - x_of(q[3])).abs() { 2 } else { 3 };
+            BlendDrag::Single(h)
         };
-        ui.data_mut(|d| d.insert_temp(drag_key, near));
+        ui.data_mut(|d| d.insert_temp(drag_key, mode));
     }
     if resp.dragged()
-        && let (Some(h), Some(pos)) = (ui.data(|d| d.get_temp::<usize>(drag_key)), resp.interact_pointer_pos())
-        && let Some(cur) = q.get(h).copied()
+        && let (Some(mut mode), Some(pos)) = (ui.data(|d| d.get_temp::<BlendDrag>(drag_key)), resp.interact_pointer_pos())
     {
         let target = v_of(pos.x);
-        let split = ui.input(|i| i.modifiers.alt);
-        let mut n = *q;
-        let pair = if h < 2 { 0 } else { 2 };
-        if split {
-            n[h] = target;
-        } else {
-            // Unsplit: the pair moves together, keeping its spread.
-            let delta = i16::from(target) - i16::from(cur);
-            for v in &mut n[pair..pair + 2] {
-                *v = (i16::from(*v) + delta).clamp(0, 255) as u8;
-            }
-        }
-        // Keep the order black low <= black high <= white low <= white high, pushing the others.
-        for i in 0..4 {
-            if i < h {
-                n[i] = n[i].min(n[h]);
-            } else if i > h {
-                n[i] = n[i].max(n[h]);
-            }
-        }
-        for i in 1..4 {
-            n[i] = n[i].max(n[i - 1]);
-        }
+        let n = step_blend_drag(&mut mode, q, target, alt);
+        ui.data_mut(|d| d.insert_temp(drag_key, mode));
         if n != *q {
             *q = n;
             changed = true;
@@ -1999,3 +1281,507 @@ impl MaxAlpha for Color32 {
 #[cfg(test)]
 mod tests;
 
+/// Photoshop's column widths: the effect list, the right-hand column (OK, Cancel, New Style…,
+/// Preview, the preview swatch) and a page row's label column.
+const LIST_W: f32 = 200.0;
+
+const SIDE_W: f32 = 112.0;
+
+const LABEL_W: f32 = 104.0;
+
+/// The bar under the effect list (fx, move up, move down, delete).
+const BAR_H: f32 = 30.0;
+
+/// A bordered column `w` × `h`, as Photoshop frames the effect list and the page; `add` gets the
+/// height inside the border.
+fn boxed(ui: &mut egui::Ui, w: f32, h: f32, add: impl FnOnce(&mut egui::Ui, f32)) {
+    const PAD: f32 = 4.0;
+    let t = Tokens::get(ui.ctx());
+    egui::Frame::new().stroke(Stroke::new(1.0, t.separator)).corner_radius(t.radius_sm).inner_margin(PAD).show(ui, |ui| {
+        let inner = (vec2(w, h) - egui::Vec2::splat(2.0 * PAD + 2.0)).max(egui::Vec2::splat(40.0));
+        // Top-down inside, whatever the row it sits in lays out.
+        ui.vertical(|ui| {
+            ui.set_width(inner.x);
+            ui.set_height(inner.y);
+            add(ui, inner.y);
+        });
+    });
+}
+
+/// The effect list: Styles, Blending Options, then a row per effect instance (a greyed row for a
+/// kind the layer doesn't have), each as wide as the list.
+fn effect_list(ui: &mut egui::Ui, f: &mut Map<String, Value>, selected: &str) {
+    let t = Tokens::get(ui.ctx());
+    let w = ui.available_width();
+    // Styles & Blending Options rows (matching the effect row layout & padding).
+    for (id, label) in [(STYLES_PAGE, "Styles"), (BLENDING, "Blending Options")] {
+        let is_sel = selected == id;
+        let (rect, resp) = ui.allocate_exact_size(vec2(w, 26.0), Sense::click());
+        if is_sel {
+            ui.painter().rect_filled(rect, t.radius_sm, t.row_selected.gamma_multiply(if t.pro { 1.0 } else { 0.0 }).max_alpha(t.hover));
+        } else if resp.hovered() {
+            ui.painter().rect_filled(rect, t.radius_sm, t.hover.gamma_multiply(0.5));
+        }
+        ui.painter().text(
+            rect.left_center() + vec2(28.0, 0.0),
+            egui::Align2::LEFT_CENTER,
+            tl!(label),
+            egui::FontId::proportional(12.5),
+            if is_sel { t.text } else { t.text_dim },
+        );
+        if resp.clicked() {
+            f.insert("selected".into(), json!(id));
+        }
+    }
+    ui.add_space(4.0);
+    for &(kind, label) in KINDS {
+        let ids: Vec<String> = effects_of(f)
+            .iter()
+            .filter(|e| e.get("kind").and_then(Value::as_str) == Some(kind))
+            .filter_map(|e| e.get("id").and_then(Value::as_str).map(str::to_string))
+            .collect();
+        if ids.is_empty() {
+            // The effect isn't on the layer: a greyed row with an empty checkbox, as in
+            // Photoshop (#1357); a click on either adds it, turned on.
+            let (rect, resp) = ui.allocate_exact_size(vec2(w, 26.0), Sense::click());
+            if resp.hovered() {
+                ui.painter().rect_filled(rect, t.radius_sm, t.hover.gamma_multiply(0.5));
+            }
+            fx_checkbox(ui.painter(), fx_checkbox_rect(rect), false, &t);
+            ui.painter().text(rect.left_center() + vec2(28.0, 0.0), egui::Align2::LEFT_CENTER, tl!(label), egui::FontId::proportional(12.5), t.text_faint);
+            // Photoshop shows + on every kind that takes several instances.
+            if multi(kind) {
+                let col = if resp.hovered() { t.accent } else { t.text_faint };
+                ui.painter().text(rect.right_center() - vec2(8.0, 0.0), egui::Align2::CENTER_CENTER, "+", egui::FontId::proportional(13.0), col);
+            }
+            if resp.clicked() {
+                add_instance(f, kind);
+            }
+            continue;
+        }
+        let count = ids.len();
+        for id in &ids {
+            let Some(e) = entry(f, id) else { continue };
+            let kind_label = KINDS.iter().find(|k| k.0 == kind).map(|k| k.1).unwrap_or(label);
+            let mut on = e.get("on").and_then(Value::as_bool).unwrap_or(false);
+            let is_sel = id.as_str() == selected;
+            let (rect, resp) = ui.allocate_exact_size(vec2(w, 26.0), Sense::click());
+            if is_sel {
+                ui.painter().rect_filled(rect, t.radius_sm, t.row_selected.gamma_multiply(if t.pro { 1.0 } else { 0.0 }).max_alpha(t.hover));
+            } else if resp.hovered() {
+                ui.painter().rect_filled(rect, t.radius_sm, t.hover.gamma_multiply(0.5));
+            }
+            let cb = fx_checkbox_rect(rect);
+            let cresp = ui.interact(cb, ui.scope_id().with(("fxcb", kind, id)), Sense::click());
+            fx_checkbox(ui.painter(), cb, on, &t);
+            ui.painter().text(
+                rect.left_center() + vec2(28.0, 0.0),
+                egui::Align2::LEFT_CENTER,
+                tl!(kind_label),
+                egui::FontId::proportional(12.5),
+                fx_label_color(on, &t),
+            );
+            // + adds another instance; − removes one once there are several.
+            if multi(kind) {
+                let btn = |ui: &egui::Ui, at: egui::Pos2, glyph: &str, tag: &str| {
+                    let r = egui::Rect::from_center_size(at, vec2(18.0, 18.0));
+                    let hresp = ui.interact(r, ui.scope_id().with(("fxbtn", tag, id)), Sense::click());
+                    let col = if hresp.hovered() { t.accent } else { t.text_faint };
+                    ui.painter().text(r.center(), egui::Align2::CENTER_CENTER, glyph, egui::FontId::proportional(13.0), col);
+                    hresp.clicked()
+                };
+                if count > 1 && btn(ui, rect.right_center() - vec2(22.0, 0.0), "\u{2212}", "minus") {
+                    remove_instance(f, id);
+                    continue;
+                }
+                if btn(ui, rect.right_center() - vec2(8.0, 0.0), "+", "plus") {
+                    add_instance(f, kind);
+                }
+            }
+            if cresp.clicked() {
+                on = !on;
+                if let Some(e) = entry_mut(f, id) {
+                    e["on"] = json!(on);
+                }
+                f.insert("selected".into(), json!(id));
+            } else if resp.clicked() {
+                f.insert("selected".into(), json!(id));
+            }
+        }
+    }
+}
+
+/// The ids of the instances of `kind`, in list order.
+fn ids_of(f: &Map<String, Value>, kind: &str) -> Vec<String> {
+    effects_of(f)
+        .iter()
+        .filter(|e| e.get("kind").and_then(Value::as_str) == Some(kind))
+        .filter_map(|e| e.get("id").and_then(Value::as_str).map(str::to_string))
+        .collect()
+}
+
+/// Moves instance `id` `by` places among the instances of its kind (negative: up the list).
+fn move_instance(f: &mut Map<String, Value>, id: &str, by: isize) {
+    let Some(a) = f.get_mut("effects").and_then(Value::as_array_mut) else { return };
+    let kind_of = |e: &Value| e.get("kind").and_then(Value::as_str).map(str::to_string);
+    let Some(kind) = a.iter().find(|e| e.get("id").and_then(Value::as_str) == Some(id)).and_then(kind_of) else { return };
+    let slots: Vec<usize> = a.iter().enumerate().filter(|(_, e)| kind_of(e).as_deref() == Some(kind.as_str())).map(|(i, _)| i).collect();
+    let Some(at) = slots.iter().position(|&i| a.get(i).and_then(|e| e.get("id")).and_then(Value::as_str) == Some(id)) else { return };
+    let Some(&other) = at.checked_add_signed(by).and_then(|j| slots.get(j)) else { return };
+    if let Some(&here) = slots.get(at)
+        && here < a.len()
+        && other < a.len()
+    {
+        a.swap(here, other);
+    }
+}
+
+/// Photoshop's bar under the effect list: fx adds an effect (or turns on and shows the one the
+/// layer has, for a kind that takes one), the arrows move the selected instance up or down among
+/// those of its kind, the bin deletes it.
+fn list_bar(ui: &mut egui::Ui, f: &mut Map<String, Value>, selected: &str) {
+    let kind = entry(f, selected).and_then(|e| e.get("kind").and_then(Value::as_str)).map(str::to_string);
+    let siblings = kind.as_deref().map(|k| ids_of(f, k)).unwrap_or_default();
+    let at = siblings.iter().position(|id| id == selected);
+    ui.horizontal(|ui| {
+        let fx = crate::panels::fx_button(ui, 24.0, tl!("Add a layer style"));
+        crate::press_menu::show(&fx, |ui, menu| {
+            ui.set_min_width(160.0);
+            for &(kind, label) in KINDS {
+                if menu.item(ui, tl!(label)) {
+                    pick_from_fx_menu(f, kind);
+                }
+            }
+        });
+        let up = at.is_some_and(|i| i > 0);
+        if ui.add_enabled_ui(up, |ui| crate::icons::button(ui, "chevron-up", 24.0, false, tl!("Move effect up"))).inner.clicked() {
+            move_instance(f, selected, -1);
+        }
+        let down = at.is_some_and(|i| i + 1 < siblings.len());
+        if ui.add_enabled_ui(down, |ui| crate::icons::button(ui, "chevron-down", 24.0, false, tl!("Move effect down"))).inner.clicked() {
+            move_instance(f, selected, 1);
+        }
+        ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+            if ui.add_enabled_ui(at.is_some(), |ui| crate::icons::button(ui, "trash", 24.0, false, tl!("Delete effect"))).inner.clicked() {
+                remove_instance(f, selected);
+            }
+        });
+    });
+}
+
+/// The fx menu's `kind`: another instance of a kind that takes several (or the first), else the
+/// layer's one, turned on and shown.
+fn pick_from_fx_menu(f: &mut Map<String, Value>, kind: &str) {
+    match ids_of(f, kind).first() {
+        Some(id) if !multi(kind) => {
+            if let Some(e) = entry_mut(f, id) {
+                e["on"] = json!(true);
+            }
+            f.insert("selected".into(), json!(id));
+        }
+        _ => add_instance(f, kind),
+    }
+}
+
+/// A check box in a page's control column, under the controls rather than the labels.
+fn checkbox_line(ui: &mut egui::Ui, on: &mut bool, label: &str) -> bool {
+    ui.horizontal(|ui| {
+        ui.add_space(LABEL_W + ui.spacing().item_spacing.x);
+        widgets::checkbox(ui, on, label).changed()
+    })
+    .inner
+}
+
+/// The selected page: the Styles gallery, Blending Options, or an effect's parameters.
+fn page(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Value>, selected: &str, invalid: Option<&str>, style_click: &mut Option<String>) {
+    let t = Tokens::get(ui.ctx());
+    // Photoshop's rows sit close together: every page fits the dialog without scrolling.
+    ui.spacing_mut().item_spacing.y = 3.0;
+    if selected == STYLES_PAGE {
+        ui.label(RichText::new(tl!("Styles")).font(crate::theme::semibold(14.0)).color(t.text));
+        ui.add_space(8.0);
+        let ctx = ui.ctx().clone();
+        // The page scrolls, so the gallery takes the room the dialog has.
+        ui.vertical(|ui| {
+            for group in &app.session.presets.styles {
+                ui.label(RichText::new(&group.name).size(12.0).color(t.text_dim));
+                ui.add_space(3.0);
+                ui.horizontal_wrapped(|ui| {
+                    ui.spacing_mut().item_spacing = vec2(4.0, 4.0);
+                    for st in &group.items {
+                        let tex = crate::preset_panels::style_texture(app, &ctx, st);
+                        let (rect, resp) = ui.allocate_exact_size(vec2(32.0, 32.0), Sense::click());
+                        ui.painter().image(tex.id(), rect, egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)), Color32::WHITE);
+                        let (stroke, kind) = if resp.hovered() {
+                            (Stroke::new(1.5, t.accent), egui::StrokeKind::Outside)
+                        } else {
+                            (Stroke::new(1.0, t.card_border), egui::StrokeKind::Inside)
+                        };
+                        ui.painter().rect_stroke(rect, 2.0, stroke, kind);
+                        if resp.on_hover_text(&st.name).clicked() {
+                            *style_click = Some(st.name.clone());
+                        }
+                    }
+                });
+                ui.add_space(10.0);
+            }
+        });
+        return;
+    }
+    let sel_kind: String = if selected == BLENDING {
+        BLENDING.to_string()
+    } else {
+        entry(f, selected).and_then(|e| e.get("kind").and_then(Value::as_str)).unwrap_or("").to_string()
+    };
+    let label = KINDS.iter().find(|k| k.0 == sel_kind).map(|k| k.1).unwrap_or(if selected == BLENDING { "Blending Options" } else { "" });
+    ui.label(RichText::new(tl!(&label)).font(crate::theme::semibold(14.0)).color(t.text));
+    ui.add_space(6.0);
+    // Only reachable through `ui.dialog.set`: say what is wrong once, keep the bad value.
+    if let Some(error) = invalid {
+        ui.colored_label(t.danger, error);
+        return;
+    }
+    if selected == BLENDING {
+        // General Blending, Advanced Blending and Blend If, laid out like Photoshop's page.
+        let names = channel_names_of(f);
+        let key = format!("p:{BLENDING}");
+        let Some(mut p) = f.get(&key).filter(|v| v.is_object()).cloned() else { return };
+        blending_page(ui, &mut p, &names);
+        f.insert(key, p);
+        return;
+    }
+    // The page shows the factory defaults under the instance's values,
+    // but only real edits reach the stored params.
+    let disp = if selected == BLENDING {
+        f.get("p:blendingOptions").cloned().unwrap_or_else(|| json!({}))
+    } else {
+        entry(f, selected).and_then(|e| e.get("params").cloned()).unwrap_or_else(|| json!({}))
+    };
+    let Some(mut disp) = disp.as_object().map(|o| Value::Object(o.clone())) else { return };
+    if selected != BLENDING {
+        let base = defaults(&sel_kind);
+        if let (Some(o), Some(b)) = (disp.as_object_mut(), base.as_object()) {
+            for (k, v) in b {
+                o.entry(k.clone()).or_insert_with(|| v.clone());
+            }
+        }
+    }
+    for &(key, label, kind_p) in spec(&sel_kind) {
+        match kind_p {
+            P::Angle => {
+                let mut v = disp.get(key).and_then(Value::as_f64).unwrap_or(0.0) as f32;
+                if widgets::angle_dial_line(ui, label, Some(LABEL_W), &mut v, -180.0..=180.0).changed() {
+                    let value = json!(v);
+                    disp[key] = value.clone();
+                    set_param(f, selected, key, value);
+                }
+            }
+            P::Slider(min, max, unit) => {
+                let mut v = disp.get(key).and_then(Value::as_f64).unwrap_or(min as f64) as f32;
+                if widgets::slider_line(ui, label, LABEL_W, &mut v, min..=max, unit).changed() {
+                    let value = json!(v.round());
+                    disp[key] = value.clone();
+                    set_param(f, selected, key, value);
+                }
+            }
+            P::Color => {
+                ui.horizontal(|ui| {
+                    widgets::row_label(ui, label, LABEL_W);
+                    let color = disp.get(key).and_then(Value::as_str).unwrap_or("#000000");
+                    let response = widgets::color_swatch(ui, parse_hex(color)).on_hover_text(tl!("Color Picker (Layer Style Color)"));
+                    if response.clicked() {
+                        f.insert(color_picker::REQUEST.into(), json!({"effect": selected, "field": key}));
+                    }
+                });
+            }
+            P::Blend => {
+                ui.horizontal(|ui| {
+                    widgets::row_label(ui, label, LABEL_W);
+                    let mut cur = disp.get(key).and_then(Value::as_str).unwrap_or("Normal").to_string();
+                    let opts: Vec<(String, &str)> = photocraft_color::BlendMode::LAYER_MODES.iter().map(|m| (m.label().to_string(), m.label())).collect();
+                    if widgets::dropdown(ui, &format!("fx-blend-{selected}-{key}"), tl!(&label), &mut cur, &opts, 150.0) {
+                        let value = json!(cur);
+                        disp[key] = value.clone();
+                        set_param(f, selected, key, value);
+                    }
+                });
+            }
+            P::GradientMethod => {
+                ui.horizontal(|ui| {
+                    widgets::row_label(ui, label, LABEL_W);
+                    let mut current = disp.get(key).and_then(Value::as_str).unwrap_or("custom").to_string();
+                    let mut options = vec![
+                        ("smooth".to_string(), "Smooth"),
+                        ("perceptual".to_string(), "Perceptual"),
+                        ("linear".to_string(), "Linear"),
+                        ("classic".to_string(), "Classic"),
+                    ];
+                    // Old/imported curves have no method record. Preserve them until
+                    // the user explicitly chooses an interpolation method.
+                    if photocraft_io::GradientMethod::from_name(&current).is_none() {
+                        current = "custom".into();
+                        options.insert(0, ("custom".into(), "Custom"));
+                    }
+                    if widgets::dropdown(ui, "fx-gradientOverlay-method", tl!("Method"), &mut current, &options, 150.0) {
+                        // The older dialog deliberately omits From/To for rich imported
+                        // curves. Once a method is chosen, show the real source ends.
+                        let snapshot = entry(f, selected).and_then(|e| e.get("fx")).cloned();
+                        if let Some(Effect::GradientOverlay { gradient, interpolation, .. }) = snapshot.and_then(|v| serde_json::from_value::<Effect>(v).ok()) {
+                            let stops = interpolation.as_ref().map_or(&gradient.stops, |source| &source.stops);
+                            for (key, stop) in [("from", stops.first()), ("to", stops.last())] {
+                                if entry(f, selected).and_then(|e| e.get("params")).and_then(|p| p.get(key)).is_none()
+                                    && let Some(stop) = stop
+                                {
+                                    set_param(f, selected, key, json!(hex(&stop.1)));
+                                }
+                            }
+                        }
+                        let value = json!(current);
+                        disp[key] = value.clone();
+                        set_param(f, selected, key, value);
+                    }
+                });
+            }
+            P::Choice(options) => {
+                ui.horizontal(|ui| {
+                    widgets::row_label(ui, label, LABEL_W);
+                    let mut cur = disp.get(key).and_then(Value::as_str).unwrap_or(options[0].0).to_string();
+                    let opts: Vec<(String, &str)> = options.iter().map(|(v, l)| (v.to_string(), *l)).collect();
+                    if widgets::dropdown(ui, &format!("fx-{sel_kind}-{key}"), tl!(&label), &mut cur, &opts, 150.0) {
+                        let value = json!(cur);
+                        disp[key] = value.clone();
+                        set_param(f, selected, key, value);
+                    }
+                });
+            }
+            P::Pattern => {
+                let list: Vec<(String, String)> = f
+                    .get("patternList")
+                    .and_then(Value::as_array)
+                    .map(|a| a.iter().filter_map(|e| Some((e.get(0)?.as_str()?.to_string(), e.get(1)?.as_str()?.to_string()))).collect())
+                    .unwrap_or_default();
+                ui.horizontal(|ui| {
+                    widgets::row_label(ui, label, LABEL_W);
+                    let mut cur = disp
+                        .get(key)
+                        .and_then(Value::as_str)
+                        .filter(|c| !c.is_empty())
+                        .map(str::to_string)
+                        .or_else(|| list.first().map(|l| l.0.clone()))
+                        .unwrap_or_default();
+                    let opts: Vec<(String, &str)> = list.iter().map(|(id, n)| (id.clone(), n.as_str())).collect();
+                    if widgets::dropdown(ui, &format!("fx-{sel_kind}-{key}"), tl!(&label), &mut cur, &opts, 180.0)
+                        || disp.get(key).and_then(Value::as_str).is_none_or(str::is_empty)
+                    {
+                        let value = json!(cur);
+                        disp[key] = value.clone();
+                        set_param(f, selected, key, value);
+                    }
+                });
+            }
+            P::Gradient => gradient_field::row(app, ui, f, selected, label, &mut disp),
+            P::Contour(aa) => contour::row(app, ui, f, selected, key, label, aa, &mut disp),
+            P::Check => {
+                let mut b = disp.get(key).and_then(Value::as_bool).unwrap_or(false);
+                if checkbox_line(ui, &mut b, label) {
+                    let value = json!(b);
+                    disp[key] = value.clone();
+                    set_param(f, selected, key, value);
+                }
+            }
+        }
+    }
+    // Make Default stores this page as the user default; Reset to Default
+    // restores it (or the factory defaults before the first Make).
+    let page_kind = sel_kind != BLENDING && entry(f, selected).is_some();
+    ui.add_space(4.0);
+    // Wrap: translated labels (ru, de) can be wider than the page column.
+    ui.with_layout(egui::Layout::right_to_left(egui::Align::Min).with_main_wrap(true), |ui| {
+        ui.add_enabled_ui(page_kind, |ui| {
+            if crate::widgets::secondary_button(ui, tl!("Reset to Default"), 130.0).clicked()
+                && let Ok(v) = app.run("layer.layerStyle.defaultFor", json!({"kind": sel_kind}))
+                && let Some(e) = entry_mut(f, selected)
+            {
+                e["params"] = v["params"].clone();
+            }
+            if crate::widgets::secondary_button(ui, tl!("Make Default"), 110.0).clicked()
+                && app.run("layer.layerStyle.makeDefault", json!({"kind": sel_kind, "params": disp})).is_ok()
+                && let Some(d) = f.get_mut(USER_DEFAULTS).and_then(Value::as_object_mut)
+            {
+                d.insert(sel_kind.to_string(), disp.clone());
+            }
+        });
+    });
+}
+
+/// Photoshop's right-hand column: OK, Cancel, New Style…, Preview and the preview swatch.
+fn side_column(app: &PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Value>, new_style: &mut bool) -> Option<bool> {
+    let mut outcome = None;
+    if widgets::primary_button(ui, tl!("OK"), SIDE_W).clicked() {
+        outcome = Some(true);
+    }
+    ui.add_space(2.0);
+    if widgets::secondary_button(ui, tl!("Cancel"), SIDE_W).clicked() {
+        outcome = Some(false);
+    }
+    ui.add_space(2.0);
+    if widgets::secondary_button(ui, tl!("New Style…"), SIDE_W).clicked() {
+        *new_style = true;
+    }
+    ui.add_space(6.0);
+    let mut preview = f.get("preview").and_then(Value::as_bool).unwrap_or(true);
+    if widgets::checkbox(ui, &mut preview, tl!("Preview")).changed() {
+        f.insert("preview".into(), json!(preview));
+    }
+    ui.add_space(6.0);
+    preview_swatch(app, ui, f, SIDE_W);
+    outcome
+}
+
+/// Photoshop's preview swatch: the dialog's pending style on a sample square, redrawn when the
+/// style changes.
+fn preview_swatch(app: &PhotocraftApp, ui: &mut egui::Ui, f: &Map<String, Value>, size: f32) {
+    let t = Tokens::get(ui.ctx());
+    let (rect, _) = ui.allocate_exact_size(egui::Vec2::splat(size), Sense::hover());
+    ui.painter().rect_filled(rect, t.radius_sm, t.field);
+    // At point size while a drag (a slider) changes it every frame, a quarter of the work on a
+    // 2x screen; at the screen's resolution once it settles.
+    let scale = if ui.input(|i| i.pointer.any_down()) { 1.0 } else { ui.ctx().pixels_per_point() };
+    let px = (size * scale).round().clamp(8.0, 256.0) as u32;
+    let key = (preview_hash(f), px);
+    let id = egui::Id::unique("layer-style-swatch");
+    let cached = ui.data(|d| d.get_temp::<(u64, u32, egui::TextureHandle)>(id)).filter(|c| (c.0, c.1) == key).map(|c| c.2);
+    let tex = cached.or_else(|| {
+        let rgba = photocraft_engine::presets::styles::thumbnail(&app.session, &pending_style(app, f)?, px);
+        let side = px as usize;
+        (rgba.len() == side * side * 4).then(|| {
+            let tex = ui.ctx().load_texture("layer-style-swatch", egui::ColorImage::from_rgba_unmultiplied([side, side], &rgba), egui::TextureOptions::LINEAR);
+            ui.data_mut(|d| d.insert_temp(id, (key.0, key.1, tex.clone())));
+            tex
+        })
+    });
+    if let Some(tex) = tex {
+        ui.painter().image(tex.id(), rect, egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)), Color32::WHITE);
+    }
+    ui.painter().rect_stroke(rect, t.radius_sm, Stroke::new(1.0, t.separator), StrokeKind::Inside);
+}
+
+/// The dialog's pending style as a preset, built on a scratch layer the way the canvas preview
+/// builds it on the real one (instance snapshots, blending options and patterns all apply).
+fn pending_style(app: &PhotocraftApp, f: &Map<String, Value>) -> Option<photocraft_engine::presets::styles::StylePreset> {
+    let mut s = photocraft_engine::Session::new();
+    s.patterns = app.session.patterns.clone();
+    s.execute("file.new", json!({"width": 8, "height": 8})).ok()?;
+    let layer = s.execute("layer.new.layer", json!({})).ok()?.get("layer")?.as_u64()?;
+    let mut f = f.clone();
+    f.insert("layer".into(), json!(layer));
+    apply(&f, |cmd, p| s.execute(cmd, p).map_err(|e| e.to_string())).ok()?;
+    let l = s.active()?.doc.layer(photocraft_doc::LayerId(layer))?;
+    Some(photocraft_engine::presets::styles::StylePreset {
+        name: String::new(),
+        effects: l.effects.items.clone(),
+        blend: Some(l.blend),
+        opacity: Some(l.opacity),
+        fill_opacity: Some(l.fill_opacity),
+    })
+}

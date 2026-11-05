@@ -4,6 +4,8 @@
 //! floats so hue survives greys), so `ui.dialog.set` drives it; OK runs `tools.setColors`.
 //! While it is the top dialog the image is its eyedropper, as in Photoshop: the pointer over the
 //! canvas is a pipette, and a click or drag there samples into the new colour ([`sample_at`]).
+//! A picker for another dialog's colour field or the Crop shield shows its colour there before
+//! OK, and Cancel puts it back ([`live_preview`]).
 
 use egui::{Color32, Mesh, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use photocraft_color::convert::{hsb_to_rgb, rgb_to_hsb};
@@ -182,22 +184,35 @@ pub fn open_for_command(app: &mut PhotocraftApp, label: &str, rgb: [f32; 3], com
     let mut f = fields_with_web(app, "command", label, rgb);
     f.insert("__command".into(), json!(command));
     f.insert("__params".into(), params);
+    // The document the picker was opened on: its live canvas preview never shows on another
+    // (`color_picker_preview`).
+    if let Some(st) = app.session.active() {
+        f.insert("__document".into(), json!(st.doc.id.0));
+    }
     app.ui.open_dialog(DialogKind::Command, f)
 }
 
-/// Open the picker on `rgb` for a colour field of another dialog (e.g. Edit › Fill's Color…): OK
-/// writes `"#rrggbb"` into `field` of dialog `dialog`, which stays open; Cancel leaves it alone.
+/// Open the picker on `rgb` for a colour field of another dialog (e.g. Edit › Fill's Color…): the
+/// field shows the picked colour while the picker is open ([`live_preview`]); OK writes
+/// `"#rrggbb"` into `field` of dialog `dialog`, which stays open; Cancel puts it back as it was.
 pub fn open_for_field(app: &mut PhotocraftApp, label: &str, rgb: [f32; 3], dialog: u64, field: &str) -> u64 {
     let mut f = fields_with_web(app, "field", label, rgb);
     f.insert("__dialog".into(), json!(dialog));
     f.insert("__field".into(), json!(field));
-    app.ui.open_dialog(DialogKind::Command, f)
+    let id = app.ui.open_dialog(DialogKind::Command, f);
+    live_preview::begin_field(app, id, dialog, field);
+    id
 }
 
 /// Open the picker on `rgb` for a colour the shell keeps itself (e.g. the Crop shield's custom
-/// colour): OK hands `"#rrggbb"` to `target`'s setter in [`confirm`]; Cancel leaves it alone.
+/// colour): OK hands `"#rrggbb"` to `target`'s setter in [`confirm`]; Cancel leaves it alone. The
+/// Crop shield shows the picked colour while the picker is open ([`live_preview`]).
 pub fn open_for_target(app: &mut PhotocraftApp, target: &str, label: &str, rgb: [f32; 3]) -> u64 {
-    app.ui.open_dialog(DialogKind::Command, fields_with_web(app, target, label, rgb))
+    let id = app.ui.open_dialog(DialogKind::Command, fields_with_web(app, target, label, rgb));
+    if target == "cropShield" {
+        live_preview::begin_crop_shield(app, id);
+    }
+    id
 }
 
 /// Set by a dialog body (to the picker's title) to open the Color Picker on its `color` field.
@@ -219,6 +234,11 @@ pub fn request_field(f: &mut Map<String, Value>, field: &str, title: &str) {
 /// The picker's title for the colour called `name`: "Color Picker (Vine Color)".
 pub fn title_for(name: &str) -> String {
     crate::i18n::fmt(tl!("Color Picker ({name})"), &[("name", name)])
+}
+
+/// Prefer a complete catalogued title; some locales only provide the named-colour template.
+pub(crate) fn fixed_title(label: &str, name: &str) -> String {
+    if crate::i18n::has(crate::i18n::current(), label) { tl!(label).to_string() } else { title_for(tl!(name)) }
 }
 
 /// The `"#rrggbb"` at `field` of `f` (a key or a JSON pointer).
@@ -321,6 +341,13 @@ where
     (hex(to_rgb(v)) == hex(rgb)).then_some(v)
 }
 
+/// The CMYK values typed into the picker, while they still match its colour: the inks a command
+/// should keep in a CMYK document (#4196, #8568).
+pub(crate) fn picked_cmyk(f: &Map<String, Value>) -> Option<[f32; 4]> {
+    let rgb = f.get("color").and_then(Value::as_str).and_then(parse_hex)?;
+    kept::<4>(f, "__cmyk", rgb, photocraft_color::convert::cmyk_to_rgb)
+}
+
 /// Current colour, keeping the stored HSB, Lab or CMYK values while they still match `color`.
 pub fn current(f: &Map<String, Value>) -> Components {
     let rgb = f.get("color").and_then(Value::as_str).and_then(parse_hex).unwrap_or([0.0; 3]);
@@ -404,7 +431,14 @@ fn flat_grid_mesh(rect: Rect, n: usize, color: impl Fn(f32, f32) -> [f32; 3]) ->
 
 /// Room for both component columns, including units, without overflowing the title's width; with
 /// the frame and title the window fits Photoshop's (about 534 x 376 points).
-pub(crate) const CONTENT_WIDTH: f32 = 504.0;
+pub(crate) const CONTENT_WIDTH: f32 = 488.0;
+/// Translated action labels can be substantially wider than their English equivalents.
+pub(crate) fn content_width(ui: &egui::Ui) -> f32 {
+    let labels = ["OK", "Cancel", "Add to Swatches"];
+    let english = crate::i18n::with_language(crate::i18n::Lang::EN, || widgets::button_width(ui, &labels));
+    let translated = widgets::button_width(ui, &labels.map(crate::i18n::t));
+    CONTENT_WIDTH + (translated - english).max(0.0)
+}
 /// Side of the colour field (Photoshop's is about 256 points).
 const FIELD: f32 = 200.0;
 /// Width of the component fields.
@@ -412,7 +446,7 @@ const VALUE_W: f32 = 42.0;
 
 /// Draw the picker and its top-right actions. `Some(true)` confirms, `Some(false)` cancels.
 pub fn body(ui: &mut egui::Ui, f: &mut Map<String, Value>) -> Option<bool> {
-    ui.set_width(CONTENT_WIDTH);
+    ui.set_width(content_width(ui));
     ui.spacing_mut().item_spacing.y = 4.0;
     let mut outcome = None;
     ui.horizontal_top(|ui| {
@@ -444,18 +478,18 @@ pub fn body(ui: &mut egui::Ui, f: &mut Map<String, Value>) -> Option<bool> {
                     if widgets::primary_button(ui, tl!("OK"), button_width).clicked() {
                         outcome = Some(true);
                     }
-                    ui.add_space(5.0);
+                    ui.add_space(4.0);
                     if widgets::secondary_button(ui, tl!("Cancel"), button_width).clicked() {
                         outcome = Some(false);
                     }
-                    ui.add_space(5.0);
+                    ui.add_space(4.0);
                     // Handled by the dialog host, which has the app (`take_add_swatch`).
                     if widgets::secondary_button(ui, tl!("Add to Swatches"), button_width).clicked() {
                         f.insert("__addSwatch".into(), json!(true));
                     }
                 });
             });
-            ui.add_space(6.0);
+            ui.add_space(4.0);
             let mode = f.get("__mode").and_then(Value::as_str).unwrap_or("h").to_string();
             fields(ui, f, &mode, &current(f));
         });
@@ -463,39 +497,49 @@ pub fn body(ui: &mut egui::Ui, f: &mut Map<String, Value>) -> Option<bool> {
     outcome
 }
 
-fn vertical_strip_mesh(rect: Rect, n: usize, color: impl Fn(f32) -> [f32; 3]) -> Mesh {
-    let mut m = Mesh::default();
-    let n = n.max(1);
-    for j in 0..=n {
-        let y = j as f32 / n as f32;
-        let c = c32(color(y));
-        let py = rect.top() + y * rect.height();
-        m.colored_vertex(pos2(rect.left(), py), c);
-        m.colored_vertex(pos2(rect.right(), py), c);
-    }
-    for j in 0..n as u32 {
-        let a = j * 2;
-        m.add_triangle(a, a + 1, a + 3);
-        m.add_triangle(a, a + 3, a + 2);
-    }
-    m
-}
-
 /// The Color Picker's colour field and component slider, editing the colour in f.
 fn color_field(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     let t = Tokens::get(ui.ctx());
     let mode = f.get("__mode").and_then(Value::as_str).unwrap_or("h").to_string();
-    let mut now = current(f);
-    let (mut rgb, mut hsv, mut lab) = (now.rgb, now.hsv, now.lab);
-    let (mut fx, mut fy, mut fz) = locate(&mode, hsv, rgb, lab);
-
-    // Allocate both widgets in the horizontal layout first so pointer interaction updates state before mesh generation.
+    let now = current(f);
+    let (rgb, hsv, lab) = (now.rgb, now.hsv, now.lab);
+    let (fx, fy, fz) = locate(&mode, hsv, rgb, lab);
+    // Colour field.
     let (field, resp) = ui.allocate_exact_size(vec2(FIELD, FIELD), Sense::click_and_drag());
+    let web_only = f.get("__webOnly").and_then(Value::as_bool).unwrap_or(false);
+    // Only Web Colors bands the field to the 216 web-safe colours, as in Photoshop (#4107).
+    let mesh = |rect: Rect, color: &dyn Fn(f32, f32) -> [f32; 3]| {
+        if web_only { flat_grid_mesh(rect, WEB_CELLS, |x, y| web_safe(color(x, y))) } else { grid_mesh(rect, 32, color) }
+    };
+    ui.painter().add(mesh(field, &|x, y| field_color(&mode, fz, x, y)));
+    ui.painter().rect_stroke(field, 0.0, Stroke::new(1.0, t.field_border), StrokeKind::Outside);
+    let marker = pos2(field.left() + fx * field.width(), field.top() + fy * field.height());
+    // Clipped to the field: at the extremes the marker sits on the edge (#8968).
+    ui.painter().with_clip_rect(field).circle_stroke(marker, 5.0, Stroke::new(1.5, if hsv[2] > 0.6 && hsv[1] < 0.4 { Color32::BLACK } else { Color32::WHITE }));
+    // Photoshop updates the colour on the press itself, not only when the button is released
+    // (#6937): `is_pointer_button_down_on` is true from the press frame onwards (it covers
+    // dragging too), while `clicked` fires on release and `dragged` only after a move.
+    if let Some(p) = widgets::pick_pos(&resp) {
+        let (x, y) = (((p.x - field.left()) / field.width()).clamp(0.0, 1.0), ((p.y - field.top()) / field.height()).clamp(0.0, 1.0));
+        let c = field_color(&mode, fz, x, y);
+        let keep = match mode.as_str() {
+            "h" => Keep::Hsv([fz * 360.0, x, 1.0 - y]),
+            "s" => Keep::Hsv([x * 360.0, fz, 1.0 - y]),
+            "v" => Keep::Hsv([x * 360.0, 1.0 - y, fz]),
+            m => field_lab(m, fz, x, y).map_or(Keep::Nothing, Keep::Lab),
+        };
+        set_rgb(f, c, keep);
+    }
+    // Component slider (hue runs 360° at the top to 0° at the bottom, like Photoshop).
     let (strip, sresp) = ui.allocate_exact_size(vec2(18.0, FIELD), Sense::click_and_drag());
-
+    ui.painter().add(mesh(strip, &|_, y| slider_color(&mode, 1.0 - y, hsv, rgb, lab)));
+    let sy = strip.top() + (1.0 - fz) * strip.height();
+    for (x, dir) in [(strip.left() - 1.0, 1.0f32), (strip.right() + 1.0, -1.0)] {
+        let tri = vec![pos2(x, sy), pos2(x - 6.0 * dir, sy - 4.0), pos2(x - 6.0 * dir, sy + 4.0)];
+        ui.painter().add(egui::Shape::convex_polygon(tri, t.text, Stroke::NONE));
+    }
     if let Some(p) = widgets::pick_pos(&sresp) {
         let z = 1.0 - ((p.y - strip.top()) / strip.height()).clamp(0.0, 1.0);
-        fz = z;
         let h = match mode.as_str() {
             "h" => Some([z * 360.0, hsv[1], hsv[2]]),
             "s" => Some([hsv[0], z, hsv[2]]),
@@ -507,104 +551,6 @@ fn color_field(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
             (None, Some(l)) => set_rgb(f, lab_rgb(l), Keep::Lab(l)),
             (None, None) => set_rgb(f, slider_color(&mode, z, hsv, rgb, lab), Keep::Nothing),
         }
-        now = current(f);
-        rgb = now.rgb;
-        hsv = now.hsv;
-        lab = now.lab;
-    }
-
-    // Colour field interaction (instant response on mouse-down, drag, or click, clamping even when dragged outside).
-    let field_active = resp.dragged() || resp.clicked() || resp.is_pointer_button_down_on();
-    let field_pos = if field_active {
-        resp.interact_pointer_pos().or_else(|| ui.input(|i| i.pointer.latest_pos()))
-    } else {
-        None
-    };
-    if let Some(p) = field_pos {
-        ui.ctx().request_repaint();
-        ui.ctx().request_repaint_after(std::time::Duration::from_millis(100));
-        let (x, y) = (((p.x - field.left()) / field.width()).clamp(0.0, 1.0), ((p.y - field.top()) / field.height()).clamp(0.0, 1.0));
-        fx = x;
-        fy = y;
-        let c = field_color(&mode, fz, x, y);
-        let keep = match mode.as_str() {
-            "h" => {
-                hsv = [fz * 360.0, x, 1.0 - y];
-                Keep::Hsv(hsv)
-            }
-            "s" => {
-                hsv = [x * 360.0, fz, 1.0 - y];
-                Keep::Hsv(hsv)
-            }
-            "v" => {
-                hsv = [x * 360.0, 1.0 - y, fz];
-                Keep::Hsv(hsv)
-            }
-            m => field_lab(m, fz, x, y).map_or(Keep::Nothing, Keep::Lab),
-        };
-        set_rgb(f, c, keep);
-        now = current(f);
-        rgb = now.rgb;
-        hsv = now.hsv;
-        lab = now.lab;
-    }
-
-    let web_only = f.get("__webOnly").and_then(Value::as_bool).unwrap_or(false);
-    // Only Web Colors bands the field to the 216 web-safe colours, as in Photoshop (#4107).
-    let mesh = |rect: Rect, color: &dyn Fn(f32, f32) -> [f32; 3]| {
-        if web_only { flat_grid_mesh(rect, WEB_CELLS, |x, y| web_safe(color(x, y))) } else { grid_mesh(rect, 32, color) }
-    };
-    let mode_hash = mode.bytes().fold(0u64, |h, b| (h << 5).wrapping_add(b as u64));
-    let cache_key = (fz.to_bits() as u64) | (mode_hash << 32) | if web_only { 1 << 63 } else { 0 };
-    let cached = ui.ctx().data(|d| {
-        let k = d.get_temp::<u64>(ui.scope_id().with("cp_field_key"));
-        let m = d.get_temp::<Mesh>(ui.scope_id().with("cp_field_mesh"));
-        if k == Some(cache_key) { m } else { None }
-    });
-    let mut field_m = if let Some(m) = cached {
-        m
-    } else {
-        let local_field = Rect::from_min_size(pos2(0.0, 0.0), field.size());
-        let m = mesh(local_field, &|x, y| field_color(&mode, fz, x, y));
-        ui.ctx().data_mut(|d| {
-            d.insert_temp(ui.scope_id().with("cp_field_key"), cache_key);
-            d.insert_temp(ui.scope_id().with("cp_field_mesh"), m.clone());
-        });
-        m
-    };
-    field_m.translate(field.min.to_vec2());
-    ui.painter().add(field_m);
-    ui.painter().rect_stroke(field, 0.0, Stroke::new(1.0, t.field_border), StrokeKind::Outside);
-
-    // Marker (double circle for maximum contrast over all colours).
-    let marker = pos2(field.left() + fx * field.width(), field.top() + fy * field.height());
-    let inner_col = if hsv[2] > 0.6 && hsv[1] < 0.4 { Color32::BLACK } else { Color32::WHITE };
-    let outer_col = if inner_col == Color32::WHITE { Color32::from_black_alpha(180) } else { Color32::from_white_alpha(180) };
-    ui.painter().circle_stroke(marker, 5.5, Stroke::new(1.0, outer_col));
-    ui.painter().circle_stroke(marker, 4.5, Stroke::new(1.5, inner_col));
-
-    // Component slider mesh (hue runs 360° at the top to 0° at the bottom, like Photoshop).
-    let mut strip_mesh = if mode == "h" {
-        let cached_strip = ui.ctx().data(|d| d.get_temp::<Mesh>(ui.scope_id().with("cp_strip_mesh_h")));
-        if let Some(m) = cached_strip {
-            m
-        } else {
-            let local_strip = Rect::from_min_size(pos2(0.0, 0.0), strip.size());
-            let m = vertical_strip_mesh(local_strip, 32, |y| slider_color(&mode, 1.0 - y, hsv, rgb, lab));
-            ui.ctx().data_mut(|d| d.insert_temp(ui.scope_id().with("cp_strip_mesh_h"), m.clone()));
-            m
-        }
-    } else {
-        let local_strip = Rect::from_min_size(pos2(0.0, 0.0), strip.size());
-        vertical_strip_mesh(local_strip, 32, |y| slider_color(&mode, 1.0 - y, hsv, rgb, lab))
-    };
-    strip_mesh.translate(strip.min.to_vec2());
-    ui.painter().add(strip_mesh);
-
-    let sy = strip.top() + (1.0 - fz) * strip.height();
-    for (x, dir) in [(strip.left() - 1.0, 1.0f32), (strip.right() + 1.0, -1.0)] {
-        let tri = vec![pos2(x, sy), pos2(x - 6.0 * dir, sy - 4.0), pos2(x - 6.0 * dir, sy + 4.0)];
-        ui.painter().add(egui::Shape::convex_polygon(tri, t.text, Stroke::NONE));
     }
 }
 
@@ -612,17 +558,17 @@ fn swatches(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     let t = Tokens::get(ui.ctx());
     let rgb = current(f).rgb;
     let orig = f.get("__orig").and_then(Value::as_str).and_then(parse_hex).unwrap_or(rgb);
-    let (area, _) = ui.allocate_exact_size(vec2(56.0 + 26.0, 96.0), Sense::hover());
-    // new / current swatches, labelled above and below with comfortable headroom for Khmer diacritics.
-    let sw = Rect::from_min_size(area.min + vec2(0.0, 18.0), vec2(56.0, 60.0));
+    let (area, _) = ui.allocate_exact_size(vec2(56.0 + 24.0, 92.0), Sense::hover());
+    // new / current swatches, labelled above and below.
+    let sw = Rect::from_min_size(area.min + vec2(0.0, 16.0), vec2(56.0, 64.0));
     let p = ui.painter();
     let label = |text: &str, at: egui::Pos2, align: egui::Align2| {
         p.text(at, align, text, egui::FontId::proportional(11.0), t.text_dim);
     };
-    label(tl!("new"), pos2(sw.center().x, sw.top() - 4.5), egui::Align2::CENTER_BOTTOM);
-    label(tl!("current"), pos2(sw.center().x, sw.bottom() + 4.5), egui::Align2::CENTER_TOP);
-    p.rect_filled(Rect::from_min_size(sw.min, vec2(56.0, 30.0)), 0.0, c32(rgb));
-    let cur = Rect::from_min_size(sw.min + vec2(0.0, 30.0), vec2(56.0, 30.0));
+    label(tl!("new"), pos2(sw.center().x, sw.top() - 3.0), egui::Align2::CENTER_BOTTOM);
+    label(tl!("current"), pos2(sw.center().x, sw.bottom() + 3.0), egui::Align2::CENTER_TOP);
+    p.rect_filled(Rect::from_min_size(sw.min, vec2(56.0, 32.0)), 0.0, c32(rgb));
+    let cur = Rect::from_min_size(sw.min + vec2(0.0, 32.0), vec2(56.0, 32.0));
     p.rect_filled(cur, 0.0, c32(orig));
     p.rect_stroke(sw, 0.0, Stroke::new(1.0, t.field_border), StrokeKind::Outside);
     let click_cur = ui.interact(cur, ui.scope_id().with("cp-current"), Sense::click());
@@ -700,7 +646,7 @@ fn fields(ui: &mut egui::Ui, f: &mut Map<String, Value>, mode: &str, now: &Compo
     ui.horizontal_top(|ui| {
         ui.spacing_mut().item_spacing.x = 10.0;
         ui.vertical(|ui| {
-            egui::Grid::new("cp-hsb-rgb").min_row_height(0.0).num_columns(4).spacing([5.0, 3.5]).show(ui, |ui| {
+            egui::Grid::new("cp-hsb-rgb").min_row_height(0.0).num_columns(4).spacing([4.0, 2.0]).show(ui, |ui| {
                 let vals = [hsv[0], hsv[1] * 100.0, hsv[2] * 100.0, rgb[0] * 255.0, rgb[1] * 255.0, rgb[2] * 255.0];
                 let units = ["°", "%", "%", "", "", ""];
                 let ranges = [0.0..=360.0, 0.0..=100.0, 0.0..=100.0, 0.0..=255.0, 0.0..=255.0, 0.0..=255.0];
@@ -731,10 +677,8 @@ fn fields(ui: &mut egui::Ui, f: &mut Map<String, Value>, mode: &str, now: &Compo
                     }
                 }
             });
-            ui.add_space(4.0);
             ui.horizontal(|ui| {
                 ui.spacing_mut().item_spacing.x = 6.0;
-                ui.add_space(14.0);
                 ui.label(egui::RichText::new("#").color(t.text_dim));
                 // While the field has focus it shows what is being typed, not the colour: rebuilding it from
                 // the colour every frame would throw away every keystroke until six valid digits were in.
@@ -778,7 +722,7 @@ fn fields(ui: &mut egui::Ui, f: &mut Map<String, Value>, mode: &str, now: &Compo
                 }
             });
         });
-        egui::Grid::new("cp-lab-cmyk").min_row_height(0.0).num_columns(4).spacing([5.0, 3.5]).show(ui, |ui| {
+        egui::Grid::new("cp-lab-cmyk").min_row_height(0.0).num_columns(4).spacing([4.0, 2.0]).show(ui, |ui| {
             for (i, (v, range)) in [(lab[0], 0.0..=100.0), (lab[1], -128.0..=127.0), (lab[2], -128.0..=127.0)].into_iter().enumerate() {
                 let (key, label) = LAB_MODES[i];
                 if radio(ui, mode == key, label) {
@@ -842,8 +786,164 @@ pub fn take_add_swatch(app: &mut PhotocraftApp, f: &mut Map<String, Value>) {
     }
 }
 
-/// OK: set the foreground or background colour.
+/// Whether a Color Picker dialog is open: a workspace under it (Content-Aware Fill, Select and
+/// Mask) leaves the keys to the picker, as it did for the swatch popups the picker replaced.
+pub fn any_open(app: &PhotocraftApp) -> bool {
+    app.ui.dialogs.iter().any(|d| owns(&d.fields))
+}
+
+/// A colour swatch widget asked for the Color Picker on its colour ([`request_for_widget`]).
+#[derive(Clone)]
+struct WidgetRequest {
+    widget: u64,
+    title: String,
+    rgb: [f32; 3],
+}
+
+fn widget_requests() -> egui::Id {
+    egui::Id::unique("color-picker-widget-requests")
+}
+
+fn widget_results() -> egui::Id {
+    egui::Id::unique("color-picker-widget-results")
+}
+
+fn widget_events() -> egui::Id {
+    egui::Id::unique("color-picker-widget-events")
+}
+
+fn widget_open() -> egui::Id {
+    egui::Id::unique("color-picker-widget-open")
+}
+
+/// What a swatch's open Color Picker did since the last frame ([`take_widget_event`]).
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum WidgetEvent {
+    /// The picker shows this colour now: preview it on the swatch.
+    Preview([f32; 3]),
+    /// The picker closed without a new colour (Cancel, Esc, the close box, OK unchanged): go back
+    /// to the colour the swatch had when it opened the picker.
+    Restore,
+}
+
+/// A colour swatch (`widgets::color_edit_button*`) was clicked: open the Color Picker titled
+/// `title` on `rgb` next frame ([`widget_tick`], which has the app). OK hands the colour back to the
+/// swatch through [`take_widget_color`]; Cancel leaves it alone.
+pub fn request_for_widget(ctx: &egui::Context, widget: egui::Id, title: &str, rgb: [f32; 3]) {
+    let rgb = rgb.map(|c| if c.is_finite() { c.clamp(0.0, 1.0) } else { 0.0 });
+    ctx.data_mut(|d| {
+        d.get_temp_mut_or_default::<Vec<WidgetRequest>>(widget_requests()).push(WidgetRequest { widget: widget.value(), title: title.to_string(), rgb })
+    });
+    ctx.request_repaint();
+}
+
+/// The colour the Color Picker of swatch `widget` returned with OK, once.
+pub fn take_widget_color(ctx: &egui::Context, widget: egui::Id) -> Option<[f32; 3]> {
+    ctx.data_mut(|d| {
+        let results = d.get_temp_mut_or_default::<Vec<(u64, [f32; 3])>>(widget_results());
+        let i = results.iter().position(|(w, _)| *w == widget.value())?;
+        Some(results.remove(i).1)
+    })
+}
+
+/// What the Color Picker of swatch `widget` did since the last frame, once: the colour it shows
+/// now while it is open, or that it closed without a new colour.
+pub fn take_widget_event(ctx: &egui::Context, widget: egui::Id) -> Option<WidgetEvent> {
+    ctx.data_mut(|d| {
+        let events = d.get_temp_mut_or_default::<Vec<(u64, WidgetEvent)>>(widget_events());
+        let i = events.iter().position(|(w, _)| *w == widget.value())?;
+        Some(events.remove(i).1)
+    })
+}
+
+/// Whether swatch `widget`'s Color Picker is open (as of this frame's [`widget_tick`]): its
+/// colour changes are previews, and only the colour OK hands back is final.
+pub fn widget_picker_open(ctx: &egui::Context, widget: egui::Id) -> bool {
+    ctx.data(|d| d.get_temp::<Vec<u64>>(widget_open()).is_some_and(|open| open.contains(&widget.value())))
+}
+
+/// Each frame, before the panels: hand colours confirmed last frame to their swatches, preview
+/// the colour an open picker shows on its swatch (as Photoshop's dialogs do while you pick), tell
+/// a swatch whose picker closed without a new colour to restore its own, and open the Color
+/// Picker a swatch asked for.
+pub fn widget_tick(app: &mut PhotocraftApp, ctx: &egui::Context) {
+    let done = std::mem::take(&mut app.widget_colors);
+    let mut events: Vec<(u64, WidgetEvent)> = Vec::new();
+    let mut open_now: Vec<u64> = Vec::new();
+    for d in app.ui.dialogs.iter_mut() {
+        if d.fields.get("__colorPicker").and_then(Value::as_str) != Some("widget") {
+            continue;
+        }
+        let Some(widget) = d.fields.get("__widget").and_then(Value::as_u64) else { continue };
+        open_now.push(widget);
+        let shown = d.fields.get("__widgetShown").or_else(|| d.fields.get("__orig")).cloned();
+        let Some(color) = d.fields.get("color").cloned() else { continue };
+        if Some(&color) != shown.as_ref()
+            && let Some(rgb) = color.as_str().and_then(parse_hex)
+        {
+            events.push((widget, WidgetEvent::Preview(rgb)));
+            d.fields.insert("__widgetShown".into(), color);
+        }
+    }
+    let was_open = ctx.data(|d| d.get_temp::<Vec<u64>>(widget_open())).unwrap_or_default();
+    for w in was_open {
+        if !open_now.contains(&w) && !done.iter().any(|(x, _)| *x == w) {
+            events.push((w, WidgetEvent::Restore));
+        }
+    }
+    let changed = !events.is_empty();
+    ctx.data_mut(|d| {
+        d.insert_temp(widget_open(), open_now);
+        if changed {
+            let all = d.get_temp_mut_or_default::<Vec<(u64, WidgetEvent)>>(widget_events());
+            // Only the newest event per swatch counts; a swatch that is gone never takes its own.
+            all.retain(|(w, _)| !events.iter().any(|(x, _)| x == w));
+            all.extend(events);
+            let excess = all.len().saturating_sub(16);
+            all.drain(..excess);
+        }
+    });
+    if changed {
+        ctx.request_repaint();
+    }
+    if !done.is_empty() {
+        ctx.data_mut(|d| {
+            // A preview not yet taken is replaced by the final colour.
+            d.get_temp_mut_or_default::<Vec<(u64, WidgetEvent)>>(widget_events()).retain(|(w, _)| !done.iter().any(|(x, _)| x == w));
+            let results = d.get_temp_mut_or_default::<Vec<(u64, [f32; 3])>>(widget_results());
+            // A swatch that is gone never takes its colour: keep only the newest one per swatch.
+            results.retain(|(w, _)| !done.iter().any(|(x, _)| x == w));
+            results.extend(done);
+            let excess = results.len().saturating_sub(16);
+            results.drain(..excess);
+        });
+        ctx.request_repaint();
+    }
+    let requests = ctx.data_mut(|d| {
+        let r = d.get_temp::<Vec<WidgetRequest>>(widget_requests());
+        d.remove::<Vec<WidgetRequest>>(widget_requests());
+        r
+    });
+    // One picker per click; a second click before it opened asks for the same thing.
+    if let Some(r) = requests.and_then(|r| r.into_iter().last()) {
+        let mut f = fields_with_web(app, "widget", &r.title, r.rgb);
+        f.insert("__widget".into(), json!(r.widget));
+        app.ui.open_dialog(DialogKind::Command, f);
+    }
+}
+
+/// OK: apply the colour to what the picker was opened for, and add it to the Recently Used
+/// Colors, as Photoshop does for a colour picked in the Color Picker.
 pub fn confirm(app: &mut PhotocraftApp, f: &Map<String, Value>) -> Result<Value, String> {
+    let r = confirm_target(app, f)?;
+    if let Some(rgb) = f.get("color").and_then(Value::as_str).and_then(parse_hex) {
+        crate::paint_picker::remember(app, rgb);
+    }
+    Ok(r)
+}
+
+/// OK: set the foreground or background colour, or whatever else the picker was opened for.
+fn confirm_target(app: &mut PhotocraftApp, f: &Map<String, Value>) -> Result<Value, String> {
     if crate::type_panels_ui::color_picker::owns(f) {
         return crate::type_panels_ui::color_picker::confirm(app, f);
     }
@@ -862,9 +962,15 @@ pub fn confirm(app: &mut PhotocraftApp, f: &Map<String, Value>) -> Result<Value,
     let target = f.get("__colorPicker").and_then(Value::as_str).unwrap_or("foreground");
     let color = f.get("color").and_then(Value::as_str).unwrap_or("#000000");
     if let Some(cmd) = f.get("__command").and_then(Value::as_str) {
+        let shown = crate::color_picker_preview::shown_for(app, f);
         let mut p = f.get("__params").cloned().filter(Value::is_object).unwrap_or_else(|| json!({}));
         p["color"] = json!(color);
-        return app.run(cmd, p);
+        let r = app.run(cmd, p)?;
+        // The canvas already shows this edit (the live preview): refresh only what it changed.
+        if let Some((doc, key)) = shown {
+            crate::canvas::shown_as_document(app, doc, |k| k == key);
+        }
+        return Ok(r);
     }
     if target == "field" {
         let (Some(dialog), Some(field)) = (f.get("__dialog").and_then(Value::as_u64), f.get("__field").and_then(Value::as_str)) else {
@@ -872,6 +978,15 @@ pub fn confirm(app: &mut PhotocraftApp, f: &Map<String, Value>) -> Result<Value,
         };
         let d = app.ui.dialog_mut(dialog).ok_or("the dialog this colour was for is closed")?;
         set_field(&mut d.fields, field, json!(color))?;
+        return Ok(json!({ "color": color }));
+    }
+    if target == "widget" {
+        let widget = f.get("__widget").and_then(Value::as_u64).ok_or("the Color Picker has no swatch to set")?;
+        let rgb = parse_hex(color).ok_or("not a colour")?;
+        // OK on the colour it opened with leaves the swatch's own (possibly finer) value alone.
+        if f.get("color") != f.get("__orig") {
+            app.widget_colors.push((widget, rgb));
+        }
         return Ok(json!({ "color": color }));
     }
     if target == "cropShield" {
@@ -898,6 +1013,8 @@ pub fn confirm(app: &mut PhotocraftApp, f: &Map<String, Value>) -> Result<Value,
     }
     Ok(r)
 }
+
+pub(crate) mod live_preview;
 
 #[cfg(test)]
 mod tests;

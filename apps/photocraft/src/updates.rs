@@ -9,6 +9,8 @@ pub const ANGKORPIX_APP: craft_update::App = craft_update::App {
     repo: "itbtdeveloper123-png/AngkorPix",
     former_ids: &[],
     former_names: &[],
+    developer: "AngkorPix Team",
+    accent: Some([0x2f, 0x7b, 0xf5]),
     icon_png: None,
 };
 
