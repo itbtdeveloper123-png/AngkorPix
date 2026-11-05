@@ -19,7 +19,7 @@ fn highlight_and_shadow_modes_are_independent_dropdowns() {
     let mut harness = egui_kittest::Harness::builder().with_size(vec2(1000.0, 1200.0)).build_ui_state(
         |ui, state: &mut (PhotocraftApp, Map<String, Value>)| {
             if ui.ctx().fonts(|fonts| fonts.families().contains(&egui::FontFamily::Name("semibold".into()))) {
-                body(&mut state.0, ui, &mut state.1, true);
+                body(&mut state.0, ui, &mut state.1);
             }
         },
         (app, fields),

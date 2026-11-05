@@ -29,7 +29,7 @@ fn method_picker_is_pending_until_confirm_and_survives_reopening() {
         |ui, state: &mut (PhotocraftApp, Map<String, Value>)| {
             // The harness draws once before setup_context installs the app fonts.
             if ui.ctx().fonts(|fonts| fonts.families().contains(&egui::FontFamily::Name("semibold".into()))) {
-                body(&mut state.0, ui, &mut state.1, true);
+                body(&mut state.0, ui, &mut state.1);
             }
         },
         (app, pending_fields),
