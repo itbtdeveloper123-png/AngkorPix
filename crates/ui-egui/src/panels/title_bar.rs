@@ -127,15 +127,15 @@ pub fn title_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                         crate::menus::apply_workspace(app);
                     }
                     if room >= 120.0 {
-                        let btn = egui::Button::new(
-                            egui::RichText::new("📐 AngkorVector")
-                                .size(11.0)
-                                .color(egui::Color32::from_rgb(220, 220, 225)),
-                        )
-                        .fill(egui::Color32::from_rgb(38, 42, 50))
-                        .corner_radius(egui::CornerRadius::same(4));
+                        let (btn_rect, btn_resp) = ui.allocate_exact_size(vec2(105.0, 22.0), Sense::click());
+                        let is_hov = btn_resp.hovered();
+                        let bg_col = if is_hov { egui::Color32::from_rgb(50, 55, 68) } else { egui::Color32::from_rgb(38, 42, 50) };
+                        ui.painter().rect_filled(btn_rect, 4.0, bg_col);
+                        let icon_box = egui::Rect::from_center_size(egui::pos2(btn_rect.left() + 12.0, btn_rect.center().y), vec2(12.0, 12.0));
+                        crate::icons::paint(ui, icon_box, "pen-tool", 12.0, egui::Color32::from_rgb(255, 140, 40));
+                        ui.painter().text(egui::pos2(btn_rect.left() + 24.0, btn_rect.center().y), egui::Align2::LEFT_CENTER, "AngkorVector", crate::theme::medium(11.0), egui::Color32::from_rgb(220, 220, 225));
 
-                        if ui.add(btn).on_hover_text(tl!("Switch to AngkorVector (Adobe Illustrator Mode)")).clicked() {
+                        if btn_resp.on_hover_text(tl!("Switch to AngkorVector (Adobe Illustrator Mode)")).clicked() {
                             crate::suite_interop::launch_or_focus_angkorvector();
                         }
                     }

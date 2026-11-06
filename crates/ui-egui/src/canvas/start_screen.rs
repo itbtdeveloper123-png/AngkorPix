@@ -121,64 +121,25 @@ fn render_start_rail(app: &mut PhotocraftApp, ui: &mut egui::Ui, rail_w: f32) {
     let (home_rect, home_resp) = ui.allocate_exact_size(egui::vec2(rail_w, 28.0), Sense::hover());
     ui.painter().rect_filled(home_rect, 4.0, t.hover);
     let icon_box = Rect::from_center_size(egui::pos2(home_rect.left() + 20.0, home_rect.center().y), egui::vec2(14.0, 14.0));
-    crate::icons::paint(ui, icon_box, "home", 14.0, t.text);
+    crate::icons::paint(ui, icon_box, "house", 14.0, t.text);
     ui.painter().text(egui::pos2(home_rect.left() + 34.0, home_rect.center().y), egui::Align2::LEFT_CENTER, tl!("Home"), crate::theme::semibold(12.0), t.text);
     let _ = home_resp;
-
-    ui.add_space(20.0);
-
-    // Hairline separator
-    let (sep_r, _) = ui.allocate_exact_size(egui::vec2(rail_w.min(130.0), 1.0), Sense::hover());
-    ui.painter().line_segment([sep_r.min, egui::pos2(sep_r.max.x, sep_r.min.y)], egui::Stroke::new(1.0, t.separator));
-
-    ui.add_space(16.0);
-
-    // 4. Community links
-    ui.painter().text(
-        egui::pos2(rail_w.min(130.0) / 2.0 + ui.min_rect().left(), ui.cursor().top() + 6.0),
-        egui::Align2::CENTER_CENTER,
-        tl!("COMMUNITY"),
-        crate::theme::semibold(9.5),
-        t.text_faint,
-    );
-    ui.add_space(20.0);
-
-    render_rail_link(app, ui, rail_w, tl!("Website"), "globe", crate::links::APP_PAGE);
-    render_rail_link(app, ui, rail_w, tl!("Tutorials"), "play-circle", crate::links::TUTORIALS);
-    render_rail_link(app, ui, rail_w, tl!("Discord"), "message-square", crate::links::DISCORD);
-    render_rail_link(app, ui, rail_w, tl!("GitHub"), "github", crate::links::GITHUB);
-}
-
-fn render_rail_link(app: &mut PhotocraftApp, ui: &mut egui::Ui, rail_w: f32, label: &str, icon_name: &str, url: &str) {
-    let t = crate::theme::Tokens::get(ui.ctx());
-    let (rect, resp) = ui.allocate_exact_size(egui::vec2(rail_w, 28.0), Sense::click());
-    let resp = resp.on_hover_cursor(egui::CursorIcon::PointingHand).on_hover_text(url);
-    if resp.hovered() {
-        ui.painter().rect_filled(rect, 4.0, t.hover);
-    }
-    let color = if resp.hovered() { t.text } else { t.text_dim };
-    let icon_box = Rect::from_center_size(egui::pos2(rect.left() + 20.0, rect.center().y), egui::vec2(14.0, 14.0));
-    crate::icons::paint(ui, icon_box, icon_name, 14.0, color);
-    ui.painter().text(egui::pos2(rect.left() + 34.0, rect.center().y), egui::Align2::LEFT_CENTER, label, crate::theme::medium(12.0), color);
-    if resp.clicked() {
-        crate::links::open(app, ui.ctx(), url);
-    }
 }
 
 fn render_start_content(app: &mut PhotocraftApp, ui: &mut egui::Ui, recent: &[String], content_w: f32) {
     let t = crate::theme::Tokens::get(ui.ctx());
     ui.add_space(8.0);
 
-    // Top Row: [01] AngkorPix
+    // Top Row: [App Icon] AngkorPix
     ui.horizontal(|ui| {
-        let badge_size = egui::vec2(24.0, 19.0);
-        let (badge_rect, _) = ui.allocate_exact_size(badge_size, Sense::hover());
-        ui.painter().rect_filled(badge_rect, 3.0, egui::Color32::from_rgb(26, 115, 232));
-        ui.painter().text(badge_rect.center(), egui::Align2::CENTER_CENTER, "01", crate::theme::semibold(10.5), egui::Color32::WHITE);
+        let logo_size = egui::vec2(26.0, 26.0);
+        let (logo_rect, _) = ui.allocate_exact_size(logo_size, Sense::hover());
+        crate::brand::paint_mark(ui, logo_rect);
 
         ui.add_space(10.0);
 
-        let title_galley = ui.painter().layout_no_wrap("AngkorPix".into(), crate::theme::semibold(20.0), t.text);
+        let app_name = crate::menus::native_menu::APP_NAME;
+        let title_galley = ui.painter().layout_no_wrap(app_name.into(), crate::theme::semibold(20.0), t.text);
         let (title_r, _) = ui.allocate_exact_size(title_galley.size(), Sense::hover());
         ui.painter().galley(title_r.min, title_galley, t.text);
     });
