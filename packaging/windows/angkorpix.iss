@@ -18,7 +18,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=..\..\LICENSE-MIT
+LicenseFile=LICENSE-KHMER.rtf
 OutputDir=..\..\RELEASES
 OutputBaseFilename=AngkorPix-Setup-v{#MyAppVersion}
 SetupIconFile=..\..\assets\app-icon\photocraft.ico
@@ -58,6 +58,7 @@ Source: "..\..\models\README.md"; DestDir: "{app}\models"; Flags: ignoreversion 
 ; AI Setup & Documentation
 Source: "..\..\setup-ai-directml.cmd"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\README.md"; DestDir: "{app}"; Flags: ignoreversion isreadme
+Source: "LICENSE-KHMER.txt"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"
