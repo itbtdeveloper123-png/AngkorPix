@@ -338,7 +338,11 @@ def main():
     try:
         import onnxruntime as ort
     except ImportError:
-        sys.stderr.write("ERROR: onnxruntime is not installed in Python environment.\n")
+        sys.stderr.write("[AngkorPix] onnxruntime not installed in Python environment. Automatically falling back to Cloud API (Poof.bg + remove.bg)...\n")
+        if try_cloud_api(args.input, args.output, explicit_key=args.api_key, provider=args.api_provider):
+            print("SUCCESS_API")
+            sys.exit(0)
+        sys.stderr.write("ERROR: onnxruntime is not installed in Python environment and Cloud API fallback failed.\n")
         sys.exit(2)
 
     sess_options = ort.SessionOptions()

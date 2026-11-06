@@ -19,4 +19,5 @@ scratch/
 models/*.onnx
 models/*.pth
 models/*.bin
+/RELEASES/
 
