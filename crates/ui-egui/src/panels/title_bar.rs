@@ -72,14 +72,14 @@ pub fn title_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
                 if is_home && n > 0 {
                     let (back_rect, back_resp) = ui.allocate_exact_size(vec2(18.0, 18.0), Sense::click());
                     let color = if back_resp.hovered() { t.text } else { t.text_dim };
-                    crate::icons::paint(ui, back_rect, "chevron_left", 14.0, color);
+                    crate::icons::paint(ui, back_rect, "chevron-left", 14.0, color);
                     if back_resp.on_hover_text(tl!("Back to document")).clicked() {
                         app.ui.chrome.home = None;
                     }
                     ui.add_space(2.0);
                 }
                 if !system {
-                    let side = if t.pro { 18.0 } else { 20.0 };
+                    let side = if t.pro { 20.0 } else { 22.0 };
                     let (mark, mark_resp) = ui.allocate_exact_size(vec2(side, side), Sense::click());
                     crate::brand::paint_mark(ui, mark);
                     if is_home && n > 0 && mark_resp.on_hover_text(tl!("Back to document")).clicked() {

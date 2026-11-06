@@ -132,16 +132,17 @@ fn render_start_content(app: &mut PhotocraftApp, ui: &mut egui::Ui, recent: &[St
 
     // Top Row: [App Icon] AngkorPix
     ui.horizontal(|ui| {
-        let logo_size = egui::vec2(26.0, 26.0);
+        let logo_size = egui::vec2(40.0, 40.0);
         let (logo_rect, _) = ui.allocate_exact_size(logo_size, Sense::hover());
         crate::brand::paint_mark(ui, logo_rect);
 
-        ui.add_space(10.0);
+        ui.add_space(12.0);
 
         let app_name = crate::menus::native_menu::APP_NAME;
-        let title_galley = ui.painter().layout_no_wrap(app_name.into(), crate::theme::semibold(20.0), t.text);
+        let title_galley = ui.painter().layout_no_wrap(app_name.into(), crate::theme::semibold(22.0), t.text);
         let (title_r, _) = ui.allocate_exact_size(title_galley.size(), Sense::hover());
-        ui.painter().galley(title_r.min, title_galley, t.text);
+        let pos = egui::pos2(title_r.min.x, logo_rect.center().y - title_galley.size().y / 2.0);
+        ui.painter().galley(pos, title_galley, t.text);
     });
 
     ui.add_space(18.0);
