@@ -51,10 +51,11 @@ pub fn title_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
             let title = if is_home {
                 String::new()
             } else {
+                let app_name = crate::menus::native_menu::APP_NAME;
                 app.session
                     .active()
-                    .map(|d| format!("{}{}", if show_name { d.doc.name.as_str() } else { "PhotoCraft" }, if d.is_dirty() { "  •" } else { "" }))
-                    .unwrap_or_else(|| "PhotoCraft".into())
+                    .map(|d| format!("{}{}", if show_name { d.doc.name.as_str() } else { app_name }, if d.is_dirty() { "  •" } else { "" }))
+                    .unwrap_or_else(|| app_name.into())
             };
             // The menus and the far-end controls are laid out first; the title is centred in
             // whatever room is left between them (`free`, left to right: menus then controls, or
@@ -200,10 +201,11 @@ pub fn system_title_bar(app: &PhotocraftApp) -> bool {
 /// document open. With Preferences › Interface › Show File Name In Title off, the file name
 /// drops out and only the app name (and the `*`) remains (#5037).
 pub fn window_title(app: &PhotocraftApp) -> String {
+    let app_name = crate::menus::native_menu::APP_NAME;
     if !app.session.prefs().interface.show_file_name_in_title {
-        return format!("{}PhotoCraft", if app.session.active().is_some_and(|d| d.is_dirty()) { "*" } else { "" });
+        return format!("{}{}", if app.session.active().is_some_and(|d| d.is_dirty()) { "*" } else { "" }, app_name);
     }
-    app.session.active().map(|d| format!("{}{} \u{2014} PhotoCraft", if d.is_dirty() { "*" } else { "" }, d.doc.name)).unwrap_or_else(|| "PhotoCraft".into())
+    app.session.active().map(|d| format!("{}{} \u{2014} {}", if d.is_dirty() { "*" } else { "" }, d.doc.name, app_name)).unwrap_or_else(|| app_name.into())
 }
 
 /// Keep the OS window title (and the taskbar / Alt-Tab entry) on the active file. Sends
