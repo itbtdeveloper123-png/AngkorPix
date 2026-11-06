@@ -31,7 +31,7 @@ echo ======================================================================
 echo           ArtPixels Creative Suite - Release Builder & Packager
 echo ======================================================================
 echo.
-echo   [1] Build and Pack AngkorPix         (v0.20.1  - Photo Editor)
+echo   [1] Build and Pack AngkorPix         (v0.20.2  - Photo Editor)
 echo   [2] Build and Pack AngkorVector      (v0.18.0  - Vector Illustrator)
 echo   [3] Build and Pack ArtPixels         (v0.10.0  - Desktop Launcher)
 echo   [4] Build and Pack ALL THREE APPS    (Complete Suite)
@@ -84,7 +84,7 @@ goto MENU
 call :CLOSE_RUNNING
 echo.
 echo ======================================================================
-echo   [1/3] Building AngkorPix v0.20.1 in Release Mode...
+echo   [1/3] Building AngkorPix v0.20.2 in Release Mode...
 echo ======================================================================
 cd /d "%PHOTOCRAFT_DIR%"
 cargo build --release -p angkorpix
@@ -97,7 +97,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo [INFO] Packaging AngkorPix into zip...
-set "ZIP_PIX=%RELEASES_DIR%\angkorpix-0.20.1-windows-x64-portable.zip"
+set "ZIP_PIX=%RELEASES_DIR%\angkorpix-0.20.2-windows-x64-portable.zip"
 if exist "%ZIP_PIX%" del /f /q "%ZIP_PIX%"
 
 set "STAGE_PIX=%PHOTOCRAFT_DIR%\target\stage_angkorpix"
@@ -110,7 +110,15 @@ if exist "%PHOTOCRAFT_DIR%\models" xcopy /E /I /Y "%PHOTOCRAFT_DIR%\models" "%ST
 if exist "%PHOTOCRAFT_DIR%\setup-ai-directml.cmd" copy /Y "%PHOTOCRAFT_DIR%\setup-ai-directml.cmd" "%STAGE_PIX%\" >nul
 if exist "%PHOTOCRAFT_DIR%\README.md" copy /Y "%PHOTOCRAFT_DIR%\README.md" "%STAGE_PIX%\" >nul
 
-if not exist "%RELEASES_DIR%\angkorpix-0.20.1-windows-x64-portable" mkdir "%RELEASES_DIR%\angkorpix-0.20.1-windows-x64-portable"`r`nxcopy /E /I /Y "%STAGE_PIX%" "%RELEASES_DIR%\angkorpix-0.20.1-windows-x64-portable" >nul`r`ntar -a -c -f "%ZIP_PIX%" -C "%STAGE_PIX%" *
+if not exist "%RELEASES_DIR%\angkorpix-0.20.2-windows-x64-portable" mkdir "%RELEASES_DIR%\angkorpix-0.20.2-windows-x64-portable"
+xcopy /E /I /Y "%STAGE_PIX%" "%RELEASES_DIR%\angkorpix-0.20.2-windows-x64-portable" >nul
+tar -a -c -f "%ZIP_PIX%" -C "%STAGE_PIX%" *
+
+:: Also sync backward compatibility releases
+if not exist "%RELEASES_DIR%\angkorpix-0.20.1-windows-x64-portable" mkdir "%RELEASES_DIR%\angkorpix-0.20.1-windows-x64-portable"
+xcopy /E /I /Y "%STAGE_PIX%" "%RELEASES_DIR%\angkorpix-0.20.1-windows-x64-portable" >nul
+tar -a -c -f "%RELEASES_DIR%\angkorpix-0.20.1-windows-x64-portable.zip" -C "%STAGE_PIX%" *
+
 rd /s /q "%STAGE_PIX%"
 
 echo [SUCCESS] Created: %ZIP_PIX%

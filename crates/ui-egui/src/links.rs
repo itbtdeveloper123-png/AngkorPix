@@ -9,6 +9,7 @@ use crate::PhotocraftApp;
 pub const DISCORD: &str = "https://github.com/itbtdeveloper123-png";
 pub const ARTCRAFT_WEBSITE: &str = "https://github.com/itbtdeveloper123-png";
 pub const APP_PAGE: &str = "https://github.com/itbtdeveloper123-png/AngkorPix";
+pub const TUTORIALS: &str = "https://getartcraft.com/tutorials";
 pub const GITHUB: &str = "https://github.com/itbtdeveloper123-png/AngkorPix";
 pub const ISSUES: &str = "https://github.com/itbtdeveloper123-png/AngkorPix/issues";
 

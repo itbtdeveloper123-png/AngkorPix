@@ -943,7 +943,7 @@ fn render_poster_composer_content(app: &mut PhotocraftApp, ui: &mut Ui, t: &Toke
     ui.data_mut(|d| d.insert_temp(state_id, state));
 }
 
-fn render_one_click_tools_popup_content(app: &mut PhotocraftApp, ui: &mut Ui, t: &Tokens) {
+fn render_one_click_tools_popup_content(app: &mut PhotocraftApp, ui: &mut Ui, _t: &Tokens) {
     ui.set_min_width(380.0);
 
     ui.horizontal(|ui| {
@@ -980,20 +980,17 @@ fn render_one_click_tools_popup_content(app: &mut PhotocraftApp, ui: &mut Ui, t:
             let (card_r, card_resp) = ui.allocate_exact_size(vec2(ui.available_width(), 48.0), Sense::click());
             let hovered = card_resp.hovered();
 
+            // High-contrast, sleek pro card styling (always readable, never washed out)
             let bg = if hovered {
-                accent.gamma_multiply(0.22)
-            } else if t.dark() {
-                Color32::from_rgb(38, 38, 42)
+                accent.gamma_multiply(0.28)
             } else {
-                Color32::from_rgb(244, 244, 248)
+                Color32::from_rgb(42, 42, 46)
             };
 
             let stroke_col = if hovered {
                 accent
-            } else if t.dark() {
-                Color32::from_rgb(56, 56, 62)
             } else {
-                Color32::from_rgb(218, 218, 224)
+                Color32::from_rgb(62, 62, 68)
             };
 
             let painter = ui.painter();
@@ -1004,24 +1001,16 @@ fn render_one_click_tools_popup_content(app: &mut PhotocraftApp, ui: &mut Ui, t:
             let bar = Rect::from_min_max(pos2(card_r.left() + 2.0, card_r.top() + 4.0), pos2(card_r.left() + 6.0, card_r.bottom() - 4.0));
             painter.rect_filled(bar, CornerRadius::same(2), accent);
 
-            // Title
-            let title_col = if hovered {
-                Color32::WHITE
-            } else if t.dark() {
-                Color32::from_rgb(240, 240, 245)
-            } else {
-                Color32::from_rgb(24, 24, 28)
-            };
+            // Title: always crisp, bright white
+            let title_col = Color32::WHITE;
             let title_galley = painter.layout_no_wrap(title.to_string(), theme::medium(12.5), title_col);
             painter.galley(pos2(card_r.left() + 14.0, card_r.top() + 6.0), title_galley, title_col);
 
-            // Description (Khmer + English)
+            // Description (Khmer + English): clear silver/gray, highlighted on hover
             let desc_col = if hovered {
-                accent
-            } else if t.dark() {
-                Color32::from_rgb(175, 175, 185)
+                Color32::from_rgb(220, 235, 255)
             } else {
-                Color32::from_rgb(90, 90, 100)
+                Color32::from_rgb(180, 185, 195)
             };
             let desc_text = format!("{} • {}", khmer_desc, en_desc);
             let desc_galley = painter.layout_no_wrap(desc_text, egui::FontId::proportional(10.5), desc_col);

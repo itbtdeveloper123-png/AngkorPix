@@ -567,7 +567,7 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                 }
             }
 
-            let mut region = match region_opt {
+            let region = match region_opt {
                 Some(r) => r,
                 None => {
                     // Cancel reaches the min cuts inside Select Subject, so Esc doesn't wait for them.
@@ -596,15 +596,17 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                 }
             };
 
+            let mut surface = matting::region_surface(&region);
             if ctx.cancelled() {
                 return Err(EngineError::Cancelled);
             }
             if refine && !is_ai && !is_specialized {
-                ctx.progress(0.6, "Refining edge");
-                let refined = with_doc_sampler(doc, Some(id), sample_all, |smp, _| {
-                    matting::refine_mask(smp, &matting::region_reader(&region), region.bbox, bounds, &REFINE)
+                let refined = ctx.stage(0.6, 0.95, "Refining edge", |interrupt| {
+                    with_doc_sampler(doc, Some(id), sample_all, |smp, _| {
+                        matting::refine_surface_with_interrupt(smp, &surface, bounds, &REFINE, None, interrupt)
+                    })
                 });
-                region = refined.unwrap_or(region);
+                surface = refined.map_err(|e| EngineError::Other(e.to_string()))?.unwrap_or(surface);
                 if ctx.cancelled() {
                     return Err(EngineError::Cancelled);
                 }
@@ -708,7 +710,7 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                     "📁 Glass Cutout (ដបកែវថ្លា - Photoshop)"
                 };
                 let mut group = Layer::group(group_title, vec![body_layer, highlight_layer]);
-                let mask_surf = matting::region_surface(&region);
+                let mask_surf = surface.clone();
                 group.mask = Some(LayerMask { surface: mask_surf, ..LayerMask::reveal_all() });
 
                 let gid = doc.insert_above(Some(id), group);
@@ -723,7 +725,7 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                         }
                     }
                 }
-                let mask = crate::commands::mask_at_depth(LayerMask { surface: matting::region_surface(&region), ..LayerMask::reveal_all() }, doc.depth)?;
+                let mask = crate::commands::mask_at_depth(LayerMask { surface: surface.clone(), ..LayerMask::reveal_all() }, doc.depth)?;
                 if let Some(l) = doc.layer_mut(id) {
                     if is_api {
                         l.name = "remove.bg Cutout (Cloud HD)".to_string();
@@ -740,7 +742,7 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                 }
             }
             doc.selection = None;
-            let b = region.bbox;
+            let b = surface.content_bounds();
             Ok([b.x0, b.y0, b.width() as i32, b.height() as i32])
         },
         move |bounds| json!({ "layer": id.0, "bounds": bounds }),
