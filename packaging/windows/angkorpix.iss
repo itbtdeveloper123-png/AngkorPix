@@ -2,7 +2,7 @@
 ; Native Pro Image Editor & Photoshop Alternative (Creative Suite by ArtPixels)
 
 #define MyAppName "AngkorPix"
-#define MyAppVersion "0.20.2"
+#define MyAppVersion "0.21.0"
 #define MyAppPublisher "ArtPixels / IT BT"
 #define MyAppURL "https://github.com/itbtdeveloper123-png/AngkorPix"
 #define MyAppExeName "angkorpix.exe"
@@ -58,10 +58,12 @@ Source: "..\..\models\README.md"; DestDir: "{app}\models"; Flags: ignoreversion 
 ; AI Setup & Documentation
 Source: "..\..\setup-ai-directml.cmd"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\README.md"; DestDir: "{app}"; Flags: ignoreversion isreadme
+Source: "..\..\AngkorPix-Tutorial-Book.pdf"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "LICENSE-KHMER.txt"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"
+Name: "{group}\AngkorPix Tutorial Book"; Filename: "{app}\AngkorPix-Tutorial-Book.pdf"
 Name: "{group}\Setup AI GPU Acceleration"; Filename: "{app}\setup-ai-directml.cmd"; IconFilename: "{app}\{#MyAppExeName}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; IconFilename: "{app}\{#MyAppExeName}"
