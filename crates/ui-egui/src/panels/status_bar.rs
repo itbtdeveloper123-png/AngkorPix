@@ -14,6 +14,8 @@ pub fn status_bar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
         .exact_size(status_bar_heights(&t).0)
         .frame(egui::Frame::NONE.fill(t.chrome).inner_margin(egui::Margin::symmetric(10, 0)))
         .show(ui, |ui| {
+            let r = ui.max_rect();
+            ui.painter().line_segment([r.left_top(), r.right_top()], egui::Stroke::new(1.0, t.separator));
             let control_h = status_bar_heights(&t).1;
             // Read from the right in a right-to-left UI, with the trailing group at the left.
             crate::direction::horizontal_centered(ui, |ui| {

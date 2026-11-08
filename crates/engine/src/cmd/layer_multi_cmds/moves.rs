@@ -185,20 +185,20 @@ pub fn translate(s: &mut Session, p: &Value) -> Result<Value> {
                 if is_artboard || is_locked {
                     continue;
                 }
-                if let Some(l) = doc.layer(id) {
-                    if let Some(b) = layer_bounds(l) {
-                        let cx = b.x0 + (b.width() as i32) / 2;
-                        let cy = b.y0 + (b.height() as i32) / 2;
-                        let target_ab = artboards.iter().rev().find(|(_, rect)| rect.contains(cx, cy)).map(|(ab_id, _)| *ab_id);
-                        let cur_ab = doc.artboard_of(id);
-                        if target_ab != cur_ab {
-                            if let Some(l_obj) = doc.remove(id) {
-                                if let Some(tab) = target_ab {
-                                    doc.insert_into(tab, l_obj);
-                                } else {
-                                    doc.insert_above(None, l_obj);
-                                }
-                            }
+                if let Some(l) = doc.layer(id)
+                    && let Some(b) = layer_bounds(l)
+                {
+                    let cx = b.x0 + (b.width() as i32) / 2;
+                    let cy = b.y0 + (b.height() as i32) / 2;
+                    let target_ab = artboards.iter().rev().find(|(_, rect)| rect.contains(cx, cy)).map(|(ab_id, _)| *ab_id);
+                    let cur_ab = doc.artboard_of(id);
+                    if target_ab != cur_ab
+                        && let Some(l_obj) = doc.remove(id)
+                    {
+                        if let Some(tab) = target_ab {
+                            doc.insert_into(tab, l_obj);
+                        } else {
+                            doc.insert_above(None, l_obj);
                         }
                     }
                 }

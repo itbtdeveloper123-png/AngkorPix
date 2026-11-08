@@ -6,16 +6,16 @@ use std::process::Command;
 /// Attempts to find the AngkorVector executable path.
 pub fn find_angkorvector_exe() -> Option<PathBuf> {
     // 1. Check beside current executable
-    if let Ok(current_exe) = std::env::current_exe() {
-        if let Some(dir) = current_exe.parent() {
-            let beside = dir.join("angkorvector.exe");
-            if beside.is_file() {
-                return Some(beside);
-            }
-            let beside_legacy = dir.join("vectorcraft.exe");
-            if beside_legacy.is_file() {
-                return Some(beside_legacy);
-            }
+    if let Ok(current_exe) = std::env::current_exe()
+        && let Some(dir) = current_exe.parent()
+    {
+        let beside = dir.join("angkorvector.exe");
+        if beside.is_file() {
+            return Some(beside);
+        }
+        let beside_legacy = dir.join("vectorcraft.exe");
+        if beside_legacy.is_file() {
+            return Some(beside_legacy);
         }
     }
 

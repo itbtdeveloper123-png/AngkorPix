@@ -105,6 +105,10 @@ pub fn toolbar(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
         .exact_size(w)
         .frame(egui::Frame::NONE.fill(t.chrome).inner_margin(egui::Margin::symmetric(m, 8)))
         .show(ui, |ui| {
+            let full = ui.max_rect();
+            let div_x = if crate::direction::is_rtl() { full.left() } else { full.right() };
+            ui.painter().line_segment([pos2(div_x, full.top() - 8.0), pos2(div_x, full.bottom() + 8.0)], egui::Stroke::new(1.0, t.separator));
+
             // Toolbar width is a user preference, not a Pro-only feature.
             // Keep the same hit target in every theme (including RTL layouts).
             let (cr, resp) = ui.allocate_exact_size(vec2(bx, 14.0), Sense::click());

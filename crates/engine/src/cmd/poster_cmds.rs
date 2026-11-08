@@ -248,6 +248,7 @@ fn build_vignette_layer(bounds: Rect, fmt: PixelFormat) -> Layer {
 }
 
 /// Helper to build an editable TextLayer
+#[allow(clippy::too_many_arguments)]
 fn build_text_layer(
     doc: &Document,
     name: &str,

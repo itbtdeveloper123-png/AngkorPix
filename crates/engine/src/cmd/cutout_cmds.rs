@@ -72,13 +72,13 @@ fn native_ps_glass_cutout(bounds: Rect, rgba_vec: &[[f32; 4]]) -> CutoutResult {
         for x in 0..w {
             if x < border_x || x >= w - border_x || y < border_y || y >= h - border_y {
                 let idx = y * w + x;
-                if let Some(px) = rgba_vec.get(idx) {
-                    if px[3] > 0.3 {
-                        bg_r += px[0];
-                        bg_g += px[1];
-                        bg_b += px[2];
-                        bg_count += 1;
-                    }
+                if let Some(px) = rgba_vec.get(idx)
+                    && px[3] > 0.3
+                {
+                    bg_r += px[0];
+                    bg_g += px[1];
+                    bg_b += px[2];
+                    bg_count += 1;
                 }
             }
         }
@@ -101,8 +101,10 @@ fn native_ps_glass_cutout(bounds: Rect, rgba_vec: &[[f32; 4]]) -> CutoutResult {
                 if let Some(v) = is_outer_bg.get_mut(idx) { *v = true; }
             } else {
                 let dist = (px[0] - bg_color[0]).abs() + (px[1] - bg_color[1]).abs() + (px[2] - bg_color[2]).abs();
-                if dist < fill_threshold {
-                    if let Some(v) = is_outer_bg.get_mut(idx) { *v = true; }
+                if dist < fill_threshold
+                    && let Some(v) = is_outer_bg.get_mut(idx)
+                {
+                    *v = true;
                 }
             }
         }
@@ -516,6 +518,7 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
         "Remove Background"
     };
 
+    #[allow(clippy::cognitive_complexity)]
     crate::jobs::edit_job(
         s,
         job_label,
@@ -718,12 +721,12 @@ fn run(s: &mut Session, p: &Value) -> Result<Value> {
                 *active = Some(gid);
             } else {
                 crate::extra_cmds::background_to_layer_for_mask(doc, id);
-                if let Some(rgba) = &rgba_opt {
-                    if let Some(surf) = doc.layer_mut(id).and_then(Layer::surface_mut) {
-                        if surf.channels() == 4 && rgba.len() == (bounds.width() as usize * bounds.height() as usize * 4) {
-                            surf.write_region(bounds, rgba);
-                        }
-                    }
+                if let Some(rgba) = &rgba_opt
+                    && let Some(surf) = doc.layer_mut(id).and_then(Layer::surface_mut)
+                    && surf.channels() == 4
+                    && rgba.len() == (bounds.width() as usize * bounds.height() as usize * 4)
+                {
+                    surf.write_region(bounds, rgba);
                 }
                 let mask = crate::commands::mask_at_depth(LayerMask { surface: surface.clone(), ..LayerMask::reveal_all() }, doc.depth)?;
                 if let Some(l) = doc.layer_mut(id) {

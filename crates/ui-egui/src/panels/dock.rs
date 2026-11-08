@@ -46,12 +46,13 @@ fn rail(app: &mut PhotocraftApp, ui: &mut egui::Ui, t: &Tokens) {
             ui.painter().line_segment([pos2(x, r.top() - 8.0), pos2(x, r.bottom() + 8.0)], Stroke::new(1.0, t.separator));
             ui.spacing_mut().item_spacing.y = 4.0;
             use crate::dock::Group;
-            let entries: [(&str, &str, Group); 6] = [
+            let entries: [(&str, &str, Group); 7] = [
                 ("sliders-horizontal", tl!("Properties"), Group::Properties),
-                ("navigation", tl!("Navigator"), Group::Navigator),
-                ("palette", tl!("Color & Swatches"), Group::Color),
                 ("layers", tl!("Layers"), Group::Layers),
                 ("clock", tl!("History"), Group::History),
+                ("palette", tl!("Color & Swatches"), Group::Color),
+                ("type", tl!("Character & Paragraph"), Group::Character),
+                ("navigation", tl!("Navigator"), Group::Navigator),
                 ("brush", tl!("Brushes"), Group::Brushes),
             ];
             for (icon, name, g) in entries {
